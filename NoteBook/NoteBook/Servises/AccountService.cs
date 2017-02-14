@@ -29,7 +29,7 @@ namespace NoteBook.Servises
                 var json = JsonConvert.SerializeObject(credentials);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var result = await client.PostAsync("http://192.168.1.149:81/api/Account/login", content);
+                var result = await client.PostAsync("http://192.168.1.149:81/api/Account/login", content).ConfigureAwait(false);
 
                 return result;
             }
@@ -41,7 +41,9 @@ namespace NoteBook.Servises
             {
                 var json = JsonConvert.SerializeObject(credentials);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var result = await client.PostAsync("http://169.254.133.101:81/api/Account/register", content);
+
+                var result = await client.PostAsync("http://192.168.1.149:81/api/Account/register", content).ConfigureAwait(false);
+
                 return result;
             }
         }

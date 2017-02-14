@@ -40,7 +40,7 @@ namespace WebService.Controllers
         [System.Web.Http.HttpPost]
         [System.Web.Http.AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public IHttpActionResult Register([FromBody] AccountModels.RegisterModel model)
+        public async Task<IHttpActionResult> Register([FromBody] AccountModels.RegisterModel model)
         {
             string error;
             try
