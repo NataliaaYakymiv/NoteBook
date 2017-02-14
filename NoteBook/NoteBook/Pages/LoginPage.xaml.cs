@@ -1,4 +1,7 @@
-﻿using Xamarin.Forms;
+﻿using System;
+using NoteBook.Models;
+using NoteBook.Servises;
+using Xamarin.Forms;
 
 namespace NoteBook.Pages
 {
@@ -8,6 +11,23 @@ namespace NoteBook.Pages
         {
             Title = "Login Page";
             InitializeComponent();
+        }
+
+        private async void OnLogin(object sender, EventArgs e)
+        {
+            AccountModels.LoginModel credentials = new AccountModels.LoginModel();
+            credentials.UserName = LoginEntry.Text;
+            credentials.Password = PasswordEntry.Text;
+
+            var response = AccountService.GetService().Login(credentials);
+
+            LoginEntry.Text = string.Empty;
+            StateLabel.Text = await response.Result.Content.ReadAsStringAsync();
+
+            if (response.Result.IsSuccessStatusCode)
+            {
+                PasswordEntry.Text = string.Empty;
+            }
         }
     }
 }

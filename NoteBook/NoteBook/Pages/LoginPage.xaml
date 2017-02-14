@@ -6,8 +6,7 @@
     <Label x:Name="TextLabel" FontSize="Large">Sign in</Label>
     <Entry x:Name="LoginEntry" Placeholder = "Login"/>
     <Entry x:Name="PasswordEntry"  Placeholder = "Password" IsPassword ="True" />
-    <Button Text = "Sign in" FontSize="Medium" BorderWidth="1"
-            HorizontalOptions="Center" VerticalOptions="CenterAndExpand"
-             />
+    <Button Text ="Sign in" FontSize="Medium" BorderWidth="1" Clicked="OnLogin"/>
+    <Label x:Name="StateLabel" FontSize="Large"></Label>
   </StackLayout>
 </ContentPage>

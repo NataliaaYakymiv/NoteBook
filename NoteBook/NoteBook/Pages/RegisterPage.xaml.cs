@@ -15,11 +15,20 @@ namespace NoteBook.Pages
 
         private async void OnRegister(object sender, EventArgs e)
         {
-            FormCredentials credentials = new FormCredentials();
-            credentials.Name = LoginEntry.Text;
+            AccountModels.RegisterModel credentials = new AccountModels.RegisterModel();
+            credentials.UserName = LoginEntry.Text;
             credentials.Password = PasswordEntry.Text;
 
-            await AccountService.GetService().Register(credentials);
+            var response = AccountService.GetService().Register(credentials);
+
+            LoginEntry.Text = string.Empty;
+            StateLabel.Text = await response.Result.Content.ReadAsStringAsync();
+
+            if (response.Result.IsSuccessStatusCode)
+            {
+                PasswordEntry.Text = string.Empty;
+            }
+            
         }
     }
 }

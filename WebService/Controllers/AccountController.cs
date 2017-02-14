@@ -5,66 +5,139 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using System.Web.Mvc;
+using System.Web.Security;
 using System.Web.UI.WebControls;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
+using Microsoft.Web.WebPages.OAuth;
 using WebMatrix.WebData;
+using WebService.Filters;
 using WebService.Models;
 
 namespace WebService.Controllers
 {
-    [RoutePrefix("api/Account")]
+    //[InitializeSimpleMembership]
+    [System.Web.Http.RoutePrefix("api/Account")]
+    [System.Web.Http.Authorize]
     public class AccountController : ApiController
     {
-
-        [HttpGet]
-        public IHttpActionResult Login()
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public IHttpActionResult Login(AccountModels.LoginModel model)
         {
-            if (!WebSecurity.Initialized)
+            if (WebSecurity.Login(model.UserName, model.Password, persistCookie: model.RememberMe))
             {
-                WebSecurity.InitializeDatabaseConnection("DefaultConnection", "Users", "ID", "Name",
-                    autoCreateTables: true);
+                return Ok("Successful login");
             }
-            return Ok("Login form");
+
+            return BadRequest("The user name or password provided is incorrect.");
         }
 
-        [HttpPost]
-        public IHttpActionResult Login(FormCredentials form)
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public IHttpActionResult Register([FromBody] AccountModels.RegisterModel model)
         {
-            bool authenticated = WebSecurity.Login(form.Name, form.Password, false);
-
-            if (authenticated)
+            string error;
+            try
             {
-                return Ok("Authorized");
+                WebSecurity.CreateUserAndAccount(model.UserName, model.Password);
+                return Ok("Registration successful");
             }
-            return Unauthorized();
-        }
-
-        [HttpGet]
-        public IHttpActionResult Register()
-        {
-            if (!WebSecurity.Initialized)
+            catch (MembershipCreateUserException e)
             {
-                WebSecurity.InitializeDatabaseConnection("DefaultConnection", "Users", "ID", "Name",
-                    autoCreateTables: true);
+                error = ErrorCodeToString(e.StatusCode);
             }
-            return Ok("Register form");
+
+            return BadRequest(error);
         }
 
-        [HttpPost]
-        public IHttpActionResult Register([FromBody]FormCredentials form)
-        {
-            WebSecurity.CreateUserAndAccount(form.Name, form.Password);
-            return Ok("Register");
-        }
-
+        [System.Web.Http.HttpGet]
+        [ValidateAntiForgeryToken]
         public IHttpActionResult Logout()
         {
             WebSecurity.Logout();
             return Ok("Logout");
         }
+        #region Helpers
+        //private ActionResult RedirectToLocal(string returnUrl)
+        //{
+        //    if (Url.IsLocalUrl(returnUrl))
+        //    {
+        //        return Redirect(returnUrl);
+        //    }
+        //    else
+        //    {
+        //        return RedirectToAction("Index", "Home");
+        //    }
+        //}
+
+        public enum ManageMessageId
+        {
+            ChangePasswordSuccess,
+            SetPasswordSuccess,
+            RemoveLoginSuccess,
+        }
+
+        internal class ExternalLoginResult : ActionResult
+        {
+            public ExternalLoginResult(string provider, string returnUrl)
+            {
+                Provider = provider;
+                ReturnUrl = returnUrl;
+            }
+
+            public string Provider { get; private set; }
+            public string ReturnUrl { get; private set; }
+
+            public override void ExecuteResult(ControllerContext context)
+            {
+                OAuthWebSecurity.RequestAuthentication(Provider, ReturnUrl);
+            }
+        }
+
+        private static string ErrorCodeToString(MembershipCreateStatus createStatus)
+        {
+            // See http://go.microsoft.com/fwlink/?LinkID=177550 for
+            // a full list of status codes.
+            switch (createStatus)
+            {
+                case MembershipCreateStatus.DuplicateUserName:
+                    return "User name already exists. Please enter a different user name.";
+
+                case MembershipCreateStatus.DuplicateEmail:
+                    return "A user name for that e-mail address already exists. Please enter a different e-mail address.";
+
+                case MembershipCreateStatus.InvalidPassword:
+                    return "The password provided is invalid. Please enter a valid password value.";
+
+                case MembershipCreateStatus.InvalidEmail:
+                    return "The e-mail address provided is invalid. Please check the value and try again.";
+
+                case MembershipCreateStatus.InvalidAnswer:
+                    return "The password retrieval answer provided is invalid. Please check the value and try again.";
+
+                case MembershipCreateStatus.InvalidQuestion:
+                    return "The password retrieval question provided is invalid. Please check the value and try again.";
+
+                case MembershipCreateStatus.InvalidUserName:
+                    return "The user name provided is invalid. Please check the value and try again.";
+
+                case MembershipCreateStatus.ProviderError:
+                    return "The authentication provider returned an error. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
+
+                case MembershipCreateStatus.UserRejected:
+                    return "The user creation request has been canceled. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
+
+                default:
+                    return "An unknown error occurred. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
+            }
+        }
+        #endregion
 
         //private ApplicationSignInManager _signInManager;
         //private ApplicationUserManager _userManager;

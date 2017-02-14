@@ -18,7 +18,7 @@ namespace NoteBook.Pages
 
         private async void OnLogin(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new Pages.LoginPage());
+            await Navigation.PushAsync(new LoginPage());
         }
     }
 }

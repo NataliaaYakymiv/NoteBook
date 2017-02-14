@@ -10,7 +10,7 @@ namespace NoteBook.Servises
 {
     public class AccountService : IAccountService
     {
-        public string Url { get; } = "http://localhost:55023";
+        public string Url { get; } = "http://192.168.1.149:81/";
 
         private AccountService() { }
         private static AccountService Instance { set; get; }
@@ -22,21 +22,27 @@ namespace NoteBook.Servises
             return new AccountService();
         }
 
-        public async Task<string> Login(FormCredentials credentials)
-        {
-            throw  new NotImplementedException();
-        }
-
-        public async Task<string> Register(FormCredentials credentials)
+        public async Task<HttpResponseMessage> Login(AccountModels.LoginModel credentials)
         {
             using (var client = new HttpClient())
             {
                 var json = JsonConvert.SerializeObject(credentials);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var result = await client.PostAsync("http://192.168.1.149:81/api/Account/register", content);
+                var result = await client.PostAsync("http://192.168.1.149:81/api/Account/login", content);
 
-                return await result.Content.ReadAsStringAsync();
+                return result;
+            }
+        }
+
+        public async Task<HttpResponseMessage> Register(AccountModels.RegisterModel credentials)
+        {
+            using (var client = new HttpClient())
+            {
+                var json = JsonConvert.SerializeObject(credentials);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var result = await client.PostAsync("http://169.254.133.101:81/api/Account/register", content);
+                return result;
             }
         }
     }

@@ -7,5 +7,6 @@
     <Entry x:Name="LoginEntry" BindingContext="{x:Reference Name=LoginEntry}" Placeholder = "Login"/>
     <Entry x:Name="PasswordEntry"  BindingContext="{x:Reference Name=PasswordEntry}"  Placeholder = "Password" IsPassword ="True" />
     <Button Text = "Registration" FontSize="Medium" BorderWidth="1" Clicked="OnRegister"/>
+    <Label x:Name="StateLabel" FontSize="Large"></Label>
   </StackLayout>
 </ContentPage>
