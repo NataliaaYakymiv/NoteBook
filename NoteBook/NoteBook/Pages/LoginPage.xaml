@@ -7,6 +7,9 @@
     <Entry x:Name="LoginEntry" Placeholder = "Login"/>
     <Entry x:Name="PasswordEntry"  Placeholder = "Password" IsPassword ="True" />
     <Button Text ="Sign in" FontSize="Medium" BorderWidth="1" Clicked="OnLogin"/>
+    <Button Text ="Facebook" FontSize="Medium" BorderWidth="1" Clicked="OnFacebookLogin"/>
     <Label x:Name="StateLabel" FontSize="Large"></Label>
+  <Button Text ="Get int" FontSize="Medium" BorderWidth="1" Clicked="OnGetNumber"/>
+  <Label x:Name="StateLabel1" FontSize="Large"></Label>
   </StackLayout>
 </ContentPage>

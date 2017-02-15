@@ -29,5 +29,15 @@ namespace NoteBook.Pages
                 PasswordEntry.Text = string.Empty;
             }
         }
+
+        private async void OnGetNumber(object sender, EventArgs e)
+        {
+            StateLabel1.Text = await AccountService.GetService().GetInt().Result.Content.ReadAsStringAsync();
+        }
+
+        private void OnFacebookLogin(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
