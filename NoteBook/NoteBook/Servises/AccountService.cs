@@ -13,7 +13,10 @@ namespace NoteBook.Servises
 {
     public class AccountService : IAccountService
     {
-        public string Url { get; } = "http://192.168.1.149:81/";
+        //Yura
+        //public string Url { get; } = "http://192.168.1.149:81/";
+        //Natalia
+        public string Url { get; } = "http://192.168.0.102:81/";
         public string AuthKey { get; private set; }
 
         private AccountService() { }
@@ -30,9 +33,9 @@ namespace NoteBook.Servises
             {
                 var json = JsonConvert.SerializeObject(credentials);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                var result = await client.PostAsync("http://192.168.1.149:81/api/Account/login", content).ConfigureAwait(false);
-
+                
+                var result = await client.PostAsync("http://192.168.0.102:81/api/Account/login", content).ConfigureAwait(false);
+                
                 AuthKey = result.Headers.GetValues(HttpRequestHeader.Authorization.ToString()).First(x => x.StartsWith("Basic"));
 
                 return result;
@@ -46,7 +49,7 @@ namespace NoteBook.Servises
                 var json = JsonConvert.SerializeObject(credentials);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var result = await client.PostAsync("http://192.168.1.149:81/api/Account/register", content).ConfigureAwait(false);
+                var result = await client.PostAsync("http://192.168.0.102:81/api/Account/register", content).ConfigureAwait(false);
 
                 return result;
             }
@@ -59,7 +62,7 @@ namespace NoteBook.Servises
 
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.Add(HttpRequestHeader.Authorization.ToString(), AuthKey);
-                var result = await client.GetAsync("http://192.168.1.149:81/api/Account/GetNumber").ConfigureAwait(false);
+                var result = await client.GetAsync("http://192.168.0.102:81/api/Account/GetNumber").ConfigureAwait(false);
 
                 return result;
             }

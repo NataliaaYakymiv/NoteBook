@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 using WebService.Models;
+using WebService.Services;
 
 namespace WebService.Services
 {
@@ -28,7 +31,7 @@ namespace WebService.Services
             return _repository.DoesItemExist(id);
         }
 
-        public NotesItem Find(string id)
+        public NoteModel Find(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -38,12 +41,12 @@ namespace WebService.Services
             return _repository.Find(id);
         }
 
-        public IEnumerable<NotesItem> GetData()
+        public IEnumerable<NoteModel> GetData()
         {
             return _repository.All;
         }
 
-        public void InsertData(NotesItem item)
+        public void InsertData(NoteModel item)
         {
             if (item == null)
             {
@@ -53,7 +56,7 @@ namespace WebService.Services
             _repository.Insert(item);
         }
 
-        public void UpdateData(NotesItem item)
+        public void UpdateData(NoteModel item)
         {
             if (item == null)
             {

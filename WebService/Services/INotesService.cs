@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 using WebService.Models;
 
 namespace WebService.Services
@@ -6,10 +9,10 @@ namespace WebService.Services
     public interface INotesService
     {
         bool DoesItemExist(string id);
-        NotesItem Find(string id);
-        IEnumerable<NotesItem> GetData();
-        void InsertData(NotesItem item);
-        void UpdateData(NotesItem item);
+        NoteModel Find(string id);
+        IEnumerable<NoteModel> GetData();
+        void InsertData(NoteModel item);
+        void UpdateData(NoteModel item);
         void DeleteData(string id);
     }
 }

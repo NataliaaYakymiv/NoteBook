@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NoteBook.Pages.NotePage">
+  <StackLayout>
+    <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+      <Button Text = "Create" BorderWidth="1"  Clicked="OnCreate" />
+      <Button Text = "Update" BorderWidth="1" Clicked="OnUpdate" />
+      <Button Text = "Delete" BorderWidth="1" Clicked="OnDelete" />
+    </StackLayout>
+    <Label  x:Name="UserName" HorizontalOptions="Center" FontSize="Large" TextColor="Black" >User Name</Label>
+
+    <ScrollView>
+      <StackLayout>
+        <ListView x:Name="notesList" ItemSelected="NotesList_ItemSelected">
+          <ListView.ItemTemplate>
+            <DataTemplate>
+              <ViewCell>
+                <ViewCell.View>
+                  <StackLayout Orientation="Horizontal">
+                    <Label Text="{Binding NoteName}" TextColor="Black"/>
+                    <Label Text="{Binding NoteText}" />
+                  </StackLayout>
+                </ViewCell.View>
+              </ViewCell>
+            </DataTemplate>
+          </ListView.ItemTemplate>
+        </ListView>
+        <Label x:Name="selected" FontSize="Large" />
+      </StackLayout>
+    </ScrollView>
+  </StackLayout>
+</ContentPage>

@@ -1,41 +1,44 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using WebService.Models;
+using WebService.Services;
 
 namespace WebService.Services
 {
     public class NotesRepository : INotesRepository
     {
-        private List<NotesItem> _notesList;
+        private List<NoteModel> _notesList;
 
         public NotesRepository()
         {
             InitializeData();
         }
 
-        public IEnumerable<NotesItem> All
+        public IEnumerable<NoteModel> All
         {
             get { return _notesList; }
         }
 
         public bool DoesItemExist(string id)
         {
-            return _notesList.Any(item => item.Id == id);
+            return _notesList.Any(item => item.NoteId == id);
         }
 
-        public NotesItem Find(string id)
+        public NoteModel Find(string id)
         {
-            return _notesList.Where(item => item.Id == id).FirstOrDefault();
+            return _notesList.Where(item => item.NoteId == id).FirstOrDefault();
         }
 
-        public void Insert(NotesItem item)
+        public void Insert(NoteModel item)
         {
             _notesList.Add(item);
         }
 
-        public void Update(NotesItem item)
+        public void Update(NoteModel item)
         {
-            var todoItem = this.Find(item.Id);
+            var todoItem = this.Find(item.NoteId);
             var index = _notesList.IndexOf(todoItem);
             _notesList.RemoveAt(index);
             _notesList.Insert(index, item);
@@ -50,29 +53,29 @@ namespace WebService.Services
 
         private void InitializeData()
         {
-            _notesList = new List<NotesItem>();
+            _notesList = new List<NoteModel>();
 
-            var todoItem1 = new NotesItem()
+            var todoItem1 = new NoteModel()
             {
-                Id = "6bb8a868-dba1-4f1a-93b7-24ebce87e243",
-                Name = "Learn app development",
-                Text = "Attend Xamarin University",
+                NoteId = "6bb8a868-dba1-4f1a-93b7-24ebce87e243",
+                NoteName = "Learn app development",
+                NoteText = "Attend Xamarin University",
                 //Done = true
             };
 
-            var todoItem2 = new NotesItem()
+            var todoItem2 = new NoteModel()
             {
-                Id = "b94afb54-a1cb-4313-8af3-b7511551b33b",
-                Name = "Develop apps",
-                Text = "Use Xamarin Studio/Visual Studio",
+                NoteId = "b94afb54-a1cb-4313-8af3-b7511551b33b",
+                NoteName = "Develop apps",
+                NoteText = "Use Xamarin Studio/Visual Studio",
                 //Done = false
             };
 
-            var todoItem3 = new NotesItem()
+            var todoItem3 = new NoteModel()
             {
-                Id = "ecfa6f80-3671-4911-aabe-63cc442c1ecf",
-                Name = "Publish apps",
-                Text = "All app stores",
+                NoteId = "ecfa6f80-3671-4911-aabe-63cc442c1ecf",
+                NoteName = "Publish apps",
+                NoteText = "All app stores",
                 //Done = false,
             };
 
