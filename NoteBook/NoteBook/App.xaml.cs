@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using NoteBook.Pages;
 using Xamarin.Forms;
 
 namespace NoteBook
@@ -14,6 +14,7 @@ namespace NoteBook
             InitializeComponent();
 
             MainPage = new NavigationPage(new Pages.MainPage());
+            //LoginPage = new NavigationPage(new LoginPage());
         }
 
         protected override void OnStart()

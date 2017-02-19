@@ -1,67 +1,50 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using System.Web.Http.Results;
 using System.Web.Mvc;
 using System.Web.Security;
-using System.Web.UI.WebControls;
 using DotNetOpenAuth.AspNet;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin;
-using Microsoft.Owin.Security;
 using Microsoft.Web.WebPages.OAuth;
 using WebMatrix.WebData;
-using WebService.Filters;
 using WebService.Models;
 
 namespace WebService.Controllers
 {
-    //[InitializeSimpleMembership]
+    [System.Web.Http.Authorize]
     [System.Web.Http.RoutePrefix("api/Account")]
-    //[System.Web.Http.Authorize]
-    
     public class AccountController : ApiController
     {
+
+        public string Url { get; } = "http://192.168.8.58:81";
+
+        //
+        // POST: /Account/Login
         [System.Web.Http.HttpPost]
         [System.Web.Http.AllowAnonymous]
-        //[ValidateAntiForgeryToken]
         public IHttpActionResult Login(AccountModels.LoginModel model)
         {
-            if (WebSecurity.Login(model.UserName, model.Password, persistCookie: model.RememberMe))
+            if (WebSecurity.Login(model.UserName, model.Password, persistCookie: true))
             {
-                //WebSecurity.
-                var encodedToken = System.Convert.ToBase64String(Encoding.UTF8.GetBytes(model.UserName + ":" + model.Password));
-                HttpContext.Current.Response.Headers.Add(HttpRequestHeader.Authorization.ToString(), "Basic " + encodedToken);
-                //HttpRequestMessage requestMessage = new HttpRequestMessage();
-                //requestMessage.Headers.Authorization = new AuthenticationHeaderValue();
-                //IHttpActionResult result = StatusCode(HttpStatusCode.OK);
                 return Ok("Successful login");
             }
 
             return BadRequest("The user name or password provided is incorrect.");
         }
 
+        //
+        // POST: /Account/Register
         [System.Web.Http.HttpPost]
         [System.Web.Http.AllowAnonymous]
-        //[ValidateAntiForgeryToken]
         public IHttpActionResult Register([FromBody] AccountModels.RegisterModel model)
         {
             string error;
             try
             {
                 WebSecurity.CreateUserAndAccount(model.UserName, model.Password);
-                //HttpRequestMessage response = new HttpRequestMessage();
-                //response.Headers.Authorization = new AuthenticationHeaderValue();
-                //IHttpActionResult result = new OkResult(response);
                 return Ok("Registration successful");
             }
             catch (MembershipCreateUserException e)
@@ -72,39 +55,34 @@ namespace WebService.Controllers
             return BadRequest(error);
         }
 
-        [System.Web.Http.HttpGet]
-        [BasicAuthentication]
-        //[ValidateAntiForgeryToken]
-        //[System.Web.Http.AllowAnonymous]
-        public string GetNumber()
-        {
-            return "kek";
-        }
 
-        //[System.Web.Http.HttpPost]
-        //[System.Web.Http.AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult ExternalLogin(string provider, string returnUrl)
-        //{
-        //    return new ExternalLoginResult(provider, Url.Action("ExternalLoginCallback", new { ReturnUrl = returnUrl }));
-        //}
+        //
+        // GET: /Account/ExternalLogin
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.AllowAnonymous]
+        public IHttpActionResult ExternalLogin([FromUri]string provider)
+        {
+            OAuthWebSecurity.RequestAuthentication(provider, Url + "/api/account/ExternalLoginCallback");
+            return Ok("ExternalLogin");
+        }
 
         //
         // GET: /Account/ExternalLoginCallback
-
+        [System.Web.Http.HttpGet]
         [System.Web.Http.AllowAnonymous]
-        public IHttpActionResult ExternalLoginCallback(string returnUrl)
+        public IHttpActionResult ExternalLoginCallback(/*string returnUrl*/)
         {
-            AuthenticationResult result = OAuthWebSecurity.VerifyAuthentication(returnUrl);
+            var returnUrl = Url + "/api/account/ExternalLoginConfirmation";
+            AuthenticationResult result = OAuthWebSecurity.VerifyAuthentication();
             if (!result.IsSuccessful)
             {
-                return Redirect("ExternalLoginFailure");
+                return Redirect(Url + "/api/account/ExternalLoginFailure");
             }
 
             if (OAuthWebSecurity.Login(result.Provider, result.ProviderUserId, createPersistentCookie: false))
             {
                 
-                return Redirect(returnUrl);
+                return Redirect(new Uri("http://192.168.1.2:81/api/account/ExternalLoginConfirmation"));
             }
 
             if (User.Identity.IsAuthenticated)
@@ -141,29 +119,33 @@ namespace WebService.Controllers
                     case "google":
                         {
                             model.Email = result.UserName;
-                            model.UserName = "";
+                            model.UserName = result.UserName;
                             break;
                         }
                     case "twitter":
                         {
-                            model.Email = "";
+                            model.Email = result.UserName;
                             model.UserName = result.UserName;
                             break;
                         }
                     default:
+                    {
+                        model.Email = result.UserName;
+                        model.UserName = result.UserName;
                         break;
+                    }
 
                 }
-                return Ok("External login");
+
+                ExternalLoginConfirmation(model, "");
+                return Ok(model);
             }
         }
 
         //
         // POST: /Account/ExternalLoginConfirmation
-
         [System.Web.Http.HttpPost]
         [System.Web.Http.AllowAnonymous]
-        //[ValidateAntiForgeryToken]
         public IHttpActionResult ExternalLoginConfirmation(AccountModels.RegisterExternalLoginModel model, string returnUrl)
         {
             string provider = null;
@@ -171,16 +153,15 @@ namespace WebService.Controllers
 
             if (User.Identity.IsAuthenticated || !OAuthWebSecurity.TryDeserializeProviderUserId(model.ExternalLoginData, out provider, out providerUserId))
             {
-                return Redirect("/api/nodes/get");
+                return Redirect(Url + "/api/nodes/get");
             }
 
             if (ModelState.IsValid)
             {
-                // Insert a new user into the database
                 using (AccountModels.UsersContext db = new AccountModels.UsersContext())
                 {
                     AccountModels.UserProfile user = db.UserProfiles.FirstOrDefault(u => u.UserName.ToLower() == model.UserName.ToLower());
-                    // Check if user already exists
+
                     if (user == null)
                     {
                         user = new AccountModels.UserProfile { UserName = model.UserName };
@@ -217,7 +198,7 @@ namespace WebService.Controllers
 
         //
         // GET: /Account/ExternalLoginFailure
-
+        [System.Web.Http.HttpGet]
         [System.Web.Http.AllowAnonymous]
         public IHttpActionResult ExternalLoginFailure()
         {
@@ -225,11 +206,16 @@ namespace WebService.Controllers
         }
 
         [System.Web.Http.HttpGet]
-        //[ValidateAntiForgeryToken]
         public IHttpActionResult Logout()
         {
             WebSecurity.Logout();
             return Ok("Logout");
+        }
+
+        [System.Web.Http.HttpGet]
+        public IHttpActionResult GetString()
+        {
+            return Ok("String");
         }
         #region Helpers
         //private ActionResult RedirectToLocal(string returnUrl)
@@ -264,7 +250,7 @@ namespace WebService.Controllers
 
             public override void ExecuteResult(ControllerContext context)
             {
-                OAuthWebSecurity.RequestAuthentication(Provider, ReturnUrl);
+                
             }
         }
 

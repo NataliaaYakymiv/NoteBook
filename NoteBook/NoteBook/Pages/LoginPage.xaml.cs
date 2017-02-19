@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using NoteBook.Models;
 using NoteBook.Servises;
 using Xamarin.Forms;
@@ -30,14 +31,19 @@ namespace NoteBook.Pages
             }
         }
 
-        private async void OnGetNumber(object sender, EventArgs e)
+        private async void OnLinkedinLogin(object sender, EventArgs e)
         {
-            StateLabel1.Text = await AccountService.GetService().GetInt().Result.Content.ReadAsStringAsync();
+            await Navigation.PushAsync(new ExternalLoginPage("linkedin"));
         }
 
-        private void OnFacebookLogin(object sender, EventArgs e)
+        private async void OnFacebookLogin(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            await Navigation.PushAsync(new ExternalLoginPage("facebook"));
+        }
+
+        private async void OnString(object sender, EventArgs e)
+        {
+            StateLabel1.Text = await AccountService.GetService().GetSTask().Result.Content.ReadAsStringAsync();
         }
     }
 }

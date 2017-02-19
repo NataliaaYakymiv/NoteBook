@@ -2,14 +2,17 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NoteBook.Pages.LoginPage">
-  <StackLayout>
+  
+  <StackLayout x:Name="LayOut" IsVisible="True">
     <Label x:Name="TextLabel" FontSize="Large">Sign in</Label>
     <Entry x:Name="LoginEntry" Placeholder = "Login"/>
     <Entry x:Name="PasswordEntry"  Placeholder = "Password" IsPassword ="True" />
     <Button Text ="Sign in" FontSize="Medium" BorderWidth="1" Clicked="OnLogin"/>
-    <Button Text ="Facebook" FontSize="Medium" BorderWidth="1" Clicked="OnFacebookLogin"/>
     <Label x:Name="StateLabel" FontSize="Large"></Label>
-  <Button Text ="Get int" FontSize="Medium" BorderWidth="1" Clicked="OnGetNumber"/>
-  <Label x:Name="StateLabel1" FontSize="Large"></Label>
+    <Button Text ="LinkedIn" FontSize="Medium" BorderWidth="1" Clicked="OnLinkedinLogin"/>
+    <Button Text ="Facebook" FontSize="Medium" BorderWidth="1" Clicked="OnFacebookLogin"/>
+    <Button Text ="Get String" FontSize="Medium" BorderWidth="1" Clicked="OnString"/>
+    <Label x:Name="StateLabel1" FontSize="Large"></Label>
   </StackLayout>
+
 </ContentPage>

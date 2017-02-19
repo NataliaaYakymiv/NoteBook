@@ -13,7 +13,14 @@ namespace NoteBook.Servises
 {
     public class AccountService : IAccountService
     {
-        public string Url { get; } = "http://192.168.1.149:81/";
+        public string Url { get; } = "http://192.168.8.58:81/";
+        public string RegisterPath { get; } = "api/Account/register";
+        public string LoginPath { get; } = "api/Account/login";
+        public string ExternalLoginPath { get; } = "api/Account/externallogin";
+        public string ExternalLoginCallbackPath { get; } = "api/Account/externallogincallback";
+        public string ExternalLoginConfirmationPath { get; } = "api/Account/externalloginconfirmation";
+        public string ExternalLoginFailurePath { get; } = "api/Account/externalloginfailure";
+
         public string AuthKey { get; private set; }
 
         private AccountService() { }
@@ -31,9 +38,9 @@ namespace NoteBook.Servises
                 var json = JsonConvert.SerializeObject(credentials);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var result = await client.PostAsync("http://192.168.1.149:81/api/Account/login", content).ConfigureAwait(false);
+                var result = await client.PostAsync(Url + LoginPath, content).ConfigureAwait(false);
 
-                AuthKey = result.Headers.GetValues(HttpRequestHeader.Authorization.ToString()).First(x => x.StartsWith("Basic"));
+                AuthKey = result.Headers.GetValues("Set-Cookie").First(x => x.StartsWith(".ASPXAUTH"));
 
                 return result;
             }
@@ -46,25 +53,28 @@ namespace NoteBook.Servises
                 var json = JsonConvert.SerializeObject(credentials);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var result = await client.PostAsync("http://192.168.1.149:81/api/Account/register", content).ConfigureAwait(false);
+                var result = await client.PostAsync(Url + RegisterPath, content).ConfigureAwait(false);
 
                 return result;
             }
         }
 
-        public async Task<HttpResponseMessage> GetInt()
+        public async Task<HttpResponseMessage> GetSTask()
         {
-            using (var client = new HttpClient())
+            HttpClientHandler handler = new HttpClientHandler();
+            handler.CookieContainer = new CookieContainer();
+            if (AuthKey != null || AuthKey != string.Empty)
             {
+                var name = AuthKey.Split('=')[0];
+                var value = AuthKey.Split('=')[1].Split(';')[0];
+                handler.CookieContainer.Add(new Uri(Url), new Cookie(name, value));
 
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Add(HttpRequestHeader.Authorization.ToString(), AuthKey);
-                var result = await client.GetAsync("http://192.168.1.149:81/api/Account/GetNumber").ConfigureAwait(false);
-
+            }
+            using (var client = new HttpClient(handler))
+            {
+                var result = await client.GetAsync(Url + "/api/Account/getstring").ConfigureAwait(false);
                 return result;
             }
-        }
-
-        
+        } 
     }
 }

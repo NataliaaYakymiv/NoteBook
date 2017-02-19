@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NoteBook.Pages.ExternalLoginPage">
+<StackLayout x:Name="LayOut" IsVisible="True">
+  <Label x:Name="StateLabel" FontSize="Large"></Label>
+  <Button x:Name="BackBtn" IsVisible="False" Text ="Back to Login page" FontSize="Medium" BorderWidth="1" Clicked="OnBack"/>
+  <WebView x:Name="WebView" IsVisible="True" VerticalOptions="FillAndExpand" />
+</StackLayout>
+</ContentPage>

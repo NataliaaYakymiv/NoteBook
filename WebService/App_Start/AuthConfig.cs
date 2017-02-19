@@ -20,11 +20,14 @@ namespace WebService
             //OAuthWebSecurity.RegisterTwitterClient(
             //    consumerKey: "",
             //    consumerSecret: "");
-
-            //OAuthWebSecurity.RegisterFacebookClient(
-            //    appId: "",
-            //    appSecret: "");
-
+           // OAuthWebSecurity.
+            OAuthWebSecurity.RegisterFacebookClient(
+                appId: "710642582432970",
+                appSecret: "f8676402fa85d8cfdaceb7ab6af86f6e");
+            OAuthWebSecurity.RegisterLinkedInClient(
+                consumerKey: "86t482hcaas1vl",
+                consumerSecret: "FoaMtH2nj1MQFsim"
+                );
             //OAuthWebSecurity.RegisterGoogleClient();
         }
     }
