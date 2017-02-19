@@ -1,68 +1,89 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
+using System.Web.Http;
 using System.Web.Mvc;
+using System.Web.Security;
+using WebMatrix.WebData;
 using WebService.Models;
 using WebService.Services;
 
-
 namespace WebService.Controllers
 {
+    [System.Web.Http.RoutePrefix("api/Notes")]
     public class TodoItemsController : BaseApiController
     {
         static readonly INotesService notesService = new NotesService(new NotesRepository());
 
-        [HttpGet]
+       // [HttpGet]
         //[BasicAuthentication(RequireSsl = false)]
         public HttpResponseMessage Get()
         {
-            return base.BuildSuccessResult(HttpStatusCode.OK, notesService.GetData());
+            var notes = notesService.GetData();
+            HttpResponseMessage response;
+            if (notes == null)
+            {
+                response = Request.CreateResponse(HttpStatusCode.NoContent);
+            }
+            else
+            {
+                response = Request.CreateResponse(HttpStatusCode.OK, notes);
+            }
+            return response;
+            
         }
 
-        [HttpPost]
-        //[BasicAuthentication(RequireSsl = false)]
-        public HttpResponseMessage Create(NotesItem item)
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.AllowAnonymous]
+        [System.Web.Http.Route("Create")]
+        public IHttpActionResult Create(NoteModel item)
         {
             try
             {
                 if (item == null ||
-                    string.IsNullOrWhiteSpace(item.Name) ||
-                    string.IsNullOrWhiteSpace(item.Text))
+                    string.IsNullOrWhiteSpace(item.NoteName) ||
+                    string.IsNullOrWhiteSpace(item.NoteText))
                 {
-                    return base.BuildErrorResult(HttpStatusCode.BadRequest, ErrorCode.NotesItemIDInUse.ToString());
+                    return BadRequest("Item = null");
                 }
 
                 // Determine if the ID already exists
-                var itemExists = notesService.DoesItemExist(item.Id);
+                var itemExists = notesService.DoesItemExist(item.NoteId);
                 if (itemExists)
                 {
                     //return base.BuildErrorResult(HttpStatusCode.Conflict, ErrorCode.TodoItemIDInUse.ToString());
-                    return base.BuildErrorResult(HttpStatusCode.Conflict, ErrorCode.NotesItemIDInUse.ToString());
+                    return BadRequest("Comflict");
                 }
                 notesService.InsertData(item);
+                return Ok("OK");
             }
             catch (Exception)
             {
-                return base.BuildErrorResult(HttpStatusCode.BadRequest, ErrorCode.CouldNotCreateItem.ToString());
+                return BadRequest("could not create");
             }
 
-            return base.BuildSuccessResult(HttpStatusCode.Created);
+            //return BadRequest("Error");
         }
 
-        [HttpPut]
+        [System.Web.Http.HttpPut]
+        [System.Web.Http.AllowAnonymous]
+        [System.Web.Http.Route("Edit")]
         //[BasicAuthentication(RequireSsl = false)]
-        public HttpResponseMessage Edit(string id, NotesItem item)
+        public HttpResponseMessage Edit(NoteModel item)
         {
             try
             {
                 if (item == null ||
-                    string.IsNullOrWhiteSpace(item.Name) ||
-                    string.IsNullOrWhiteSpace(item.Text))
+                    string.IsNullOrWhiteSpace(item.NoteName) ||
+                    string.IsNullOrWhiteSpace(item.NoteText))
                 {
                     return base.BuildErrorResult(HttpStatusCode.BadRequest, ErrorCode.NotesItemNameAndNotesRequired.ToString());
                 }
 
-                var todoItem = notesService.Find(id);
+                var todoItem = notesService.Find(item.NoteId);
                 if (todoItem != null)
                 {
                     notesService.UpdateData(item);
@@ -80,7 +101,9 @@ namespace WebService.Controllers
             return base.BuildSuccessResult(HttpStatusCode.NoContent);
         }
 
-        [HttpDelete]
+        [System.Web.Http.HttpDelete]
+        [System.Web.Http.AllowAnonymous]
+        [System.Web.Http.Route("Delete")]
         //[BasicAuthentication(RequireSsl = false)]
         public HttpResponseMessage Delete(string id)
         {

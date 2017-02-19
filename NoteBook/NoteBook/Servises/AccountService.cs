@@ -68,11 +68,11 @@ namespace NoteBook.Servises
                 var name = AuthKey.Split('=')[0];
                 var value = AuthKey.Split('=')[1].Split(';')[0];
                 handler.CookieContainer.Add(new Uri(Url), new Cookie(name, value));
-
             }
             using (var client = new HttpClient(handler))
             {
                 var result = await client.GetAsync(Url + "/api/Account/getstring").ConfigureAwait(false);
+
                 return result;
             }
         } 

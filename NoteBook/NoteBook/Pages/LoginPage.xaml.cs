@@ -28,6 +28,7 @@ namespace NoteBook.Pages
             if (response.Result.IsSuccessStatusCode)
             {
                 PasswordEntry.Text = string.Empty;
+                await Navigation.PushAsync(new NotePage());
             }
         }
 
