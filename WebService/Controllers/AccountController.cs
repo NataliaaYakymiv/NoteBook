@@ -207,6 +207,9 @@ namespace WebService.Controllers
             return BadRequest("Fail OAuth login");
         }
 
+
+        //
+        // GET: /Account/Logout
         [System.Web.Http.HttpGet]
         public IHttpActionResult Logout()
         {

@@ -72,24 +72,6 @@ namespace NoteBook.Servises
             }
         }
 
-        public async Task<HttpResponseMessage> GetSTask()
-        {
-            HttpClientHandler handler = new HttpClientHandler();
-            handler.CookieContainer = new CookieContainer();
-            if (AuthKey != null || AuthKey != string.Empty)
-            {
-                var name = AuthKey.Split('=')[0];
-                var value = AuthKey.Split('=')[1].Split(';')[0];
-                handler.CookieContainer.Add(new Uri(Url), new Cookie(name, value));
-            }
-            using (var client = new HttpClient(handler))
-            {
-                var result = await client.GetAsync(Url + "/api/Account/getstring").ConfigureAwait(false);
-
-                return result;
-            }
-        }
-
         public HttpClient GetAuthHttpClient()
         {
             HttpClientHandler handler = new HttpClientHandler();
