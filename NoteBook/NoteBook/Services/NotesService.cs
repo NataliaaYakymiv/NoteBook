@@ -13,7 +13,7 @@ namespace NoteBook.Servises
 {
     class NotesService : INotesService
     {
-        public string Url { get; } = "http://192.168.1.127:81/";
+        public string Url { get; } = "http://192.168.1.111:81/";
 
         public string NoteGetPath { get; } = "api/Notes/Get";
         public string NoteCreatePath { get; } = "api/Notes/Create";

@@ -19,9 +19,9 @@ namespace NoteBook.Pages
         public async void OnUpdateNote(object sender, EventArgs e)
         {
             NoteModel credentials = new NoteModel();
-            credentials.NoteId = "b94afb54-a1cb-4313-8af3-b7511551b33b";
-            credentials.NoteName = "name";//NoteNameEntry.Text;
-            credentials.NoteText = "text";//NoteTextEntry.Text;
+            credentials.NoteId = 1;
+            credentials.NoteName = NoteNameEntry.Text;
+            credentials.NoteText = NoteTextEntry.Text;
 
             var response = NotesService.GetService().Edit(credentials);
 

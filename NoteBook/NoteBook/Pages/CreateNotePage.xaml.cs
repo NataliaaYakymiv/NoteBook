@@ -19,9 +19,9 @@ namespace NoteBook.Pages
         public async void OnCreateNote(object sender, EventArgs e)
         {
             NoteModel credentials = new NoteModel();
-            credentials.NoteId = "hkdll";
-            credentials.NoteName = "name";//NoteNameEntry.Text;
-            credentials.NoteText = "text";//NoteTextEntry.Text;
+           // credentials.NoteId = 2;
+            credentials.NoteName = NoteNameEntry.Text;
+            credentials.NoteText = NoteTextEntry.Text;
 
             var response = NotesService.GetService().Create(credentials);
 

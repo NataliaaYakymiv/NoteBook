@@ -11,9 +11,11 @@ namespace WebService.Models
     {
         [Key]
         [Required]
-        public string NoteId { get; set; }
+        public int NoteId { get; set; }
 
-        // public string CreatorId { get; set; }
+        //[Required]
+        //public int CreatorId { get; set; }
+
         [Required]
         [Display(Name = "Note name")]
         public string NoteName { get; set; }

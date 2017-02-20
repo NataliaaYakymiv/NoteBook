@@ -28,7 +28,7 @@ namespace NoteBook.Contracts
 
         public Task DeleteTaskAsync(NoteModel item)
         {
-            return restService.DeleteTodoItemAsync(item.NoteId);
+            return restService.DeleteTodoItemAsync(item.NoteId.ToString());
         }
     }
 }
