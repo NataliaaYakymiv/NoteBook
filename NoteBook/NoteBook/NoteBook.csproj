@@ -65,8 +65,8 @@
       <DependentUpon>RegisterPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Contracts\IAccountService.cs" />
-    <Compile Include="Servises\AccountService.cs" />
-    <Compile Include="Servises\NotesService.cs" />
+    <Compile Include="Services\AccountService.cs" />
+    <Compile Include="Services\NotesService.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Pages\MainPage.xaml">

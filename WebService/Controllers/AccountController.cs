@@ -19,7 +19,7 @@ namespace WebService.Controllers
     public class AccountController : ApiController
     {
 
-        public string Url { get; } = "http://192.168.1.111:81";
+        public string Url { get; } = "http://192.168.1.127:81";
 
         //
         // POST: /Account/Login
