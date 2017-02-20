@@ -3,13 +3,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NoteBook.Pages.LoginPage">
   
-  <StackLayout x:Name="LayOut" IsVisible="True">
-    <Label x:Name="TextLabel" FontSize="Large">Sign in</Label>
-    <Entry x:Name="LoginEntry" Placeholder = "Login"/>
-    <Entry x:Name="PasswordEntry"  Placeholder = "Password" IsPassword ="True" />
-    <Button Text ="Sign in" FontSize="Medium" BorderWidth="1" Clicked="OnLogin"/>
+  <StackLayout x:Name="Layout">
+    <Label x:Name="TextLabel" HorizontalTextAlignment="Center" FontSize="Large">Sign in</Label>
+      <Entry x:Name="LoginEntry" Placeholder = "Login"/>
+      <Entry x:Name="PasswordEntry"  Placeholder = "Password" IsPassword ="True" />
+      <Button Text ="Sign in" FontSize="Medium" BorderWidth="1" Clicked="OnLogin"/>
     <Label x:Name="StateLabel" FontSize="Large"></Label>
-    <Button Text ="LinkedIn" FontSize="Medium" BorderWidth="1" Clicked="OnLinkedinLogin"/>
+    <StackLayout VerticalOptions="End">
+      <Button Text ="Facebook" FontSize="Medium" BorderWidth="1" Clicked="OnFacebookLogin" BackgroundColor="#3b579d" TextColor="White"/>
+      <Button Text ="Google" FontSize="Medium" BorderWidth="1" Clicked="OnGoogleLogin" BackgroundColor="#cf4332" TextColor="White"/>
+      <Button Text ="LinkedIn" FontSize="Medium" BorderWidth="1" Clicked="OnLinkedinLogin" BackgroundColor="#006599" TextColor="White"/>
+    </StackLayout>
   </StackLayout>
+  
 
 </ContentPage>

@@ -1,11 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:NoteBook"
              x:Class="NoteBook.Pages.MainPage">
-  <StackLayout>
-    <Label x:Name="TextLabel" FontSize="Large">Note book</Label>
-    <Label x:Name="TextLabelLong">App for write and read notes</Label>
+  
+    <StackLayout VerticalOptions="Center">
     <Button Text = "Sign in" BorderWidth="1" Clicked="OnLogin" />
     <Button Text = "Sign up" BorderWidth="1" Clicked="OnRegister" />
   </StackLayout>
