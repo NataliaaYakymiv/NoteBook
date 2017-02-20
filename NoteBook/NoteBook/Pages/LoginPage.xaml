@@ -10,9 +10,6 @@
     <Button Text ="Sign in" FontSize="Medium" BorderWidth="1" Clicked="OnLogin"/>
     <Label x:Name="StateLabel" FontSize="Large"></Label>
     <Button Text ="LinkedIn" FontSize="Medium" BorderWidth="1" Clicked="OnLinkedinLogin"/>
-    <Button Text ="Facebook" FontSize="Medium" BorderWidth="1" Clicked="OnFacebookLogin"/>
-    <Button Text ="Get String" FontSize="Medium" BorderWidth="1" Clicked="OnString"/>
-    <Label x:Name="StateLabel1" FontSize="Large"></Label>
   </StackLayout>
 
 </ContentPage>

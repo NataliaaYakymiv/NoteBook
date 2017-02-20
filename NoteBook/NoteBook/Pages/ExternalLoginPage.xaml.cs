@@ -20,10 +20,18 @@ namespace NoteBook.Pages
             {
                 Url = url
             };
-           
-            WebView.Navigating += (s, e) =>
+        }
+
+        private async void OnBack(object sender, EventArgs e)
+        {
+            await Navigation.PopAsync();
+        }
+
+        public void OnExternalLogin()
+        {
+            WebView.Navigating += async (s, e) =>
             {
-                
+
                 if (
                     e.Url.StartsWith(AccountService.GetService().Url +
                                      AccountService.GetService().ExternalLoginFailurePath))
@@ -32,24 +40,26 @@ namespace NoteBook.Pages
                     StateLabel.Text = "Login Failure";
                     WebView.IsVisible = false;
                     BackBtn.IsVisible = true;
-                    
+
                 }
-            };
-            WebView.Navigated += (s, e) =>
-            {
                 if (
                     e.Url.StartsWith(AccountService.GetService().Url +
-                                     AccountService.GetService().ExternalLoginConfirmationPath))
+                                     AccountService.GetService().ExternalLoginFinalPath))
                 {
-
-                    StateLabel.Text = "ExternalLoginConfirmationPath";
+                    WebView.IsVisible = false;
+                    var result = await AccountService.GetService().ExternalLogin(e.Url);
+                    if (result.IsSuccessStatusCode)
+                    {
+                        await Navigation.PushAsync(new NotePage());
+                    }
+                    else
+                    {
+                        StateLabel.Text = await result.Content.ReadAsStringAsync();
+                        StateLabel.Text = "Login Failure";
+                        BackBtn.IsVisible = true;
+                    }
                 }
             };
-        }
-
-        private async void OnBack(object sender, EventArgs e)
-        {
-            await Navigation.PopAsync();
         }
     }
 }

@@ -34,17 +34,10 @@ namespace NoteBook.Pages
 
         private async void OnLinkedinLogin(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new ExternalLoginPage("linkedin"));
+            var page = new ExternalLoginPage("linkedin");
+            await Navigation.PushAsync(page);
+            page.OnExternalLogin();
         }
-
-        private async void OnFacebookLogin(object sender, EventArgs e)
-        {
-            await Navigation.PushAsync(new ExternalLoginPage("facebook"));
-        }
-
-        private async void OnString(object sender, EventArgs e)
-        {
-            StateLabel1.Text = await AccountService.GetService().GetSTask().Result.Content.ReadAsStringAsync();
-        }
+        
     }
 }

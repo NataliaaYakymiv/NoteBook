@@ -228,14 +228,11 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\NotesItem.cs" />
-    <Compile Include="Services\INotesService.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\FormCredentials.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
-    <Compile Include="Services\NotesRepository.cs" />
-    <Compile Include="Services\NotesService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\INotesRepository.cs" />
     <Compile Include="Services\INotesService.cs" />

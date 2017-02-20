@@ -13,13 +13,13 @@ using WebService.Services;
 
 namespace WebService.Controllers
 {
+
+    [System.Web.Http.Authorize]
     [System.Web.Http.RoutePrefix("api/Notes")]
     public class TodoItemsController : BaseApiController
     {
         static readonly INotesService notesService = new NotesService(new NotesRepository());
 
-       // [HttpGet]
-        //[BasicAuthentication(RequireSsl = false)]
         public HttpResponseMessage Get()
         {
             var notes = notesService.GetData();
@@ -37,7 +37,6 @@ namespace WebService.Controllers
         }
 
         [System.Web.Http.HttpPost]
-        [System.Web.Http.AllowAnonymous]
         [System.Web.Http.Route("Create")]
         public IHttpActionResult Create(NoteModel item)
         {
@@ -69,7 +68,6 @@ namespace WebService.Controllers
         }
 
         [System.Web.Http.HttpPut]
-        [System.Web.Http.AllowAnonymous]
         [System.Web.Http.Route("Edit")]
         //[BasicAuthentication(RequireSsl = false)]
         public HttpResponseMessage Edit(NoteModel item)
@@ -102,7 +100,6 @@ namespace WebService.Controllers
         }
 
         [System.Web.Http.HttpDelete]
-        [System.Web.Http.AllowAnonymous]
         [System.Web.Http.Route("Delete")]
         //[BasicAuthentication(RequireSsl = false)]
         public HttpResponseMessage Delete(string id)

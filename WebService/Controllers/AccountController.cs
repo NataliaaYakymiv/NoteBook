@@ -70,9 +70,8 @@ namespace WebService.Controllers
         // GET: /Account/ExternalLoginCallback
         [System.Web.Http.HttpGet]
         [System.Web.Http.AllowAnonymous]
-        public IHttpActionResult ExternalLoginCallback(/*string returnUrl*/)
+        public IHttpActionResult ExternalLoginCallback()
         {
-            var returnUrl = Url + "/api/account/ExternalLoginConfirmation";
             AuthenticationResult result = OAuthWebSecurity.VerifyAuthentication();
             if (!result.IsSuccessful)
             {
@@ -81,13 +80,12 @@ namespace WebService.Controllers
 
             if (OAuthWebSecurity.Login(result.Provider, result.ProviderUserId, createPersistentCookie: false))
             {
-                
-                return Redirect(new Uri("http://192.168.1.2:81/api/account/ExternalLoginConfirmation"));
+                return Redirect(Url + "/api/account/ExternalLoginFinal?provider=" + result.Provider + "&providerUserId=" + result.ProviderUserId);
             }
 
             if (User.Identity.IsAuthenticated)
             {
-                // If the current user is logged in add the new account
+
                 OAuthWebSecurity.CreateOrUpdateAccount(result.Provider, result.ProviderUserId, User.Identity.Name);
                 if (result.Provider == "facebook" || result.Provider == "google")
                 {
@@ -105,13 +103,11 @@ namespace WebService.Controllers
                         }
                     }
                 }
-                return Redirect(returnUrl);
+                return Redirect(Url + "/api/account/ExternalLoginFinal?provider=" + result.Provider + "&providerUserId=" + result.ProviderUserId);
             }
             else
             {
                 string loginData = OAuthWebSecurity.SerializeProviderUserId(result.Provider, result.ProviderUserId);
-                //ViewBag.ProviderDisplayName = OAuthWebSecurity.GetOAuthClientData(result.Provider).DisplayName;
-                //ViewBag.ReturnUrl = returnUrl;
                 var model = new AccountModels.RegisterExternalLoginModel { UserName = result.UserName, ExternalLoginData = loginData };
                 switch (result.Provider)
                 {
@@ -153,7 +149,7 @@ namespace WebService.Controllers
 
             if (User.Identity.IsAuthenticated || !OAuthWebSecurity.TryDeserializeProviderUserId(model.ExternalLoginData, out provider, out providerUserId))
             {
-                return Redirect(Url + "/api/nodes/get");
+                return Redirect(Url + "/api/account/ExternalLoginFinal?provider=" + provider + "&providerUserId=" + providerUserId);
             }
 
             if (ModelState.IsValid)
@@ -180,20 +176,26 @@ namespace WebService.Controllers
                             }
                         }
 
-                        OAuthWebSecurity.Login(provider, providerUserId, createPersistentCookie: false);
-
-                        return Redirect(returnUrl);
+                        return Redirect(Url + "/api/account/ExternalLoginFinal?provider=" + provider + "&providerUserId=" + providerUserId);
                     }
-                    else
-                    {
-                        ModelState.AddModelError("UserName", "User name already exists. Please enter a different user name.");
-                    }
+                   
                 }
             }
 
-            //ViewBag.ProviderDisplayName = OAuthWebSecurity.GetOAuthClientData(provider).DisplayName;
-            //ViewBag.ReturnUrl = returnUrl;
             return Ok("Confirm external login");
+        }
+
+        //
+        // GET: /Account/ExternalLoginFinal
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.AllowAnonymous]
+        public IHttpActionResult ExternalLoginFinal(string provider, string providerUserId)
+        {
+            if (OAuthWebSecurity.Login(provider, providerUserId, createPersistentCookie: false))
+            {
+                return Ok("Successful login");
+            }
+            return BadRequest("Fail OAuth login");
         }
 
         //
@@ -212,23 +214,7 @@ namespace WebService.Controllers
             return Ok("Logout");
         }
 
-        [System.Web.Http.HttpGet]
-        public IHttpActionResult GetString()
-        {
-            return Ok("String");
-        }
         #region Helpers
-        //private ActionResult RedirectToLocal(string returnUrl)
-        //{
-        //    if (Url.IsLocalUrl(returnUrl))
-        //    {
-        //        return Redirect(returnUrl);
-        //    }
-        //    else
-        //    {
-        //        return RedirectToAction("Index", "Home");
-        //    }
-        //}
 
         public enum ManageMessageId
         {
@@ -237,27 +223,8 @@ namespace WebService.Controllers
             RemoveLoginSuccess,
         }
 
-        internal class ExternalLoginResult : ActionResult
-        {
-            public ExternalLoginResult(string provider, string returnUrl)
-            {
-                Provider = provider;
-                ReturnUrl = returnUrl;
-            }
-
-            public string Provider { get; private set; }
-            public string ReturnUrl { get; private set; }
-
-            public override void ExecuteResult(ControllerContext context)
-            {
-                
-            }
-        }
-
         private static string ErrorCodeToString(MembershipCreateStatus createStatus)
         {
-            // See http://go.microsoft.com/fwlink/?LinkID=177550 for
-            // a full list of status codes.
             switch (createStatus)
             {
                 case MembershipCreateStatus.DuplicateUserName:
@@ -292,7 +259,5 @@ namespace WebService.Controllers
             }
         }
         #endregion
-
-     
     }
 }
