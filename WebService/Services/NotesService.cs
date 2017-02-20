@@ -43,7 +43,7 @@ namespace WebService.Services
 
         public IEnumerable<NoteModel> GetData()
         {
-            return _repository.All;
+            return _repository.All();
         }
 
         public void InsertData(NoteModel item)
