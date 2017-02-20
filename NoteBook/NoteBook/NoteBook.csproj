@@ -39,6 +39,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Contracts\INotesService.cs" />
+    <Compile Include="Contracts\NotesItemManager.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Pages\ExternalLoginPage.xaml.cs">
       <DependentUpon>ExternalLoginPage.xaml</DependentUpon>
@@ -141,7 +142,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Pages\UpdateNotePage.xaml">
-    <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>

@@ -7,19 +7,24 @@ using System.Threading.Tasks;
 using NoteBook.Models;
 using System.Net.Http;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace NoteBook.Servises
 {
     class NotesService : INotesService
     {
-        public string Url { get; } = "http://192.168.8.58:81/";
+        public string Url { get; } = "http://192.168.1.111:81/";
 
         public string NoteGetPath { get; } = "api/Notes/Get";
         public string NoteCreatePath { get; } = "api/Notes/Create";
         public string NoteEditPath { get; } = "api/Notes/Edit";
+        public string NoteRefreshPath { get; } = "api/Notes/Refresh";
+        public string NoteDeletePath { get; } = "api/Notes/Delete";
 
         private NotesService() { }
         private static NotesService Instance { set; get; }
+        public List<NoteModel> Items { get; private set; }
+
 
         public static NotesService GetService()
         {
@@ -31,6 +36,41 @@ namespace NoteBook.Servises
             throw new NotImplementedException();
         }
 
+
+
+        public async Task<List<NoteModel>> RefreshDataAsync()
+        {
+            Items = new List<NoteModel>();
+            using (var client = AccountService.GetService().GetAuthHttpClient())
+            {
+                try
+                {
+                    var response = await client.GetAsync(Url + NoteRefreshPath);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        Items = JsonConvert.DeserializeObject<List<NoteModel>>(content);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(@"				ERROR {0}", ex.Message);
+                }
+            }
+            return Items;
+        }
+
+
+        public Task SaveTodoItemAsync(NoteModel item, bool isNewItem)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteTodoItemAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
+
         public HttpResponseMessage Create(NoteModel credentials)
         {
             using (var client = AccountService.GetService().GetAuthHttpClient())
@@ -38,11 +78,12 @@ namespace NoteBook.Servises
                 var json = JsonConvert.SerializeObject(credentials);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var result =  client.PostAsync(Url + NoteCreatePath, content).Result;
+                var result = client.PostAsync(Url + NoteCreatePath, content).Result;
 
                 return result;
             }
         }
+
         public HttpResponseMessage Edit(NoteModel credentials)
         {
             using (var client = AccountService.GetService().GetAuthHttpClient())
@@ -56,18 +97,19 @@ namespace NoteBook.Servises
             }
 
         }
-        //public HttpResponseMessage Delete(NoteModel credentials)
-        //{
-        //    using (var client = new HttpClient())
-        //    {
-        //        var json = JsonConvert.SerializeObject(credentials);
-        //        var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        //        var result = client.DeleteAsync("http://192.168.0.102:81/api/Notes/Delete").Result;
+        public HttpResponseMessage Delete(NoteModel credentials)
+        {
+            using (var client = AccountService.GetService().GetAuthHttpClient())
+            {
+                var json = JsonConvert.SerializeObject(credentials);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        //        return result;
-        //    }
+                var result = client.PostAsync(Url + NoteDeletePath, content).Result;
 
-        //}
+                return result;
+            }
+
+        }
     }
 }

@@ -4,17 +4,23 @@ using System.Linq;
 using System.Text;
 using NoteBook.Pages;
 using Xamarin.Forms;
+using NoteBook.Contracts;
+using NoteBook.Servises;
 
 namespace NoteBook
 {
     public partial class App : Application
     {
+        public static NotesItemManager NotesItemManager { get; private set; }
+
+
         public App()
         {
             InitializeComponent();
 
+            NotesItemManager = new NotesItemManager(NotesService.GetService());
+
             MainPage = new NavigationPage(new Pages.MainPage());
-            //LoginPage = new NavigationPage(new LoginPage());
         }
 
         protected override void OnStart()

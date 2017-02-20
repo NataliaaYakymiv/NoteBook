@@ -7,7 +7,9 @@
       <Button Text = "Create" BorderWidth="1"  Clicked="OnCreate" />
       <Button Text = "Update" BorderWidth="1" Clicked="OnUpdate" />
       <Button Text = "Delete" BorderWidth="1" Clicked="OnDelete" />
+      <Button Text = "Refresh" BorderWidth="1" Clicked="OnRefresh" />
     </StackLayout>
+    <Label  x:Name="StateLabel" HorizontalOptions="Center" FontSize="Large" TextColor="Black" >User Name</Label>
     <Label  x:Name="UserName" HorizontalOptions="Center" FontSize="Large" TextColor="Black" >User Name</Label>
 
     <ScrollView>
@@ -18,8 +20,8 @@
               <ViewCell>
                 <ViewCell.View>
                   <StackLayout Orientation="Horizontal">
-                    <Label Text="{Binding NoteName}" TextColor="Black"/>
-                    <Label Text="{Binding NoteText}" />
+                    <Label Text="{Binding NoteName}" TextColor="Green" FontSize="18"/>
+                    <Label Text="{Binding NoteText}" TextColor="Red" FontSize="18"/>
                   </StackLayout>
                 </ViewCell.View>
               </ViewCell>
