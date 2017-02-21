@@ -12,7 +12,7 @@ namespace NoteBook.Services
 {
     public class AccountService : IAccountService
     {
-        public string Url { get; } = "http://5ed5859d.ngrok.io/";
+        public string Url { get; } = Constants.URL;
 
         public string RegisterPath { get; } = "api/Account/register";
         public string LoginPath { get; } = "api/Account/login";

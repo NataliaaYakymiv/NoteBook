@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text;
 using Microsoft.Web.WebPages.OAuth;
 using WebService.OAuthClients;
-
-//using SocialAuthorization.Models;
 namespace WebService
 {
     public static class AuthConfig

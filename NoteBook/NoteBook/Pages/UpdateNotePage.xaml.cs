@@ -15,12 +15,22 @@ namespace NoteBook.Pages
         {
             InitializeComponent();
         }
+
+        public UpdateNotePage(NoteModel item)
+        {
+            InitializeComponent();
+            ForceLayout();
+            NoteNameEntry.Text = item.NoteName;
+            NoteTextEntry.Text = item.NoteText;
+            NoteIdEntry.Text = item.NoteId.ToString();
+        }
+
         public async void OnUpdateNote(object sender, EventArgs e)
         {
             NoteModel credentials = new NoteModel();
-            credentials.NoteId = "b94afb54-a1cb-4313-8af3-b7511551b33b";
-            credentials.NoteName = "name";//NoteNameEntry.Text;
-            credentials.NoteText = "text";//NoteTextEntry.Text;
+            credentials.NoteId =Int32.Parse(NoteIdEntry.Text);
+            credentials.NoteName = NoteNameEntry.Text;
+            credentials.NoteText = NoteTextEntry.Text;
 
             var response = NotesService.GetService().Edit(credentials);
 
@@ -32,6 +42,8 @@ namespace NoteBook.Pages
             {
                 NoteTextEntry.Text = string.Empty;
             }
+
+            await Navigation.PushAsync(new NotePage());
         }
     }
 }

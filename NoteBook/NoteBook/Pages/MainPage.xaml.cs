@@ -7,7 +7,11 @@ namespace NoteBook.Pages
     {
         public MainPage()
         {
-            Title = "Main Page";
+            Title = "Welcome!";
+            var logo = new Image { Aspect = Aspect.AspectFit };
+            logo.Source = "logo.jpg";
+            
+            
             InitializeComponent();
         }
 

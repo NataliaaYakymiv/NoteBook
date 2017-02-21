@@ -5,6 +5,7 @@
   <StackLayout>
     <Entry x:Name="NoteNameEntry" BindingContext="{x:Reference Name=NoteNameEntry}" Placeholder = "Name"/>
     <Entry x:Name="NoteTextEntry"  BindingContext="{x:Reference Name=NoteTextEntry}"  Placeholder = "Text"  />
+    <Entry x:Name="NoteIdEntry"  BindingContext="{x:Reference Name=NoteIdEntry}"  Placeholder = "Text" IsVisible="False" />
     <Button Text = "Update note" FontSize="Medium" BorderWidth="1" Clicked="OnUpdateNote"/>
     <Label x:Name="StateLabel" FontSize="Large"></Label>
   </StackLayout>

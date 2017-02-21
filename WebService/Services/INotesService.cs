@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using WebService.Models;
 
 namespace WebService.Services
 {
     public interface INotesService
     {
-        bool DoesItemExist(string id);
-        NoteModel Find(string id);
+        bool DoesItemExist(int id);
+        NoteModel Find(int id);
         IEnumerable<NoteModel> GetData();
         void InsertData(NoteModel item);
         void UpdateData(NoteModel item);
-        void DeleteData(string id);
+        void DeleteData(int id);
     }
 }

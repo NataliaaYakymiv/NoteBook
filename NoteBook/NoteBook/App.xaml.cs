@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NoteBook.Pages;
-using Xamarin.Forms;
+﻿using Xamarin.Forms;
 using NoteBook.Contracts;
 using NoteBook.Services;
 

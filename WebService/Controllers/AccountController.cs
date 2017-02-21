@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
-using System.Web.Mvc;
 using System.Web.Security;
 using DotNetOpenAuth.AspNet;
 using Microsoft.Web.WebPages.OAuth;
@@ -21,6 +16,7 @@ namespace WebService.Controllers
     {
 
         public string Url { get; } = "http://5ed5859d.ngrok.io/";
+      //  public string Url { get; } = "http://192.168.0.105:81";
 
         //
         // POST: /Account/Login
@@ -28,7 +24,7 @@ namespace WebService.Controllers
         [System.Web.Http.AllowAnonymous]
         public IHttpActionResult Login(AccountModels.LoginModel model)
         {
-            if (WebSecurity.Login(model.UserName, model.Password, persistCookie: true))
+             if (WebSecurity.Login(model.UserName, model.Password, persistCookie: true))
             {
                 return Ok("Successful login");
             }

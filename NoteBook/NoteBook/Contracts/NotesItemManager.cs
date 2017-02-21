@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using NoteBook.Contracts;
 using NoteBook.Models;
 
 namespace NoteBook.Contracts

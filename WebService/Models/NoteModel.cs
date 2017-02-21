@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
-using System.Linq;
-using System.Web;
 
 namespace WebService.Models
 {
@@ -11,9 +7,8 @@ namespace WebService.Models
     {
         [Key]
         [Required]
-        public string NoteId { get; set; }
+        public int NoteId { get; set; }
 
-        // public string CreatorId { get; set; }
         [Required]
         [Display(Name = "Note name")]
         public string NoteName { get; set; }

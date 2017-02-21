@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Http;
 using NoteBook.Models;
 using NoteBook.Services;
 using Xamarin.Forms;
@@ -10,7 +9,6 @@ namespace NoteBook.Pages
     {
         public LoginPage()
         {
-            Title = "Login Page";
             InitializeComponent();
         }
 
@@ -25,10 +23,26 @@ namespace NoteBook.Pages
             StateLabel.Text = await response.Result.Content.ReadAsStringAsync();
 
             if (response.Result.IsSuccessStatusCode)
-            {
+            {   
+                
+
                 PasswordEntry.Text = string.Empty;
                 await Navigation.PushAsync(new NotePage());
             }
+        }
+
+        private async void OnGoogleLogin(object sender, EventArgs e)
+        {
+            var page = new ExternalLoginPage("linkedin");
+            await Navigation.PushAsync(page);
+            page.OnExternalLogin();
+        }
+
+        private async void OnFacebookLogin(object sender, EventArgs e)
+        {
+            var page = new ExternalLoginPage("linkedin");
+            await Navigation.PushAsync(page);
+            page.OnExternalLogin();
         }
 
         private async void OnLinkedinLogin(object sender, EventArgs e)
@@ -38,25 +52,6 @@ namespace NoteBook.Pages
             page.OnExternalLogin();
         }
 
-        private async void OnFacebookLogin(object sender, EventArgs e)
-        {
-            var page = new ExternalLoginPage("facebook");
-            await Navigation.PushAsync(page);
-            page.OnExternalLogin();
-        }
-
-        private async void OnGoogleLogin(object sender, EventArgs e)
-        {
-            var page = new ExternalLoginPage("google");
-            await Navigation.PushAsync(page);
-            page.OnExternalLogin();
-        }
-
-        private async void OnVkLogin(object sender, EventArgs e)
-        {
-            var page = new ExternalLoginPage("vkontakte");
-            await Navigation.PushAsync(page);
-            page.OnExternalLogin();
-        }
+        
     }
 }

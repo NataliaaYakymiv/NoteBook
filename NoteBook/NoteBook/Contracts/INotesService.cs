@@ -1,9 +1,6 @@
 ﻿using NoteBook.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace NoteBook.Contracts
@@ -14,7 +11,7 @@ namespace NoteBook.Contracts
 
         Task SaveTodoItemAsync(NoteModel item, bool isNewItem);
 
-        Task DeleteTodoItemAsync(string id);
+        Task DeleteTodoItemAsync(int id);
 
         Task<HttpResponseMessage> GetNotes();
     }
