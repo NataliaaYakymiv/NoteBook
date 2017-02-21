@@ -82,15 +82,15 @@ namespace WebService.Controllers
                 return Redirect(Url + "api/account/ExternalLoginFinal?provider=" + result.Provider + "&providerUserId=" + result.ProviderUserId);
             }
 
-            if (User.Identity.IsAuthenticated)
-            {
+            //if (User.Identity.IsAuthenticated)
+           // {
 
-                OAuthWebSecurity.CreateOrUpdateAccount(result.Provider, result.ProviderUserId, result.UserName);
+                //OAuthWebSecurity.CreateOrUpdateAccount(result.Provider, result.ProviderUserId, result.UserName);
 
-                return Redirect(Url + "api/account/ExternalLoginFinal?provider=" + result.Provider + "&providerUserId=" + result.ProviderUserId);
-            }
-            else
-            {
+           //     return Redirect(Url + "api/account/ExternalLoginFinal?provider=" + result.Provider + "&providerUserId=" + result.ProviderUserId);
+          //  }
+          //  else
+         //   {
                 string loginData = OAuthWebSecurity.SerializeProviderUserId(result.Provider, result.ProviderUserId);
                 var model = new AccountModels.RegisterExternalLoginModel { UserName = result.UserName, ExternalLoginData = loginData };
                 switch (result.Provider)
@@ -115,18 +115,18 @@ namespace WebService.Controllers
                         break;
                     }
 
-                }
-
-                ExternalLoginConfirmation(model, "");
-                return Ok(model);
+               // }
             }
+            ExternalLoginConfirmation(model);
+            return Ok();
+            //return Redirect(Url + "api/account/ExternalLoginConfirmation?username=" + model.UserName + "&email=" + model.Email + "&externallogindata=" + model.ExternalLoginData);
         }
 
         //
         // POST: /Account/ExternalLoginConfirmation
-        [System.Web.Http.HttpPost]
+        [System.Web.Http.HttpGet]
         [System.Web.Http.AllowAnonymous]
-        public IHttpActionResult ExternalLoginConfirmation(AccountModels.RegisterExternalLoginModel model, string returnUrl)
+        public IHttpActionResult ExternalLoginConfirmation(AccountModels.RegisterExternalLoginModel model)
         {
             string provider = null;
             string providerUserId = null;

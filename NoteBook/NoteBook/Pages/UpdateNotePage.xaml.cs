@@ -20,6 +20,7 @@ namespace NoteBook.Pages
         {
             InitializeComponent();
             ForceLayout();
+
             NoteNameEntry.Text = item.NoteName;
             NoteTextEntry.Text = item.NoteText;
             NoteIdEntry.Text = item.NoteId.ToString();
@@ -27,19 +28,17 @@ namespace NoteBook.Pages
 
         public async void OnUpdateNote(object sender, EventArgs e)
         {
-            NoteModel credentials = new NoteModel();
-            credentials.NoteId =Int32.Parse(NoteIdEntry.Text);
-            credentials.NoteName = NoteNameEntry.Text;
-            credentials.NoteText = NoteTextEntry.Text;
+            NoteModel note = new NoteModel();
+            note.NoteId =Int32.Parse(NoteIdEntry.Text);
+            note.NoteName = NoteNameEntry.Text;
+            note.NoteText = NoteTextEntry.Text;
 
-            var response = NotesService.GetService().Edit(credentials);
-
-            var v = credentials;
-            NoteNameEntry.Text = string.Empty;
+            var response = NotesService.GetService().Edit(note);
             StateLabel.Text = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
+                NoteNameEntry.Text = string.Empty;
                 NoteTextEntry.Text = string.Empty;
             }
 

@@ -33,14 +33,14 @@ namespace NoteBook.Pages
 
         private async void OnGoogleLogin(object sender, EventArgs e)
         {
-            var page = new ExternalLoginPage("linkedin");
+            var page = new ExternalLoginPage("google");
             await Navigation.PushAsync(page);
             page.OnExternalLogin();
         }
 
         private async void OnFacebookLogin(object sender, EventArgs e)
         {
-            var page = new ExternalLoginPage("linkedin");
+            var page = new ExternalLoginPage("facebook");
             await Navigation.PushAsync(page);
             page.OnExternalLogin();
         }

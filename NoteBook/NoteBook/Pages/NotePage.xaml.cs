@@ -3,16 +3,18 @@ using System;
 using System.Collections.Generic;
 using NoteBook.Services;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 
 namespace NoteBook.Pages
 {
     public partial class NotePage : ContentPage
     {
-        protected async override void OnAppearing()
+        protected override async void OnAppearing()
         {
-            Temp = await App.NotesItemManager.GetTasksAsync().ConfigureAwait(true);
-            notesList.ItemsSource = Temp;
+            Notes = await App.NotesItemManager.GetTasksAsync().ConfigureAwait(true);
+            notesList.ItemsSource = Notes;
+
+            UpdateButton.IsEnabled = DeleteButton.IsEnabled = false;
+
             base.OnAppearing();
         }
 
@@ -22,37 +24,30 @@ namespace NoteBook.Pages
             set;
         }
 
-        public List<NoteModel> Temp
-        {
-            get;
-            set;
-        }
-
         public NotePage()
         {
             InitializeComponent();
-            ForceLayout();
         }
 
 
-        void NotesList_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+        private void NotesList_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
-            UpdateButton.IsEnabled = true;
-            DeleteButton.IsEnabled = true;
+            UpdateButton.IsEnabled = DeleteButton.IsEnabled = true;
         }
 
         private async void OnCreate(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new CreateNotePage());
         }
+
         private async void OnUpdate(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new UpdateNotePage((NoteModel)notesList.SelectedItem));
 
         }
+
         private async void OnDelete(object sender, EventArgs e)
         {
-            NoteModel credentials = new NoteModel();
             var response = NotesService.GetService().Delete((NoteModel)notesList.SelectedItem);
             OnAppearing();
         }
