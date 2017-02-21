@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Web.WebPages.OAuth;
+using WebService.OAuthClients;
+
 //using SocialAuthorization.Models;
 namespace WebService
 {
@@ -10,17 +12,6 @@ namespace WebService
     {
         public static void RegisterAuth()
         {
-            // To let users of this site log in using their accounts from other sites such as Microsoft, Facebook, and Twitter,
-            // you must update this site. For more information visit http://go.microsoft.com/fwlink/?LinkID=252166
-
-            //OAuthWebSecurity.RegisterMicrosoftClient(
-            //    clientId: "",
-            //    clientSecret: "");
-
-            //OAuthWebSecurity.RegisterTwitterClient(
-            //    consumerKey: "",
-            //    consumerSecret: "");
-           // OAuthWebSecurity.
             OAuthWebSecurity.RegisterFacebookClient(
                 appId: "710642582432970",
                 appSecret: "f8676402fa85d8cfdaceb7ab6af86f6e");
@@ -28,7 +19,11 @@ namespace WebService
                 consumerKey: "86t482hcaas1vl",
                 consumerSecret: "FoaMtH2nj1MQFsim"
                 );
-            //OAuthWebSecurity.RegisterGoogleClient();
+            OAuthWebSecurity.RegisterClient(
+                client: new GoogleOAuth2Client(
+                    "1029764351833-n4mqi2u02v1439mb2f8v0df19qkl91ag.apps.googleusercontent.com", "StjvjB0OIiC6cVgk6VGZDatd"),
+                displayName: "google",
+                extraData: null);
         }
     }
 }

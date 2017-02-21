@@ -1,19 +1,18 @@
-﻿using NoteBook.Contracts;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using NoteBook.Models;
-using System.Net.Http;
 using Newtonsoft.Json;
-using System.Diagnostics;
+using NoteBook.Contracts;
+using NoteBook.Models;
 
-namespace NoteBook.Servises
+namespace NoteBook.Services
 {
     class NotesService : INotesService
     {
-        public string Url { get; } = "http://192.168.1.127:81/";
+        public string Url { get; } = "http://5ed5859d.ngrok.io/";
 
         public string NoteGetPath { get; } = "api/Notes/Get";
         public string NoteCreatePath { get; } = "api/Notes/Create";

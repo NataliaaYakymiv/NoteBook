@@ -5,7 +5,7 @@ using System.Text;
 using NoteBook.Pages;
 using Xamarin.Forms;
 using NoteBook.Contracts;
-using NoteBook.Servises;
+using NoteBook.Services;
 
 namespace NoteBook
 {

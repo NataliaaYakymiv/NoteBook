@@ -1,6 +1,6 @@
 ﻿using System;
 using NoteBook.Models;
-using NoteBook.Servises;
+using NoteBook.Services;
 using Xamarin.Forms;
 
 namespace NoteBook.Pages

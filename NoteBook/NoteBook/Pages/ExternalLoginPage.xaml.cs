@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using NoteBook.Servises;
+using NoteBook.Services;
 using Xamarin.Forms;
 
 namespace NoteBook.Pages

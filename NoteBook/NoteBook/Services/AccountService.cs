@@ -2,18 +2,18 @@
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NoteBook.Contracts;
 using NoteBook.Models;
 
-namespace NoteBook.Servises
+namespace NoteBook.Services
 {
     public class AccountService : IAccountService
     {
-        public string Url { get; } = "http://192.168.1.127:81/";
+        public string Url { get; } = "http://5ed5859d.ngrok.io/";
+
         public string RegisterPath { get; } = "api/Account/register";
         public string LoginPath { get; } = "api/Account/login";
         public string ExternalLoginPath { get; } = "api/Account/externallogin";

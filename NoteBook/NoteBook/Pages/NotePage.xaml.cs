@@ -5,9 +5,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using NoteBook.Servises;
 using Xamarin.Forms;
 using NoteBook.Contracts;
+using NoteBook.Services;
 using Application = Xamarin.Forms.PlatformConfiguration.AndroidSpecific.Application;
 
 namespace NoteBook.Pages

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using NoteBook.Models;
-using NoteBook.Servises;
+using NoteBook.Services;
 using Xamarin.Forms;
 
 namespace NoteBook.Pages
@@ -21,7 +21,6 @@ namespace NoteBook.Pages
             credentials.Password = PasswordEntry.Text;
 
             var response = AccountService.GetService().Login(credentials);
-
             LoginEntry.Text = string.Empty;
             StateLabel.Text = await response.Result.Content.ReadAsStringAsync();
 
@@ -38,6 +37,26 @@ namespace NoteBook.Pages
             await Navigation.PushAsync(page);
             page.OnExternalLogin();
         }
-        
+
+        private async void OnFacebookLogin(object sender, EventArgs e)
+        {
+            var page = new ExternalLoginPage("facebook");
+            await Navigation.PushAsync(page);
+            page.OnExternalLogin();
+        }
+
+        private async void OnGoogleLogin(object sender, EventArgs e)
+        {
+            var page = new ExternalLoginPage("google");
+            await Navigation.PushAsync(page);
+            page.OnExternalLogin();
+        }
+
+        private async void OnVkLogin(object sender, EventArgs e)
+        {
+            var page = new ExternalLoginPage("vkontakte");
+            await Navigation.PushAsync(page);
+            page.OnExternalLogin();
+        }
     }
 }

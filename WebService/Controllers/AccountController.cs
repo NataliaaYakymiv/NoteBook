@@ -11,6 +11,7 @@ using DotNetOpenAuth.AspNet;
 using Microsoft.Web.WebPages.OAuth;
 using WebMatrix.WebData;
 using WebService.Models;
+using WebService.OAuthClients;
 
 namespace WebService.Controllers
 {
@@ -19,7 +20,7 @@ namespace WebService.Controllers
     public class AccountController : ApiController
     {
 
-        public string Url { get; } = "http://192.168.1.127:81";
+        public string Url { get; } = "http://5ed5859d.ngrok.io/";
 
         //
         // POST: /Account/Login
@@ -62,7 +63,7 @@ namespace WebService.Controllers
         [System.Web.Http.AllowAnonymous]
         public IHttpActionResult ExternalLogin([FromUri]string provider)
         {
-            OAuthWebSecurity.RequestAuthentication(provider, Url + "/api/account/ExternalLoginCallback");
+            OAuthWebSecurity.RequestAuthentication(provider, Url + "api/account/ExternalLoginCallback");
             return Ok("ExternalLogin");
         }
 
@@ -72,38 +73,25 @@ namespace WebService.Controllers
         [System.Web.Http.AllowAnonymous]
         public IHttpActionResult ExternalLoginCallback()
         {
-            AuthenticationResult result = OAuthWebSecurity.VerifyAuthentication();
+            GoogleOAuth2Client.RewriteRequest();
+
+            AuthenticationResult result = OAuthWebSecurity.VerifyAuthentication(Url + "api/account/ExternalLoginCallback");
             if (!result.IsSuccessful)
             {
-                return Redirect(Url + "/api/account/ExternalLoginFailure");
+                return Redirect(Url + "api/account/ExternalLoginFailure");
             }
 
             if (OAuthWebSecurity.Login(result.Provider, result.ProviderUserId, createPersistentCookie: false))
             {
-                return Redirect(Url + "/api/account/ExternalLoginFinal?provider=" + result.Provider + "&providerUserId=" + result.ProviderUserId);
+                return Redirect(Url + "api/account/ExternalLoginFinal?provider=" + result.Provider + "&providerUserId=" + result.ProviderUserId);
             }
 
             if (User.Identity.IsAuthenticated)
             {
 
-                OAuthWebSecurity.CreateOrUpdateAccount(result.Provider, result.ProviderUserId, User.Identity.Name);
-                if (result.Provider == "facebook" || result.Provider == "google")
-                {
-                    using (AccountModels.UsersContext db = new AccountModels.UsersContext())
-                    {
-                        AccountModels.UserProfile user = db.UserProfiles.FirstOrDefault(u => u.UserName.ToLower() == User.Identity.Name);
-                        if (user != null)
-                        {
-                            var oauthItem = db.OAuthMemberships.FirstOrDefault(x => x.Provider == result.Provider && x.ProviderUserId == result.ProviderUserId && x.UserId == user.UserId);
-                            if (oauthItem != null)
-                            {
-                                oauthItem.Email = result.UserName;
-                                db.SaveChanges();
-                            }
-                        }
-                    }
-                }
-                return Redirect(Url + "/api/account/ExternalLoginFinal?provider=" + result.Provider + "&providerUserId=" + result.ProviderUserId);
+                OAuthWebSecurity.CreateOrUpdateAccount(result.Provider, result.ProviderUserId, result.UserName);
+
+                return Redirect(Url + "api/account/ExternalLoginFinal?provider=" + result.Provider + "&providerUserId=" + result.ProviderUserId);
             }
             else
             {
@@ -149,7 +137,7 @@ namespace WebService.Controllers
 
             if (User.Identity.IsAuthenticated || !OAuthWebSecurity.TryDeserializeProviderUserId(model.ExternalLoginData, out provider, out providerUserId))
             {
-                return Redirect(Url + "/api/account/ExternalLoginFinal?provider=" + provider + "&providerUserId=" + providerUserId);
+                return Redirect(Url + "api/account/ExternalLoginFinal?provider=" + provider + "&providerUserId=" + providerUserId);
             }
 
             if (ModelState.IsValid)
@@ -166,17 +154,7 @@ namespace WebService.Controllers
 
                         OAuthWebSecurity.CreateOrUpdateAccount(provider, providerUserId, model.UserName);
 
-                        if (!String.IsNullOrEmpty(model.Email))
-                        {
-                            var oauthItem = db.OAuthMemberships.FirstOrDefault(x => x.Provider == provider && x.ProviderUserId == providerUserId && x.UserId == user.UserId);
-                            if (oauthItem != null)
-                            {
-                                oauthItem.Email = model.Email;
-                                db.SaveChanges();
-                            }
-                        }
-
-                        return Redirect(Url + "/api/account/ExternalLoginFinal?provider=" + provider + "&providerUserId=" + providerUserId);
+                        return Redirect(Url + "api/account/ExternalLoginFinal?provider=" + provider + "&providerUserId=" + providerUserId);
                     }
                    
                 }
