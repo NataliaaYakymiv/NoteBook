@@ -1,204 +1,193 @@
-﻿using System;
-using System.Linq;
-using System.Web.Http;
+﻿using System.Web.Http;
 using System.Web.Security;
 using DotNetOpenAuth.AspNet;
 using Microsoft.Web.WebPages.OAuth;
 using WebMatrix.WebData;
+using WebService.Contracts;
 using WebService.Models;
 using WebService.OAuthClients;
+using WebService.Repositories;
 
 namespace WebService.Controllers
 {
-    [System.Web.Http.Authorize]
-    [System.Web.Http.RoutePrefix("api/Account")]
+    [Authorize]
+    [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
 
         public string Url { get; } = "http://5ed5859d.ngrok.io/";
-      //  public string Url { get; } = "http://192.168.0.105:81";
+        //  public string Url { get; } = "http://192.168.0.105:81";
 
+
+        static readonly IAccountRepository AccountRepository = new AccountRepository();
         //
         // POST: /Account/Login
-        [System.Web.Http.HttpPost]
-        [System.Web.Http.AllowAnonymous]
+        [HttpPost]
+        [AllowAnonymous]
         public IHttpActionResult Login(AccountModels.LoginModel model)
         {
-             if (WebSecurity.Login(model.UserName, model.Password, persistCookie: true))
+            IHttpActionResult result;
+
+            if (WebSecurity.Login(model.UserName, model.Password, persistCookie: true))
             {
-                return Ok("Successful login");
+                result = Ok();
+            }
+            else
+            {
+                result = BadRequest();
             }
 
-            return BadRequest("The user name or password provided is incorrect.");
+            return result;
         }
 
         //
         // POST: /Account/Register
-        [System.Web.Http.HttpPost]
-        [System.Web.Http.AllowAnonymous]
+        [HttpPost]
+        [AllowAnonymous]
         public IHttpActionResult Register([FromBody] AccountModels.RegisterModel model)
         {
-            string error;
+            IHttpActionResult result;
             try
             {
                 WebSecurity.CreateUserAndAccount(model.UserName, model.Password);
-                return Ok("Registration successful");
+                result = Ok();
             }
             catch (MembershipCreateUserException e)
             {
-                error = ErrorCodeToString(e.StatusCode);
+                var error = ErrorCodeToString(e.StatusCode);
+                result = BadRequest(error);
             }
 
-            return BadRequest(error);
+            return result;
         }
 
 
         //
         // GET: /Account/ExternalLogin
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.AllowAnonymous]
+        [HttpGet]
+        [AllowAnonymous]
         public IHttpActionResult ExternalLogin([FromUri]string provider)
         {
             OAuthWebSecurity.RequestAuthentication(provider, Url + "api/account/ExternalLoginCallback");
-            return Ok("ExternalLogin");
+
+            return Ok();
         }
 
         //
         // GET: /Account/ExternalLoginCallback
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.AllowAnonymous]
+        [HttpGet]
+        [AllowAnonymous]
         public IHttpActionResult ExternalLoginCallback()
         {
             GoogleOAuth2Client.RewriteRequest();
+            IHttpActionResult actionResult;
 
             AuthenticationResult result = OAuthWebSecurity.VerifyAuthentication(Url + "api/account/ExternalLoginCallback");
             if (!result.IsSuccessful)
             {
-                return Redirect(Url + "api/account/ExternalLoginFailure");
+                actionResult = Redirect(Url  + "api/account/ExternalLoginFailure");
             }
 
-            if (OAuthWebSecurity.Login(result.Provider, result.ProviderUserId, createPersistentCookie: false))
+            else if (OAuthWebSecurity.Login(result.Provider, result.ProviderUserId, createPersistentCookie: false))
             {
-                return Redirect(Url + "api/account/ExternalLoginFinal?provider=" + result.Provider + "&providerUserId=" + result.ProviderUserId);
+                actionResult =
+                    Redirect(Url + "api/account/ExternalLoginFinal?provider=" + result.Provider + "&providerUserId=" +
+                             result.ProviderUserId);
             }
-
-            //if (User.Identity.IsAuthenticated)
-           // {
-
-                //OAuthWebSecurity.CreateOrUpdateAccount(result.Provider, result.ProviderUserId, result.UserName);
-
-           //     return Redirect(Url + "api/account/ExternalLoginFinal?provider=" + result.Provider + "&providerUserId=" + result.ProviderUserId);
-          //  }
-          //  else
-         //   {
+            else
+            {
                 string loginData = OAuthWebSecurity.SerializeProviderUserId(result.Provider, result.ProviderUserId);
-                var model = new AccountModels.RegisterExternalLoginModel { UserName = result.UserName, ExternalLoginData = loginData };
+                var model = new AccountModels.RegisterExternalLoginModel
+                {
+                    UserName = result.UserName,
+                    ExternalLoginData = loginData
+                };
+
                 switch (result.Provider)
                 {
                     case "facebook":
                     case "google":
-                        {
-                            model.Email = result.UserName;
-                            model.UserName = result.UserName;
-                            break;
-                        }
+                    {
+                        model.Email = result.UserName;
+                        model.UserName = result.UserName;
+                        break;
+                    }
                     case "twitter":
-                        {
-                            model.Email = result.UserName;
-                            model.UserName = result.UserName;
-                            break;
-                        }
+                    {
+                        model.Email = result.UserName;
+                        model.UserName = result.UserName;
+                        break;
+                    }
                     default:
                     {
                         model.Email = result.UserName;
                         model.UserName = result.UserName;
                         break;
                     }
+                }
 
-               // }
+                actionResult =
+                    Redirect(Url + "api/account/ExternalLoginConfirmation?username=" + model.UserName + "&email=" +
+                             model.Email + "&externallogindata=" + model.ExternalLoginData + "&provider=" +
+                             result.Provider + "&providerUserId=" + result.ProviderUserId);
             }
-            ExternalLoginConfirmation(model);
-            return Ok();
-            //return Redirect(Url + "api/account/ExternalLoginConfirmation?username=" + model.UserName + "&email=" + model.Email + "&externallogindata=" + model.ExternalLoginData);
+
+            return actionResult;
         }
 
         //
         // POST: /Account/ExternalLoginConfirmation
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.AllowAnonymous]
-        public IHttpActionResult ExternalLoginConfirmation(AccountModels.RegisterExternalLoginModel model)
+        [HttpGet]
+        [AllowAnonymous]
+        public IHttpActionResult ExternalLoginConfirmation(string username, string externalLoginData, string email, string provider, string providerUserId)
         {
-            string provider = null;
-            string providerUserId = null;
+            AccountModels.RegisterExternalLoginModel model = new AccountModels.RegisterExternalLoginModel() {UserName = username, ExternalLoginData = externalLoginData, Email = email};
 
-            if (User.Identity.IsAuthenticated || !OAuthWebSecurity.TryDeserializeProviderUserId(model.ExternalLoginData, out provider, out providerUserId))
-            {
-                return Redirect(Url + "api/account/ExternalLoginFinal?provider=" + provider + "&providerUserId=" + providerUserId);
-            }
+            AccountRepository.CreateUser(model, provider, providerUserId);
 
-            if (ModelState.IsValid)
-            {
-                using (AccountModels.UsersContext db = new AccountModels.UsersContext())
-                {
-                    AccountModels.UserProfile user = db.UserProfiles.FirstOrDefault(u => u.UserName.ToLower() == model.UserName.ToLower());
-
-                    if (user == null)
-                    {
-                        user = new AccountModels.UserProfile { UserName = model.UserName };
-                        db.UserProfiles.Add(user);
-                        db.SaveChanges();
-
-                        OAuthWebSecurity.CreateOrUpdateAccount(provider, providerUserId, model.UserName);
-
-                        return Redirect(Url + "api/account/ExternalLoginFinal?provider=" + provider + "&providerUserId=" + providerUserId);
-                    }
-                   
-                }
-            }
-
-            return Ok("Confirm external login");
+            return Redirect(Url + "api/account/ExternalLoginFinal?provider=" + provider + "&providerUserId=" + providerUserId);
         }
 
         //
         // GET: /Account/ExternalLoginFinal
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.AllowAnonymous]
+        [HttpGet]
+        [AllowAnonymous]
         public IHttpActionResult ExternalLoginFinal(string provider, string providerUserId)
         {
+            IHttpActionResult result;
             if (OAuthWebSecurity.Login(provider, providerUserId, createPersistentCookie: false))
             {
-                return Ok("Successful login");
+                result = Ok();
             }
-            return BadRequest("Fail OAuth login");
+            else
+            {
+                result = BadRequest();
+            }
+            
+            return result;
         }
 
         //
         // GET: /Account/ExternalLoginFailure
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.AllowAnonymous]
+        [HttpGet]
+        [AllowAnonymous]
         public IHttpActionResult ExternalLoginFailure()
         {
-            return BadRequest("Fail OAuth login");
+            return BadRequest();
         }
 
 
         //
         // GET: /Account/Logout
-        [System.Web.Http.HttpGet]
+        [HttpGet]
         public IHttpActionResult Logout()
         {
             WebSecurity.Logout();
-            return Ok("Logout");
+
+            return Ok();
         }
 
         #region Helpers
-
-        public enum ManageMessageId
-        {
-            ChangePasswordSuccess,
-            SetPasswordSuccess,
-            RemoveLoginSuccess,
-        }
 
         private static string ErrorCodeToString(MembershipCreateStatus createStatus)
         {

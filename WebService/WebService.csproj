@@ -224,6 +224,7 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Contracts\IAccountRepository.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
     <Compile Include="Controllers\NotesController.cs" />
@@ -240,10 +241,9 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="OAuthClients\GoogleAuthenticationClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\INotesRepository.cs" />
-    <Compile Include="Services\INotesService.cs" />
-    <Compile Include="Services\NotesRepository.cs" />
-    <Compile Include="Services\NotesService.cs" />
+    <Compile Include="Contracts\INotesRepository.cs" />
+    <Compile Include="Repositories\AccountRepository.cs" />
+    <Compile Include="Repositories\NotesRepository.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>

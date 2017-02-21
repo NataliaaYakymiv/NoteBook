@@ -1,6 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
+using System.Linq;
+using Microsoft.Web.WebPages.OAuth;
+
 namespace WebService.Models
 {
     public class AccountModels
@@ -23,6 +27,7 @@ namespace WebService.Models
             [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
             public int UserId { get; set; }
             public string UserName { get; set; }
+            public ICollection<NoteModel> Notes { get; set; }
         }
 
         [Table("webpages_OAuthMembership")]
@@ -96,11 +101,6 @@ namespace WebService.Models
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }
-
-            //[DataType(DataType.Password)]
-            //[Display(Name = "Confirm password")]
-            //[Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-            //public string ConfirmPassword { get; set; }
 
         }
 
