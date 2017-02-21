@@ -14,7 +14,7 @@ namespace WebService.Controllers
     public class AccountController : ApiController
     {
 
-        public string Url { get; } = "http://192.168.1.127:81";
+        public string Url { get; } = "http://192.168.0.105:81";
 
         //
         // POST: /Account/Login
@@ -22,7 +22,7 @@ namespace WebService.Controllers
         [System.Web.Http.AllowAnonymous]
         public IHttpActionResult Login(AccountModels.LoginModel model)
         {
-            if (WebSecurity.Login(model.UserName, model.Password, persistCookie: true))
+             if (WebSecurity.Login(model.UserName, model.Password, persistCookie: true))
             {
                 return Ok("Successful login");
             }

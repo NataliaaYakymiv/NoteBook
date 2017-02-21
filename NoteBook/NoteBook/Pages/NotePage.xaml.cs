@@ -44,42 +44,14 @@ namespace NoteBook.Pages
             set;
         }
 
-        public async void Fill()
-        {
-            //Notes = new List<NoteModel>();
-            //for (int i = 0; i < 100; i++)
-            //{
-            //    Notes.Add(new NoteModel { NoteName = "first", NoteText = "firstNote" });
-            //}
-
-            //notesList.ItemsSource = Notes;
-            //
-            //
-            //
-            //
-        }
-
-
         public NotePage()
         {
             InitializeComponent();
-            //Fill();
-
-
-            // //   new NoteModel { NoteId = "s", NoteName = "first", NoteText = "firstNote" },
-            //   // new NoteModel { NoteId = "s", NoteName = "first", NoteText = "firstNote" },
-            //    //new NoteModel { NoteId = "s", NoteName = "first", NoteText = "firstNote" },
-            //    //new NoteModel { NoteId = "s", NoteName = "first", NoteText = "firstNote" },
-            //};
-
-            // Notes.Add(new NoteModel { NoteName = "first", NoteText = "firstNote" });
-            //notesList.ItemsSource = Notes;
-            //notesList.ItemsSource = await App.NotesItemManager.GetTasksAsync();
-
         }
+
         void NotesList_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
-            selected.Text = ((NoteModel)e.SelectedItem).NoteName;
+            //selected.Text = ((NoteModel)e.SelectedItem).NoteName;
         }
 
         //private async void OnCreate(object sender, EventArgs e)
@@ -101,23 +73,21 @@ namespace NoteBook.Pages
         }
         private async void OnUpdate(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new UpdateNotePage());
+            //await Navigation.PushAsync(new UpdateNotePage());
+            await Navigation.PushAsync(new UpdateNotePage((NoteModel)notesList.SelectedItem));
+
         }
         private async void OnDelete(object sender, EventArgs e)
         {
             NoteModel credentials = new NoteModel();
-
-            //credentials.NoteId = "b94afb54-a1cb-4313-8af3-b7511551b33b";
-            //credentials.NoteName = "name";//NoteNameEntry.Text;
-            //credentials.NoteText = "text";//NoteTextEntry.Text;
-
             var response = NotesService.GetService().Delete((NoteModel)notesList.SelectedItem);
-            StateLabel.Text = await response.Content.ReadAsStringAsync();
+            OnAppearing();
         }
 
         private async void OnRefresh(object sender, EventArgs e)
         {
-            notesList.ItemsSource = await App.NotesItemManager.GetTasksAsync().ConfigureAwait(false);
+            OnAppearing();
+            //notesList.ItemsSource = await App.NotesItemManager.GetTasksAsync().ConfigureAwait(false);
         }
 
     }

@@ -11,7 +11,7 @@ namespace NoteBook.Contracts
 
         Task SaveTodoItemAsync(NoteModel item, bool isNewItem);
 
-        Task DeleteTodoItemAsync(string id);
+        Task DeleteTodoItemAsync(int id);
 
         Task<HttpResponseMessage> GetNotes();
     }

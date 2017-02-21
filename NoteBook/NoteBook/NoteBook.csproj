@@ -38,6 +38,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Constants.cs" />
     <Compile Include="Contracts\INotesService.cs" />
     <Compile Include="Contracts\NotesItemManager.cs" />
     <Compile Include="Models\AccountModels.cs" />

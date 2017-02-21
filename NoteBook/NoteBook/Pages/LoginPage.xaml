@@ -5,10 +5,10 @@
   
   <StackLayout x:Name="Layout">
     <Label x:Name="TextLabel" HorizontalTextAlignment="Center" FontSize="Large">Sign in</Label>
-      <Entry x:Name="LoginEntry" Placeholder = "Login"/>
-      <Entry x:Name="PasswordEntry"  Placeholder = "Password" IsPassword ="True" />
+      <Entry x:Name="LoginEntry" Placeholder = "Login" Text="qwerty"/>
+      <Entry x:Name="PasswordEntry"  Placeholder = "Password" IsPassword ="True" Text="qwerty"/>
       <Button Text ="Sign in" FontSize="Medium" BorderWidth="1" Clicked="OnLogin"/>
-    <Label x:Name="StateLabel" FontSize="Large"></Label>
+    <Label x:Name="StateLabel" FontSize="Large" HorizontalTextAlignment="Center"></Label>
     <StackLayout VerticalOptions="End">
       <Button Text ="Facebook" FontSize="Medium" BorderWidth="1" Clicked="OnFacebookLogin" BackgroundColor="#3b579d" TextColor="White"/>
       <Button Text ="Google" FontSize="Medium" BorderWidth="1" Clicked="OnGoogleLogin" BackgroundColor="#cf4332" TextColor="White"/>

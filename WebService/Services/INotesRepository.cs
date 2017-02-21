@@ -5,11 +5,11 @@ namespace WebService.Services
 {
     public interface INotesRepository
     {
-        bool DoesItemExist(string id);
+        bool DoesItemExist(int id);
         IEnumerable<NoteModel> All();
-        NoteModel Find(string id);
+        NoteModel Find(int id);
         void Insert(NoteModel item);
         void Update(NoteModel item);
-        void Delete(string id);
+        void Delete(int id);
     }
 }

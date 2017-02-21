@@ -12,7 +12,7 @@ namespace NoteBook.Servises
 {
     public class AccountService : IAccountService
     {
-        public string Url { get; } = "http://192.168.1.127:81/";
+        public string Url { get; } = Constants.URL;
         public string RegisterPath { get; } = "api/Account/register";
         public string LoginPath { get; } = "api/Account/login";
         public string ExternalLoginPath { get; } = "api/Account/externallogin";

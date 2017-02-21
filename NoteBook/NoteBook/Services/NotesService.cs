@@ -12,7 +12,7 @@ namespace NoteBook.Servises
 {
     class NotesService : INotesService
     {
-        public string Url { get; } = "http://192.168.1.127:81/";
+        public string Url { get; } = Constants.URL;
 
         public string NoteGetPath { get; } = "api/Notes/Get";
         public string NoteCreatePath { get; } = "api/Notes/Create";
@@ -65,7 +65,7 @@ namespace NoteBook.Servises
             throw new NotImplementedException();
         }
 
-        public Task DeleteTodoItemAsync(string id)
+        public Task DeleteTodoItemAsync(int id)
         {
             throw new NotImplementedException();
         }

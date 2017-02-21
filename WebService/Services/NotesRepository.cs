@@ -18,12 +18,12 @@ namespace WebService.Services
             return db.NoteModels.ToList();
         }
 
-        public bool DoesItemExist(string id)
+        public bool DoesItemExist(int id)
         {
             return db.NoteModels.Any(item => item.NoteId == id);
         }
 
-        public NoteModel Find(string id)
+        public NoteModel Find(int id)
         {
             return db.NoteModels.Where(item => item.NoteId == id).FirstOrDefault();
         }
@@ -36,18 +36,16 @@ namespace WebService.Services
 
         public void Update(NoteModel item)
         {
-            var todoItem = this.Find(item.NoteId);
-            //todoItem = item;
-            var index = db.NoteModels.ToList().IndexOf(todoItem);
-            db.NoteModels.ToList().RemoveAt(index);
-            db.NoteModels.ToList().Insert(index, item);
-            db.NoteModels.ToList().Insert(index, item);
-
-            //db.NoteModels.Add(todoItem);
-            db.SaveChanges();
+            var result = db.NoteModels.SingleOrDefault(b => b.NoteId == item.NoteId);
+            if (result != null)
+            {
+                result.NoteName = item.NoteName;
+                result.NoteText = item.NoteText;
+                db.SaveChanges();
+            }
         }
 
-        public void Delete(string id)
+        public void Delete(int id)
         {
             db.NoteModels.Remove(this.Find(id));
             db.SaveChanges();

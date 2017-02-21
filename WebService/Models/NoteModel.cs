@@ -7,7 +7,7 @@ namespace WebService.Models
     {
         [Key]
         [Required]
-        public string NoteId { get; set; }
+        public int NoteId { get; set; }
 
         // public string CreatorId { get; set; }
         [Required]

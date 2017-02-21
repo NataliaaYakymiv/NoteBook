@@ -12,12 +12,21 @@ namespace NoteBook.Pages
         {
             InitializeComponent();
         }
+
+        public CreateNotePage(NoteModel item)
+        {
+            //update behavior
+            NoteNameEntry.Text = item.NoteName;
+            NoteTextEntry.Text = item.NoteText;
+            InitializeComponent();
+        }
+
         public async void OnCreateNote(object sender, EventArgs e)
         {
             NoteModel credentials = new NoteModel();
-            credentials.NoteId = "hkdll";
-            credentials.NoteName = "name";//NoteNameEntry.Text;
-            credentials.NoteText = "text";//NoteTextEntry.Text;
+            credentials.NoteId = 6;
+            credentials.NoteName = NoteNameEntry.Text;
+            credentials.NoteText = NoteTextEntry.Text;
 
             var response = NotesService.GetService().Create(credentials);
 
@@ -29,6 +38,8 @@ namespace NoteBook.Pages
             {
                 NoteTextEntry.Text = string.Empty;
             }
+
+            await Navigation.PushAsync(new NotePage());
         }
     }
 }

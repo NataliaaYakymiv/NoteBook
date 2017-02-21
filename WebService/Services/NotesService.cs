@@ -18,22 +18,22 @@ namespace WebService.Services
             _repository = repository;
         }
 
-        public bool DoesItemExist(string id)
+        public bool DoesItemExist(int id)
         {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                throw new ArgumentNullException(id);
-            }
+            //if (id == 0)
+            //{
+            //    throw new ArgumentNullException(id);
+            //}
 
             return _repository.DoesItemExist(id);
         }
 
-        public NoteModel Find(string id)
+        public NoteModel Find(int id)
         {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                throw new ArgumentNullException("id");
-            }
+            //if (string.IsNullOrWhiteSpace(id))
+            //{
+            //    throw new ArgumentNullException("id");
+            //}
 
             return _repository.Find(id);
         }
@@ -60,15 +60,16 @@ namespace WebService.Services
                 throw new ArgumentNullException("item");
             }
 
+
             _repository.Update(item);
         }
 
-        public void DeleteData(string id)
+        public void DeleteData(int id)
         {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                throw new ArgumentNullException("id");
-            }
+            //if (string.IsNullOrWhiteSpace(id))
+            //{
+            //    throw new ArgumentNullException("id");
+            //}
 
             _repository.Delete(id);
         }
