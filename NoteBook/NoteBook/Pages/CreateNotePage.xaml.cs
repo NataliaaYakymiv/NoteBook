@@ -24,7 +24,6 @@ namespace NoteBook.Pages
         public async void OnCreateNote(object sender, EventArgs e)
         {
             NoteModel credentials = new NoteModel();
-            credentials.NoteId = 6;
             credentials.NoteName = NoteNameEntry.Text;
             credentials.NoteText = NoteTextEntry.Text;
 

@@ -9,7 +9,6 @@ namespace WebService.Models
         [Required]
         public int NoteId { get; set; }
 
-        // public string CreatorId { get; set; }
         [Required]
         [Display(Name = "Note name")]
         public string NoteName { get; set; }
