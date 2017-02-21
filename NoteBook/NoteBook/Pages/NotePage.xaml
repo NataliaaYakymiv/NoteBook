@@ -2,33 +2,27 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NoteBook.Pages.NotePage">
-  <StackLayout>
-    <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-      <Button Text = "Create" BorderWidth="1"  Clicked="OnCreate" />
-      <Button Text = "Update" BorderWidth="1" Clicked="OnUpdate" />
-      <Button Text = "Delete" BorderWidth="1" Clicked="OnDelete" />
-      <!--<Button Text = "Refresh" BorderWidth="1" Clicked="OnRefresh"/>-->
+  <StackLayout >
+    <StackLayout  Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
+      <Button Text = "Create" BorderWidth="1"  Clicked="OnCreate" HorizontalOptions="StartAndExpand"/>
+      <Button x:Name="UpdateButton" Text = "Update" BorderWidth="1" Clicked="OnUpdate" IsEnabled="False" HorizontalOptions="CenterAndExpand"/>
+      <Button Text = "Delete" BorderWidth="1" Clicked="OnDelete" HorizontalOptions="EndAndExpand"/>
     </StackLayout>
-    <!--
-    <Label  x:Name="UserName" HorizontalOptions="Center" FontSize="Large" TextColor="Black" >User Name</Label>
-    -->
-    <ScrollView>
-      <StackLayout>
-        <ListView x:Name="notesList" ItemSelected="NotesList_ItemSelected">
-          <ListView.ItemTemplate>
-            <DataTemplate>
-              <ViewCell>
-                <ViewCell.View>
-                  <StackLayout Orientation="Horizontal" >
-                    <Label Text="{Binding NoteName}" TextColor="Black" Font="Bold" FontSize="18" />
-                    <Label Text="{Binding NoteText}" FontSize="18" />
-                  </StackLayout>
-                </ViewCell.View>
-              </ViewCell>
-            </DataTemplate>
-          </ListView.ItemTemplate>
-        </ListView>
-      </StackLayout>
+    <ScrollView VerticalOptions="FillAndExpand">
+      <ListView x:Name="notesList" ItemSelected="NotesList_ItemSelected">
+        <ListView.ItemTemplate>
+          <DataTemplate>
+            <ViewCell>
+              <ViewCell.View>
+                <StackLayout Orientation="Horizontal" VerticalOptions="FillAndExpand">
+                  <Label Text="{Binding NoteName}" TextColor="Black" Font="Bold" FontSize="18" />
+                  <Label Text="{Binding NoteText}" FontSize="18" />
+                </StackLayout>
+              </ViewCell.View>
+            </ViewCell>
+          </DataTemplate>
+        </ListView.ItemTemplate>
+      </ListView>
     </ScrollView>
   </StackLayout>
 </ContentPage>
