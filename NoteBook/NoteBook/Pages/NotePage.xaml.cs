@@ -38,14 +38,7 @@ namespace NoteBook.Pages
         void NotesList_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
             UpdateButton.IsEnabled = true;
-
-            //if (notesList.SelectedItem != null)
-            //{
-            //}
-            //else
-            //{
-            //    notesList.
-            //}
+            DeleteButton.IsEnabled = true;
         }
 
         private async void OnCreate(object sender, EventArgs e)

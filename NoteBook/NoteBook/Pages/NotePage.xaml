@@ -6,7 +6,7 @@
     <StackLayout  Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
       <Button Text = "Create" BorderWidth="1"  Clicked="OnCreate" HorizontalOptions="StartAndExpand"/>
       <Button x:Name="UpdateButton" Text = "Update" BorderWidth="1" Clicked="OnUpdate" IsEnabled="False" HorizontalOptions="CenterAndExpand"/>
-      <Button Text = "Delete" BorderWidth="1" Clicked="OnDelete" HorizontalOptions="EndAndExpand"/>
+      <Button x:Name="DeleteButton" Text = "Delete" BorderWidth="1" Clicked="OnDelete" IsEnabled="False" HorizontalOptions="EndAndExpand"/>
     </StackLayout>
     <ScrollView VerticalOptions="FillAndExpand">
       <ListView x:Name="notesList" ItemSelected="NotesList_ItemSelected">
