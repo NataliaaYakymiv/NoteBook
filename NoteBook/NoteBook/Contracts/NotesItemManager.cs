@@ -15,17 +15,9 @@ namespace NoteBook.Contracts
 
         public Task<List<NoteModel>> GetTasksAsync()
         {
-            return restService.RefreshDataAsync();
+            return restService.GetAllNotes();
         }
 
-        public Task SaveTaskAsync(NoteModel item, bool isNewItem = false)
-        {
-            return restService.SaveTodoItemAsync(item, isNewItem);
-        }
 
-        public Task DeleteTaskAsync(NoteModel item)
-        {
-            return restService.DeleteTodoItemAsync(item.NoteId);
-        }
     }
 }

@@ -33,7 +33,7 @@ namespace NoteBook.Pages
             note.NoteName = NoteNameEntry.Text;
             note.NoteText = NoteTextEntry.Text;
 
-            var response = NotesService.GetService().Edit(note);
+            var response = NotesService.GetService().UpdateNote(note);
             StateLabel.Text = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)

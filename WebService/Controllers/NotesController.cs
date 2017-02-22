@@ -10,16 +10,16 @@ namespace WebService.Controllers
 {
     [Authorize]
     [RoutePrefix("api/Notes")]
-    public class TodoItemsController : BaseApiController
+    public class NotesController : BaseApiController
     {
         static readonly INotesRepository NotesRepository = new NotesRepository();
         static readonly IAccountRepository AccountRepository = new AccountRepository();
 
         [HttpGet]
-        [Route("Refresh")]
-        public HttpResponseMessage Get()
+        [Route("GetAllNotes")]
+        public HttpResponseMessage GetAllNotes()
         {
-            var notes = NotesRepository.All(AccountRepository.GetIbByUserName(User.Identity.Name));
+            var notes = NotesRepository.All(AccountRepository.GetIdByUserName(User.Identity.Name));
             HttpResponseMessage response;
             if (notes == null)
             {
@@ -36,10 +36,10 @@ namespace WebService.Controllers
         
 
         [HttpPost]
-        [Route("Create")]
-        public IHttpActionResult Create(NoteModel item)
+        [Route("CreateNote")]
+        public HttpResponseMessage CreateNote(NoteModel item)
         {
-            IHttpActionResult result;
+            HttpResponseMessage result;
 
             try
             {
@@ -47,33 +47,33 @@ namespace WebService.Controllers
                     string.IsNullOrWhiteSpace(item.NoteName) ||
                     string.IsNullOrWhiteSpace(item.NoteText))
                 {
-                    result = BadRequest("Item = null");
+                    result = Request.CreateResponse(HttpStatusCode.BadRequest);// BadRequest("Item = null");
                 }
                 else
                 {
-                    var itemExists = NotesRepository.DoesItemExist(AccountRepository.GetIbByUserName(User.Identity.Name), item.NoteId);
+                    var itemExists = NotesRepository.DoesItemExist(AccountRepository.GetIdByUserName(User.Identity.Name), item.NoteId);
                     if (itemExists)
-                    { 
-                        result = BadRequest("Comflict");
+                    {
+                        result = Request.CreateResponse(HttpStatusCode.BadRequest); //result = BadRequest("Comflict");
                     }
                     else
                     {
-                        NotesRepository.Insert(AccountRepository.GetIbByUserName(User.Identity.Name), item);
-                        result = Ok("OK");
+                        NotesRepository.Insert(AccountRepository.GetIdByUserName(User.Identity.Name), item);
+                        result = Request.CreateResponse(HttpStatusCode.OK);//Ok("OK");
                     }
                 }
             }
             catch (Exception)
             {
-                result = BadRequest("Could not create");
+                result = Request.CreateResponse(HttpStatusCode.BadRequest); 
             }
 
             return result;
         }
 
         [HttpPut]
-        [Route("Edit")]
-        public HttpResponseMessage Edit(NoteModel item)
+        [Route("UpdateNote")]
+        public HttpResponseMessage UpdateNote(NoteModel item)
         {
             HttpResponseMessage result;
 
@@ -89,11 +89,11 @@ namespace WebService.Controllers
                 else
                 {
 
-                    var todoItem = NotesRepository.Find(AccountRepository.GetIbByUserName(User.Identity.Name),
+                    var todoItem = NotesRepository.Find(AccountRepository.GetIdByUserName(User.Identity.Name),
                         item.NoteId);
                     if (todoItem != null)
                     {
-                        NotesRepository.Update(AccountRepository.GetIbByUserName(User.Identity.Name), item);
+                        NotesRepository.Update(AccountRepository.GetIdByUserName(User.Identity.Name), item);
                         result = BuildSuccessResult(HttpStatusCode.NoContent);
                     }
                     else
@@ -111,17 +111,17 @@ namespace WebService.Controllers
         }
 
         [HttpPost]
-        [Route("Delete")]
-        public HttpResponseMessage Delete(NoteModel item)
+        [Route("DeleteNote")]
+        public HttpResponseMessage DeleteNote(NoteModel item)
         {
             HttpResponseMessage result;
 
             try
             {
-                var todoItem = NotesRepository.Find(AccountRepository.GetIbByUserName(User.Identity.Name), item.NoteId);
+                var todoItem = NotesRepository.Find(AccountRepository.GetIdByUserName(User.Identity.Name), item.NoteId);
                 if (todoItem != null)
                 {
-                    NotesRepository.Delete(AccountRepository.GetIbByUserName(User.Identity.Name), item.NoteId);
+                    NotesRepository.Delete(AccountRepository.GetIdByUserName(User.Identity.Name), item.NoteId);
                     result = BuildSuccessResult(HttpStatusCode.NoContent);
                 }
                 else

@@ -30,7 +30,7 @@ namespace NoteBook.Pages
             credentials.NoteName = NoteNameEntry.Text;
             credentials.NoteText = NoteTextEntry.Text;
 
-            var response = NotesService.GetService().Create(credentials);
+            var response = NotesService.GetService().CreateNote(credentials);
 
             var v = credentials;
             NoteNameEntry.Text = string.Empty;

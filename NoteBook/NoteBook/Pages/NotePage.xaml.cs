@@ -48,7 +48,7 @@ namespace NoteBook.Pages
 
         private async void OnDelete(object sender, EventArgs e)
         {
-            var response = NotesService.GetService().Delete((NoteModel)notesList.SelectedItem);
+            var response = NotesService.GetService().DeleteNote((NoteModel)notesList.SelectedItem);
             OnAppearing();
         }
     }

@@ -29,7 +29,7 @@ namespace WebService.Repositories
             return false;
         }
 
-        public int GetIbByUserName(string userName)
+        public int GetIdByUserName(string userName)
         {
             AccountModels.UserProfile user;
             using (AccountModels.UsersContext db = new AccountModels.UsersContext())
