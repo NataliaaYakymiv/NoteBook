@@ -1,6 +1,7 @@
 ﻿using NoteBook.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NoteBook.Services;
 using Xamarin.Forms;
 
@@ -8,9 +9,9 @@ namespace NoteBook.Pages
 {
     public partial class NotePage : ContentPage
     {
-        protected override async void OnAppearing()
+        protected override void OnAppearing()
         {
-            Notes = await App.NotesItemManager.GetTasksAsync().ConfigureAwait(true);
+            Notes = App.NotesItemManager.NoteService.GetAllNotes().ToList();
             notesList.ItemsSource = Notes;
 
             UpdateButton.IsEnabled = DeleteButton.IsEnabled = false;
@@ -27,6 +28,8 @@ namespace NoteBook.Pages
         public NotePage()
         {
             InitializeComponent();
+            App.NotesItemManager.time = DateTime.Now;
+
         }
 
 
@@ -43,12 +46,17 @@ namespace NoteBook.Pages
         private async void OnUpdate(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new UpdateNotePage((NoteModel)notesList.SelectedItem));
-
         }
 
-        private async void OnDelete(object sender, EventArgs e)
+        private void OnDelete(object sender, EventArgs e)
         {
-            var response = NotesService.GetService().DeleteNote((NoteModel)notesList.SelectedItem);
+            App.NotesItemManager.NoteService.DeleteNote((NoteModel)notesList.SelectedItem);
+            OnAppearing();
+        }
+
+        private void OnSync(object sender, EventArgs e)
+        {
+            App.NotesItemManager.Sync();
             OnAppearing();
         }
     }

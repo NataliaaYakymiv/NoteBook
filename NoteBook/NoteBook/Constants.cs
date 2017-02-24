@@ -4,6 +4,6 @@ namespace NoteBook
 {
     public static class Constants
     {
-        public const string URL = "http://192.168.1.111:81/";
+        public const string URL = "http://ae502439.ngrok.io/";
     }
 }

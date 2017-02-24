@@ -1,15 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using WebService.Models;
 
 namespace WebService.Contracts
 {
     public interface INotesRepository
     {
-        bool DoesItemExist(int idUser, int id);
+        bool DoesItemExist(int idUser, string idNote);
         IEnumerable<NoteModel> All(int iduser);
-        NoteModel Find(int idUser, int idNote);
+        IEnumerable<NoteModel> HasChanges(int idUser, SyncModel model);
+        NoteModel Find(int idUser, string idNote);
         void Insert(int idUser, NoteModel note);
         void Update(int idUser, NoteModel note);
-        void Delete(int idUser, int idNote);
+        void Delete(int idUser, string idNote);
     }
 }

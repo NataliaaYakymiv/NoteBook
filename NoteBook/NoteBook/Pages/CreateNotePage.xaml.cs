@@ -18,7 +18,6 @@ namespace NoteBook.Pages
 
         public CreateNotePage(NoteModel item)
         {
-            //update behavior
             NoteNameEntry.Text = item.NoteName;
             NoteTextEntry.Text = item.NoteText;
             InitializeComponent();
@@ -26,22 +25,23 @@ namespace NoteBook.Pages
 
         public async void OnCreateNote(object sender, EventArgs e)
         {
-            NoteModel credentials = new NoteModel();
-            credentials.NoteName = NoteNameEntry.Text;
-            credentials.NoteText = NoteTextEntry.Text;
+            NoteModel note = new NoteModel();
+            note.NoteName = NoteNameEntry.Text;
+            note.NoteText = NoteTextEntry.Text;
 
-            var response = NotesService.GetService().CreateNote(credentials);
+            var result = App.NotesItemManager.NoteService.CreateNote(note);
 
-            var v = credentials;
-            NoteNameEntry.Text = string.Empty;
-            StateLabel.Text = await response.Content.ReadAsStringAsync();
-
-            if (response.IsSuccessStatusCode)
+            if (result)
             {
+                NoteNameEntry.Text = string.Empty;
                 NoteTextEntry.Text = string.Empty;
-            }
 
-            await Navigation.PushAsync(new NotePage());
+                await Navigation.PopAsync();
+            }
+            else
+            {
+                StateLabel.Text = "Something wrong, try again";
+            }
         }
     }
 }

@@ -29,20 +29,23 @@ namespace NoteBook.Pages
         public async void OnUpdateNote(object sender, EventArgs e)
         {
             NoteModel note = new NoteModel();
-            note.NoteId =Int32.Parse(NoteIdEntry.Text);
+            note.NoteId = NoteIdEntry.Text;
             note.NoteName = NoteNameEntry.Text;
             note.NoteText = NoteTextEntry.Text;
 
-            var response = NotesService.GetService().UpdateNote(note);
-            StateLabel.Text = await response.Content.ReadAsStringAsync();
+            var result = App.NotesItemManager.NoteService.UpdateNote(note);
 
-            if (response.IsSuccessStatusCode)
+            if (result)
             {
                 NoteNameEntry.Text = string.Empty;
                 NoteTextEntry.Text = string.Empty;
-            }
 
-            await Navigation.PushAsync(new NotePage());
+                await Navigation.PopAsync();
+            }
+            else
+            {
+                StateLabel.Text = "Something wrong, try again";
+            }
         }
     }
 }

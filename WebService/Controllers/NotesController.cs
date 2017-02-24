@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -33,7 +35,7 @@ namespace WebService.Controllers
             return response;
         }
 
-        
+
 
         [HttpPost]
         [Route("CreateNote")]
@@ -47,25 +49,29 @@ namespace WebService.Controllers
                     string.IsNullOrWhiteSpace(item.NoteName) ||
                     string.IsNullOrWhiteSpace(item.NoteText))
                 {
-                    result = Request.CreateResponse(HttpStatusCode.BadRequest);// BadRequest("Item = null");
+                    result = Request.CreateResponse(HttpStatusCode.BadRequest);
                 }
                 else
                 {
-                    var itemExists = NotesRepository.DoesItemExist(AccountRepository.GetIdByUserName(User.Identity.Name), item.NoteId);
+                    var itemExists = NotesRepository.DoesItemExist(
+                        AccountRepository.GetIdByUserName(User.Identity.Name), item.NoteId);
                     if (itemExists)
                     {
-                        result = Request.CreateResponse(HttpStatusCode.BadRequest); //result = BadRequest("Comflict");
+                        result = Request.CreateResponse(HttpStatusCode.BadRequest);
                     }
                     else
                     {
                         NotesRepository.Insert(AccountRepository.GetIdByUserName(User.Identity.Name), item);
-                        result = Request.CreateResponse(HttpStatusCode.OK);//Ok("OK");
+                        var note = NotesRepository.Find(AccountRepository.GetIdByUserName(User.Identity.Name),
+                            item.NoteId);
+                        result = Request.CreateResponse(HttpStatusCode.OK, note);
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                result = Request.CreateResponse(HttpStatusCode.BadRequest); 
+                Debug.Print("Bug!!!!!!!!!!!!!!!!!!!! "  + e.Message);
+                result = Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
             return result;
@@ -94,7 +100,9 @@ namespace WebService.Controllers
                     if (todoItem != null)
                     {
                         NotesRepository.Update(AccountRepository.GetIdByUserName(User.Identity.Name), item);
-                        result = BuildSuccessResult(HttpStatusCode.NoContent);
+                        var note = NotesRepository.Find(AccountRepository.GetIdByUserName(User.Identity.Name),
+                            item.NoteId);
+                        result = BuildSuccessResult(HttpStatusCode.NoContent, note);
                     }
                     else
                     {
@@ -135,6 +143,22 @@ namespace WebService.Controllers
             }
 
             return result;
+        }
+
+        [HttpPost]
+        [Route("GetAsyncNotes")]
+        public HttpResponseMessage GetAsyncNotes(SyncModel model)
+        {
+            SyncModel syncModel = new SyncModel();
+            var notes =
+                NotesRepository.HasChanges(AccountRepository.GetIdByUserName(User.Identity.Name), model).ToList();
+            HttpResponseMessage response;
+            syncModel.NoteModels = notes;
+            syncModel.LastModify = DateTime.Now;
+            response = Request.CreateResponse(HttpStatusCode.OK, syncModel);
+
+
+            return response;
         }
     }
 

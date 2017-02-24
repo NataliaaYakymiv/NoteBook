@@ -8,14 +8,33 @@ namespace NoteBook
     {
         public static NotesItemManager NotesItemManager { get; private set; }
 
+        public const string DATABASE_NAME = "notes1.db";
+        public static INotesService database;
+        public static INotesService Database
+        {
+            get
+            {
+                if (database == null)
+                {
+                    database = new NoteService(DATABASE_NAME);
+                }
+                return database;
+            }
+        }
 
         public App()
         {
             InitializeComponent();
 
-            NotesItemManager = new NotesItemManager(NotesService.GetService());
+            NotesItemManager = new NotesItemManager(new RemoteNotesService());
 
             MainPage = new NavigationPage(new Pages.MainPage());
+
+            var a = App.Database.GetAllNotes();
+            foreach (var model in a)
+            {
+                App.Database.DeleteNote(model);
+            }
         }
 
         protected override void OnStart()
