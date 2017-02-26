@@ -18,7 +18,7 @@ namespace WebService.Controllers
         static readonly IAccountRepository AccountRepository = new AccountRepository();
 
         [HttpGet]
-        [Route("GetAllNotes")]
+        //[Route("GetAllNotes")]
         public HttpResponseMessage GetAllNotes()
         {
             var notes = NotesRepository.All(AccountRepository.GetIdByUserName(User.Identity.Name));
@@ -102,7 +102,7 @@ namespace WebService.Controllers
                         NotesRepository.Update(AccountRepository.GetIdByUserName(User.Identity.Name), item);
                         var note = NotesRepository.Find(AccountRepository.GetIdByUserName(User.Identity.Name),
                             item.NoteId);
-                        result = BuildSuccessResult(HttpStatusCode.NoContent, note);
+                        result = BuildSuccessResult(HttpStatusCode.OK, note);
                     }
                     else
                     {
@@ -146,7 +146,7 @@ namespace WebService.Controllers
         }
 
         [HttpPost]
-        [Route("GetAsyncNotes")]
+        [Route("GetSyncNotes")]
         public HttpResponseMessage GetAsyncNotes(SyncModel model)
         {
             SyncModel syncModel = new SyncModel();

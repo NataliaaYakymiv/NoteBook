@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using System;
+using Xamarin.Forms;
 using NoteBook.Contracts;
 using NoteBook.Services;
 
@@ -8,7 +9,6 @@ namespace NoteBook
     {
         public static NotesItemManager NotesItemManager { get; private set; }
 
-        public const string DATABASE_NAME = "notes1.db";
         public static INotesService database;
         public static INotesService Database
         {
@@ -16,7 +16,7 @@ namespace NoteBook
             {
                 if (database == null)
                 {
-                    database = new NoteService(DATABASE_NAME);
+                    database = new NoteService(Settings.DatabaseName);
                 }
                 return database;
             }
@@ -25,16 +25,18 @@ namespace NoteBook
         public App()
         {
             InitializeComponent();
-
-            NotesItemManager = new NotesItemManager(new RemoteNotesService());
-
-            MainPage = new NavigationPage(new Pages.MainPage());
-
-            var a = App.Database.GetAllNotes();
-            foreach (var model in a)
+            if (string.IsNullOrEmpty(UserSettings.SyncDate))
             {
-                App.Database.DeleteNote(model);
+                UserSettings.SyncDate = DateTime.MinValue.ToString();
             }
+            var accountService = new AccountService();
+            var noteService = new NoteService(Settings.DatabaseName);
+
+            var remoteService = new RemoteNotesService(accountService, noteService);
+
+            NotesItemManager = new NotesItemManager(remoteService, noteService);
+
+            MainPage = new NavigationPage(new Pages.LoginPage(accountService, new LocalNotesService(Settings.DatabaseName)));
         }
 
         protected override void OnStart()

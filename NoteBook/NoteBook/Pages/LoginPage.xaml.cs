@@ -1,4 +1,5 @@
 ﻿using System;
+using NoteBook.Contracts;
 using NoteBook.Models;
 using NoteBook.Services;
 using Xamarin.Forms;
@@ -7,51 +8,104 @@ namespace NoteBook.Pages
 {
     public partial class LoginPage : ContentPage
     {
-        public LoginPage()
+        public IAccountService AccountService { get; private set; }
+        public INotesService NotesService { get; private set; }
+
+        private LoginPage()
         {
+            Title = "Sing in";
             InitializeComponent();
+        }
+
+        public LoginPage(IAccountService accountService, INotesService notesService) : this()
+        {
+            AccountService = accountService;
+            NotesService = notesService;
+            if (AccountService.IsLoged())
+            {
+                var page = new NotePage();
+                Navigation.PushAsync(page);
+                page.SetService(NotesService);
+                page.SetAuthService(new AccountService());
+            }
+        }
+
+        public LoginPage(string login, string password, string state, IAccountService accountService, INotesService notesService) : this(accountService, notesService)
+        {
+
+            LoginEntry.Text = login;
+            PasswordEntry.Text = password;
+            StateLabel.Text = state;
         }
 
         private async void OnLogin(object sender, EventArgs e)
         {
-            AccountModels.LoginModel credentials = new AccountModels.LoginModel();
-            credentials.UserName = LoginEntry.Text;
-            credentials.Password = PasswordEntry.Text;
+            if (!string.IsNullOrEmpty(LoginEntry.Text) && !string.IsNullOrEmpty(PasswordEntry.Text))
+            {
+                var credentials = new AccountModels.LoginModel()
+                {
+                    UserName = LoginEntry.Text,
+                    Password = PasswordEntry.Text,
+                    RememberMe = !RememberMe.IsToggled
+                };
 
-            var response = AccountService.GetService().Login(credentials);
-            LoginEntry.Text = string.Empty;
-            StateLabel.Text = await response.Result.Content.ReadAsStringAsync();
+                LoginBtn.IsEnabled = false;
+                ActivityIndicatorLogin.IsRunning = true;
+                ActivityIndicatorLogin.IsVisible = true;
 
-            if (response.Result.IsSuccessStatusCode)
-            {   
-                
+                var response = await AccountService.Login(credentials);
 
-                PasswordEntry.Text = string.Empty;
-                await Navigation.PushAsync(new NotePage());
+                ActivityIndicatorLogin.IsRunning = false;
+                ActivityIndicatorLogin.IsVisible = false;
+                LoginBtn.IsEnabled = true;
+
+                if (!response)
+                {
+                    StateLabel.Text = "User name or password is not valid";
+                    PasswordEntry.Text = string.Empty;
+                }
+                else
+                {
+                    var page = new NotePage();
+                    await Navigation.PushAsync(page);
+                    page.SetService(NotesService);
+                    page.SetAuthService(new AccountService());
+                }
             }
+            else
+            {
+                StateLabel.Text = "Fill in all fields";
+            }
+
         }
 
         private async void OnGoogleLogin(object sender, EventArgs e)
         {
-            var page = new ExternalLoginPage("google");
+            var page = new ExternalLoginPage("google", AccountService, NotesService);
             await Navigation.PushAsync(page);
             page.OnExternalLogin();
         }
 
         private async void OnFacebookLogin(object sender, EventArgs e)
         {
-            var page = new ExternalLoginPage("facebook");
+            var page = new ExternalLoginPage("facebook", AccountService, NotesService);
             await Navigation.PushAsync(page);
             page.OnExternalLogin();
         }
 
         private async void OnLinkedinLogin(object sender, EventArgs e)
         {
-            var page = new ExternalLoginPage("linkedin");
+            var page = new ExternalLoginPage("linkedin", AccountService, NotesService);
             await Navigation.PushAsync(page);
             page.OnExternalLogin();
         }
 
-        
+
+        private async void OnRegister(object sender, EventArgs e)
+        {
+            var page = new RegisterPage();
+            await Navigation.PushAsync(page);
+            page.SetService(AccountService);
+        }
     }
 }

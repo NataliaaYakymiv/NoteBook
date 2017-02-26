@@ -1,67 +1,63 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+using NoteBook.Contracts;
 using NoteBook.Models;
-using NoteBook.Services;
 
-namespace NoteBook.Contracts
+namespace NoteBook.Services
 {
     public class NotesItemManager
     {
-        public INotesService NoteService { get; private set; }
+        public INotesService RemoteNoteService { get; private set; }
+        public INotesService LocalNoteService { get; private set; }
 
-
-        public DateTime time;
-
-        public NotesItemManager(INotesService noteService)
+        public NotesItemManager(INotesService remoteNoteService, INotesService localNotesService)
         {
-            NoteService = noteService;
+            RemoteNoteService = remoteNoteService;
+            LocalNoteService = localNotesService;
         }
 
-        public void SetService(INotesService noteService)
+        public void SetService(INotesService remoteNoteService, INotesService localNotesService)
         {
-            NoteService = noteService;
+            RemoteNoteService = remoteNoteService;
+            LocalNoteService = localNotesService;
         }
 
-        public void Sync()
+        public async void Sync()
         {
             SyncModel syncModel = new SyncModel();
-            var notes1 = App.Database.GetAllNotes().ToList();
-            var notes = App.Database.GetAllNotes().ToList();
+            //var notes1 = App.Database.GetAllNotes().ToList();
+            var notes = (await LocalNoteService.GetAllNotes()).ToList();
             
             
-            syncModel.LastModify = time;
+            syncModel.LastModify = Convert.ToDateTime(UserSettings.SyncDate);
             syncModel.NoteModels = notes;
 
 
-            var items = NoteService.GetSyncNotes(syncModel).ToList();
+            var items = (await RemoteNoteService.GetSyncNotes(syncModel)).ToList();
 
-            var notes3 = App.Database.GetAllNotes().ToList();
+            //var notes3 = App.Database.GetAllNotes().ToList();
 
             for (int i = 0; i < items.Count; i++)
             {
                 var i1 = i;
                 if (notes.Find(x => items[i1].NoteId == x.NoteId) != null)
                 {
-                    App.Database.UpdateNote(items[i]);
+                    await LocalNoteService.UpdateNote(items[i]);
                     notes.Remove(notes.Find(x => items[i1].NoteId == x.NoteId));
                 }
                 else
                 {
-                    App.Database.CreateNote(items[i]);
+                    await LocalNoteService.CreateNote(items[i]);
                 }
             }
-            var notes2 = App.Database.GetAllNotes().ToList();
+            //var notes2 = App.Database.GetAllNotes().ToList();
             foreach (NoteModel t in notes)
             {
-                App.Database.DeleteNote(t);
+                await LocalNoteService.DeleteNote(t);
             }
-            var notes4 = App.Database.GetAllNotes().ToList();
-            time = DateTime.Now;
+            UserSettings.SyncDate = DateTime.Now.ToString();
+            //var notes4 = App.Database.GetAllNotes().ToList();
+            //time = DateTime.Now;
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using NoteBook.Contracts;
 using NoteBook.Models;
 using SQLite;
@@ -18,33 +20,46 @@ namespace NoteBook.Services
             _database.CreateTable<NoteModel>();
         }
 
-        public IEnumerable<NoteModel> GetAllNotes()
+        public Task<IEnumerable<NoteModel>> GetAllNotes()
         {
-            return _database.Table<NoteModel>().Where(item => item.Delete == null).ToList();   
+            Task<IEnumerable<NoteModel>> task = new Task<IEnumerable<NoteModel>>(() => _database.Table<NoteModel>().Where(item => item.Delete == null));
+            task.Start();
+            return task;   
         }
 
-        public IEnumerable<NoteModel> GetSyncNotes(SyncModel syncModel)
+        public Task<IEnumerable<NoteModel>> GetSyncNotes(SyncModel syncModel)
         {
-            return GetAllNotes().Where(item => Convert.ToDateTime(item.Create) > syncModel.LastModify || Convert.ToDateTime(item.Update) > syncModel.LastModify || Convert.ToDateTime(item.Delete) > syncModel.LastModify).ToList();
+            Task<IEnumerable<NoteModel>> task = new Task<IEnumerable<NoteModel>>(() => GetAllNotes().Result.Where(item => Convert.ToDateTime(item.Create) > syncModel.LastModify || Convert.ToDateTime(item.Update) > syncModel.LastModify || Convert.ToDateTime(item.Delete) > syncModel.LastModify).ToList());
+            task.Start();
+            return task;
         }
 
-        public bool CreateNote(NoteModel note)
+        public Task<bool> CreateNote(NoteModel note)
         {
             note.NoteId = Guid.NewGuid().ToString();
             note.Create = Convert.ToString(DateTime.Now);
-            return _database.Insert(note) > 0;
+
+            Task<bool> task = new Task<bool>(() => _database.Insert(note) > 0);
+            task.Start();
+            return task;
         }
 
-        public bool UpdateNote(NoteModel note)
+        public Task<bool> UpdateNote(NoteModel note)
         {
             note.Update = Convert.ToString(DateTime.Now);
-            return _database.Update(note) > 0;
+
+            Task<bool> task = new Task<bool>(() => _database.Update(note) > 0);
+            task.Start();
+            return task;
         }
 
-        public bool DeleteNote(NoteModel note)
+        public Task<bool> DeleteNote(NoteModel note)
         {
             note.Delete = Convert.ToString(DateTime.Now);
-            return _database.Update(note) > 0;
+
+            Task<bool> task = new Task<bool>(() => _database.Update(note) > 0);
+            task.Start();
+            return task;
         }
 
     }

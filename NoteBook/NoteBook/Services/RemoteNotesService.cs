@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,121 +10,176 @@ using NoteBook.Models;
 
 namespace NoteBook.Services
 {
-    class RemoteNotesService : INotesService 
+    public class RemoteNotesService : INotesService 
     {
-        public string Url { get; } = Constants.URL;
+        public IHttpAuth AccountService { get; private set; }
+        public INotesService NotesService { get; private set; }
 
-        public string NoteGetAllNotesPath { get; } = "api/Notes/GetAllNotes";
-        public string NoteCreatePath { get; } = "api/Notes/CreateNote";
-        public string NoteUpdatePath { get; } = "api/Notes/UpdateNote";
-        public string NoteDeletePath { get; } = "api/Notes/DeleteNote";
-        public string NoteSyncPath { get; } = "api/Notes/GetSyncNotes";
+        public RemoteNotesService(IHttpAuth accountService, INotesService notesService)
+        {
+            AccountService = accountService;
+            NotesService = notesService;
+        }
 
-        //private NotesService() { }
-        //private static NotesService Instance { set; get; }
-        //public List<NoteModel> Items { get; private set; }
-
-
-        //public static NotesService GetService()
-        //{
-        //    return Instance ?? (Instance = new NotesService());
-        //}
-
-        public IEnumerable<NoteModel> GetAllNotes()
+        public async Task<IEnumerable<NoteModel>> GetAllNotes()
         {
             var items = new List<NoteModel>();
-            using (var client = AccountService.GetService().GetAuthHttpClient())
+            HttpResponseMessage response;
+            //return items;
+            using (var client = AccountService.GetAuthHttpClient())
             {
+                response = client.GetAsync(Settings.Url + Settings.NoteGetAllNotesPath).Result;
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
                 try
                 {
-                    var response = client.GetAsync(Url + NoteGetAllNotesPath).Result;
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = response.Content.ReadAsStringAsync().Result;
-                        items = JsonConvert.DeserializeObject<List<NoteModel>>(content);
-                    }
+                    items = JsonConvert.DeserializeObject<List<NoteModel>>(content);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    Debug.WriteLine(@"				ERROR {0}", ex.Message);
+                    throw new InvalidCastException("Cannot deserialize list notes");
                 }
             }
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                throw new HttpRequestException("Not authorized");
+            }
+
             return items;
         }
 
-        public IEnumerable<NoteModel> GetSyncNotes(SyncModel syncModel)
+        public async Task<IEnumerable<NoteModel>> GetSyncNotes(SyncModel syncModel)
         {
             var items = new List<NoteModel>();
-            using (var client = AccountService.GetService().GetAuthHttpClient())
+            HttpResponseMessage response;
+
+            var json = JsonConvert.SerializeObject(syncModel);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using (var client = AccountService.GetAuthHttpClient())
+            {
+                response = await client.PostAsync(Settings.Url + Settings.NoteSyncPath, content);
+            }
+
+            if (response.IsSuccessStatusCode)
             {
                 try
                 {
-                    var json = JsonConvert.SerializeObject(syncModel);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                    var response = client.PostAsync(Url + NoteSyncPath, content).Result;
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var result = response.Content.ReadAsStringAsync().Result;
-                        items = JsonConvert.DeserializeObject<SyncModel>(result).NoteModels;
-                    }
+                    var result = await response.Content.ReadAsStringAsync();
+                    items = JsonConvert.DeserializeObject<SyncModel>(result).NoteModels;
                 }
-                catch (Exception ex)
+                catch(Exception)
                 {
-                    Debug.WriteLine(@"				ERROR {0}", ex.Message);
+                    throw new InvalidCastException("Cannot deserialize list notes");
                 }
             }
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                throw new HttpRequestException("Not authorized");
+            }
+
             return items;
         }
 
-        public bool CreateNote(NoteModel credentials)
+        public async Task<bool> CreateNote(NoteModel credentials)
         {
             HttpResponseMessage response;
 
-            using (var client = AccountService.GetService().GetAuthHttpClient())
-            {
-                var json = JsonConvert.SerializeObject(credentials);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var json = JsonConvert.SerializeObject(credentials);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                response = client.PostAsync(Url + NoteCreatePath, content).Result;
+            using (var client = AccountService.GetAuthHttpClient())
+            {
+                response = await client.PostAsync(Settings.Url + Settings.NoteCreatePath, content);
             }
 
-            var note = JsonConvert.DeserializeObject<NoteModel>(response.Content.ReadAsStringAsync().Result);
+            if (response.IsSuccessStatusCode)
+            {
+                var text = await response.Content.ReadAsStringAsync();
+                NoteModel tempModel;
 
-            App.Database.CreateNote(note);
+                try
+                {
+                    tempModel = JsonConvert.DeserializeObject<NoteModel>(text);
+                }
+                catch (Exception)
+                {
+                    throw new InvalidCastException("Cannot deserialize note");
+                }
+
+                if (!await NotesService.CreateNote(tempModel))
+                    throw new InvalidOperationException("Cannot create object in DB");
+            }
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                throw new HttpRequestException("Not authorized");
+            }
+
             return response.IsSuccessStatusCode;
         }
 
-        public bool UpdateNote(NoteModel credentials)
+        public async Task<bool> UpdateNote(NoteModel credentials)
         {
             HttpResponseMessage response;
 
-            using (var client = AccountService.GetService().GetAuthHttpClient())
+            var json = JsonConvert.SerializeObject(credentials);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using (var client = AccountService.GetAuthHttpClient())
             {
-                var json = JsonConvert.SerializeObject(credentials);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                response = client.PutAsync(Url + NoteUpdatePath, content).Result;
+                response = await client.PutAsync(Settings.Url + Settings.NoteUpdatePath, content);
             }
-            var note = JsonConvert.DeserializeObject<NoteModel>(response.Content.ReadAsStringAsync().Result);
 
-            App.Database.UpdateNote(note);
+            if (response.IsSuccessStatusCode)
+            {
+                var text = await response.Content.ReadAsStringAsync();
+                NoteModel tempModel;
+
+                try
+                {
+                    tempModel = JsonConvert.DeserializeObject<NoteModel>(text);
+                }
+                catch (Exception)
+                {
+                    throw new InvalidCastException("Cannot deserialize note");
+                }
+
+                if (!await NotesService.UpdateNote(tempModel))
+                    throw new InvalidOperationException("Cannot update object in DB");
+            }
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                throw new HttpRequestException("Not authorized");
+            }
+
             return response.IsSuccessStatusCode;
         }
 
-        public bool DeleteNote(NoteModel credentials)
+        public async Task<bool> DeleteNote(NoteModel credentials)
         {
             HttpResponseMessage response;
 
-            using (var client = AccountService.GetService().GetAuthHttpClient())
-            {
-                var json = JsonConvert.SerializeObject(credentials);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var json = JsonConvert.SerializeObject(credentials);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                response =  client.PostAsync(Url + NoteDeletePath, content).Result;
+            using (var client = AccountService.GetAuthHttpClient())
+            {
+                response = await client.PostAsync(Settings.Url + Settings.NoteDeletePath, content);
             }
 
-            App.Database.DeleteNote(credentials);
+            if (response.IsSuccessStatusCode)
+            {
+                if (!await NotesService.DeleteNote(credentials))
+                    throw new InvalidOperationException("Cannot delete object in DB");
+            }
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                throw new HttpRequestException("Not authorized");
+            }
+
             return response.IsSuccessStatusCode;
         }
     }

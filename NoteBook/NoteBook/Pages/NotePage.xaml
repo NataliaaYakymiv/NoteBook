@@ -7,16 +7,23 @@
       <Button Text = "Create" BorderWidth="1"  Clicked="OnCreate" HorizontalOptions="StartAndExpand"/>
       <Button x:Name="UpdateButton" Text = "Update" BorderWidth="1" Clicked="OnUpdate" IsEnabled="False" HorizontalOptions="CenterAndExpand"/>
       <Button x:Name="DeleteButton" Text = "Delete" BorderWidth="1" Clicked="OnDelete" IsEnabled="False" HorizontalOptions="EndAndExpand"/>
+      <Label HorizontalTextAlignment="Start">Remote</Label>
+      <Switch x:Name="RemoteLocalSwitch" IsToggled="False" HorizontalOptions="End" Toggled="Ontoggled"/>
+    </StackLayout>
+    <StackLayout  Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
       <Button x:Name="SyncButton" Text = "Sync" BorderWidth="1" Clicked="OnSync" HorizontalOptions="EndAndExpand"/>
+      <Button x:Name="RefreshButton" Text = "Refresh" BorderWidth="1" Clicked="OnRefresh" HorizontalOptions="EndAndExpand"/>
+      <Button x:Name="LogoutButton" Text = "Logout" BorderWidth="1" Clicked="OnLogout" HorizontalOptions="EndAndExpand"/>
+      <ActivityIndicator x:Name="ActivityIndicatorUdpateNote" HorizontalOptions="Center" IsVisible="False" IsRunning="False" />
     </StackLayout>
     <ScrollView VerticalOptions="FillAndExpand">
-      <ListView x:Name="notesList" ItemSelected="NotesList_ItemSelected">
+      <ListView x:Name="NotesList" ItemSelected="NotesList_ItemSelected">
         <ListView.ItemTemplate>
-          <DataTemplate>
+          <DataTemplate x:Name="DataTemplate">
             <ViewCell>
               <ViewCell.View>
                 <StackLayout Orientation="Horizontal" VerticalOptions="FillAndExpand">
-                  <Label Text="{Binding NoteName}" TextColor="Black" Font="Bold" FontSize="18" />
+                  <Label Text="{Binding NoteName}" Font="Bold" FontSize="18" />
                   <Label Text="{Binding NoteText}" FontSize="18" />
                 </StackLayout>
               </ViewCell.View>

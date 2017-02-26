@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NoteBook.Contracts;
@@ -10,79 +11,112 @@ using NoteBook.Models;
 
 namespace NoteBook.Services
 {
-    public class AccountService : IAccountService
+    public class AccountService : IAccountService, IHttpAuth
     {
-        public string Url { get; } = Constants.URL;
 
-        public string RegisterPath { get; } = "api/Account/register";
-        public string LoginPath { get; } = "api/Account/login";
-        public string ExternalLoginPath { get; } = "api/Account/externallogin";
-        public string ExternalLoginCallbackPath { get; } = "api/Account/externallogincallback";
-        public string ExternalLoginConfirmationPath { get; } = "api/Account/externalloginconfirmation";
-        public string ExternalLoginFailurePath { get; } = "api/Account/externalloginfailure";
-        public string ExternalLoginFinalPath { get; } = "api/account/ExternalLoginFinal";
-
-        public string AuthKey { get; private set; }
-
-        private AccountService() { }
-        private static AccountService Instance { set; get; }
-
-        public static AccountService GetService()
+        public async Task<bool> Login(AccountModels.LoginModel credentials)
         {
-            return Instance ?? (Instance = new AccountService());
-        }
+            HttpResponseMessage result;
 
-        public async Task<HttpResponseMessage> Login(AccountModels.LoginModel credentials)
-        {
+            var json = JsonConvert.SerializeObject(credentials);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
             using (var client = new HttpClient())
             {
-                var json = JsonConvert.SerializeObject(credentials);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                var result = await client.PostAsync(Url + LoginPath, content).ConfigureAwait(false);
-
-                AuthKey = result.Headers.GetValues("Set-Cookie").First(x => x.StartsWith(".ASPXAUTH"));
-
-                return result;
+                result = await client.PostAsync(Settings.Url + Settings.LoginPath, content).ConfigureAwait(false);
             }
-        }
 
-        public async Task<HttpResponseMessage> ExternalLogin(string url)
-        {
-            using (var client = new HttpClient())
+            if (result.IsSuccessStatusCode)
             {
-                var result = await client.GetAsync(url).ConfigureAwait(false);
-
-                AuthKey = result.Headers.GetValues("Set-Cookie").First(x => x.StartsWith(".ASPXAUTH"));
-
-                return result;
+                UserSettings.UserName = credentials.UserName;
+                var aspxauth = result.Headers.GetValues("Set-Cookie").First(x => x.StartsWith(".ASPXAUTH"));
+                SetAuthKey(aspxauth);
             }
+
+            return result.IsSuccessStatusCode;
         }
 
-        public async Task<HttpResponseMessage> Register(AccountModels.RegisterModel credentials)
+        public async Task<bool> ExternalLogin(string url)
+        {
+            HttpResponseMessage result;
+
+            using (var client = new HttpClient())
+            {
+                result = await client.GetAsync(url).ConfigureAwait(false);
+            }
+
+            if (result.IsSuccessStatusCode)
+            {
+                UserSettings.UserName = result.Content.ReadAsStringAsync().Result;
+                var aspxauth  = result.Headers.GetValues("Set-Cookie").First(x => x.StartsWith(".ASPXAUTH"));
+                SetAuthKey(aspxauth);
+            }
+
+            return result.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> Register(AccountModels.RegisterModel credentials)
+        {
+            HttpResponseMessage result;
+
+            var json = JsonConvert.SerializeObject(credentials);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using (var client = new HttpClient())
+            {
+                result = await client.PostAsync(Settings.Url + Settings.RegisterPath, content).ConfigureAwait(false);
+            }
+
+            return result.IsSuccessStatusCode;
+        }
+
+        public async Task Logout()
         {
             using (var client = new HttpClient())
             {
-                var json = JsonConvert.SerializeObject(credentials);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                var result = await client.PostAsync(Url + RegisterPath, content).ConfigureAwait(false);
-
-                return result;
+                 await client.GetAsync(Settings.Url + Settings.LogoutPath).ConfigureAwait(false);
             }
         }
 
         public HttpClient GetAuthHttpClient()
         {
-            HttpClientHandler handler = new HttpClientHandler();
-            handler.CookieContainer = new CookieContainer();
-            if (AuthKey != null || AuthKey != string.Empty)
+            var handler = new HttpClientHandler {CookieContainer = new CookieContainer()};
+
+            if (!string.IsNullOrEmpty(UserSettings.AuthKey) && !string.IsNullOrEmpty(UserSettings.AuthValue))
             {
-                var name = AuthKey.Split('=')[0];
-                var value = AuthKey.Split('=')[1].Split(';')[0];
-                handler.CookieContainer.Add(new Uri(Url), new Cookie(name, value));
+                handler.CookieContainer.Add(new Uri(Settings.Url), new Cookie(UserSettings.AuthKey, UserSettings.AuthValue));
             }
+
             return new HttpClient(handler);
+        }
+
+        private static void SetAuthKey(string aspxauth)
+        {
+            if (string.IsNullOrEmpty(aspxauth)) return;
+
+            UserSettings.AuthKey = aspxauth.Split('=')[0];
+            UserSettings.AuthValue = aspxauth.Split('=')[1].Split(';')[0];
+            string time = Regex.Match(aspxauth, @"(?<=expires=)(.*)(?= GMT;)").ToString();
+            if (!string.IsNullOrEmpty(time))
+            {
+                var myDate = DateTime.ParseExact(time, "ddd, dd-MMM-yyyy HH:mm:ss",
+                    System.Globalization.CultureInfo.InvariantCulture).AddHours(2);
+                UserSettings.Expiress = myDate.ToString();
+            }
+            else
+            {
+                var tempTime = DateTime.Now.AddDays(7);
+                UserSettings.Expiress = tempTime.ToString();
+            }
+        }
+
+        public bool IsLoged()
+        {
+            if (!string.IsNullOrEmpty(UserSettings.Expiress))
+            {
+                return DateTime.Now < Convert.ToDateTime(UserSettings.Expiress);
+            }
+            return false;
         }
     }
 }

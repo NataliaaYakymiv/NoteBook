@@ -13,6 +13,7 @@ namespace NoteBook.Services
     public class NoteService : INotesService 
     {
         readonly SQLiteConnection _database;
+
         public NoteService(string filename)
         {
             string databasePath = DependencyService.Get<ISQLite>().GetDatabasePath(filename);
@@ -21,29 +22,39 @@ namespace NoteBook.Services
         }
 
 
-        public IEnumerable<NoteModel> GetAllNotes()
+        public Task<IEnumerable<NoteModel>> GetAllNotes()
         {
-            return _database.Table<NoteModel>().ToList();
+            Task<IEnumerable<NoteModel>> task = new Task<IEnumerable<NoteModel>>(() => _database.Table<NoteModel>());
+            task.Start();
+            return task;
         }
 
-        public IEnumerable<NoteModel> GetSyncNotes(SyncModel syncModel)
+        public Task<IEnumerable<NoteModel>> GetSyncNotes(SyncModel syncModel)
         {
-            return GetAllNotes().Where(item => Convert.ToDateTime(item.Create) > syncModel.LastModify || Convert.ToDateTime(item.Update) > syncModel.LastModify || Convert.ToDateTime(item.Delete) > syncModel.LastModify).ToList();
+            Task<IEnumerable<NoteModel>> task = new Task<IEnumerable<NoteModel>>(() => GetAllNotes().Result.Where(item => Convert.ToDateTime(item.Create) > syncModel.LastModify || Convert.ToDateTime(item.Update) > syncModel.LastModify || Convert.ToDateTime(item.Delete) > syncModel.LastModify));
+            task.Start();
+            return task;
         }
 
-        public bool CreateNote(NoteModel note)
+        public Task<bool> CreateNote(NoteModel note)
         {
-            return _database.Insert(note) > 0;
+            Task<bool> task = new Task<bool>(() => _database.Insert(note) > 0);
+            task.Start();
+            return task;
         }
 
-        public bool UpdateNote(NoteModel note)
+        public Task<bool> UpdateNote(NoteModel note)
         {
-            return _database.Update(note) > 0;
+            Task<bool> task = new Task<bool>(() => _database.Update(note) > 0);
+            task.Start();
+            return task;
         }
 
-        public bool DeleteNote(NoteModel note)
+        public Task<bool> DeleteNote(NoteModel note)
         {
-            return _database.Delete<NoteModel>(note.NoteId) > 0;
+            Task<bool> task = new Task<bool>(() => _database.Delete<NoteModel>(note.NoteId) > 0);
+            task.Start();
+            return task;
         }
     }
 }

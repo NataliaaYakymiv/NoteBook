@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NoteBook.Contracts;
 using NoteBook.Services;
 using Xamarin.Forms;
 
@@ -9,48 +10,68 @@ namespace NoteBook.Pages
 {
     public partial class NotePage : ContentPage
     {
-        protected override void OnAppearing()
-        {
-            Notes = App.NotesItemManager.NoteService.GetAllNotes().ToList();
-            notesList.ItemsSource = Notes;
+        public INotesService NotesService { get; set; }
+        public IAccountService AccountService { get; set; }
 
-            UpdateButton.IsEnabled = DeleteButton.IsEnabled = false;
+        public CreateNotePage CreateNotePage { get; private set; }
+        public UpdateNotePage UpdateNotePage { get; private set; }
 
-            base.OnAppearing();
-        }
+        public List<NoteModel> Notes { get; set; }
 
-        public List<NoteModel> Notes
-        {
-            get;
-            set;
-        }
 
         public NotePage()
         {
             InitializeComponent();
-            App.NotesItemManager.time = DateTime.Now;
-
+            Title = "Note page";
         }
 
+        public void SetService(INotesService notesService)
+        {
+            NotesService = notesService;
+
+            CreateNotePage = new CreateNotePage(NotesService);
+            UpdateNotePage = new UpdateNotePage(NotesService);
+
+            OnAppearing();
+        }
+
+        public void SetAuthService(IAccountService accountService)
+        {
+            AccountService = accountService;
+        }
+
+        protected sealed override void OnAppearing()
+        {
+            if (NotesService != null)
+            {
+                Notes = NotesService.GetAllNotes().Result.ToList();
+                NotesList.ItemsSource = Notes;
+
+                UpdateButton.IsEnabled = DeleteButton.IsEnabled = false;
+            }
+            base.OnAppearing();
+        }
 
         private void NotesList_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
+
             UpdateButton.IsEnabled = DeleteButton.IsEnabled = true;
         }
 
         private async void OnCreate(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new CreateNotePage());
+            await Navigation.PushAsync(CreateNotePage);
         }
 
         private async void OnUpdate(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new UpdateNotePage((NoteModel)notesList.SelectedItem));
+            UpdateNotePage.SetNoteModel((NoteModel)NotesList.SelectedItem);
+            await Navigation.PushAsync(UpdateNotePage);
         }
 
-        private void OnDelete(object sender, EventArgs e)
+        private async void OnDelete(object sender, EventArgs e)
         {
-            App.NotesItemManager.NoteService.DeleteNote((NoteModel)notesList.SelectedItem);
+            await NotesService.DeleteNote((NoteModel)NotesList.SelectedItem);
             OnAppearing();
         }
 
@@ -58,6 +79,31 @@ namespace NoteBook.Pages
         {
             App.NotesItemManager.Sync();
             OnAppearing();
+        }
+
+        private void Ontoggled(object sender, ToggledEventArgs e)
+        {
+            if (e.Value)
+            {
+                SetService(new RemoteNotesService(new AccountService(), new NoteService(Settings.DatabaseName)));
+            }
+            else
+            {
+                SetService(new LocalNotesService(Settings.DatabaseName));
+            }
+            
+        }
+
+        private async void OnLogout(object sender, EventArgs e)
+        {
+            UserSettings.AuthValue = string.Empty;
+            await AccountService.Logout();
+            await Navigation.PopToRootAsync();
+        }
+
+        private void OnRefresh(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

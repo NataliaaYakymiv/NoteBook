@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+using NoteBook.Contracts;
 using NoteBook.Services;
 using Xamarin.Forms;
 
@@ -11,10 +7,16 @@ namespace NoteBook.Pages
 {
     public partial class ExternalLoginPage : ContentPage
     {
-        public ExternalLoginPage(string provider)
+        public IAccountService AccountService { get; private set; }
+        public INotesService NotesService { get; private set; }
+
+        public ExternalLoginPage(string provider, IAccountService accountService, INotesService notesService)
         {
+            AccountService = accountService;
+            NotesService = notesService;
+
             InitializeComponent();
-            var url = AccountService.GetService().Url + AccountService.GetService().ExternalLoginPath + "?provider=" +
+            var url = Settings.Url + Settings.ExternalLoginPath + "?provider=" +
                       provider;
             WebView.Source = new UrlWebViewSource()
             {
@@ -33,8 +35,7 @@ namespace NoteBook.Pages
             {
 
                 if (
-                    e.Url.StartsWith(AccountService.GetService().Url +
-                                     AccountService.GetService().ExternalLoginFailurePath))
+                    e.Url.StartsWith(Settings.Url + Settings.ExternalLoginFailurePath))
                 {
                     e.Cancel = true;
                     StateLabel.Text = "Login Failure";
@@ -43,18 +44,19 @@ namespace NoteBook.Pages
 
                 }
                 if (
-                    e.Url.StartsWith(AccountService.GetService().Url +
-                                     AccountService.GetService().ExternalLoginFinalPath))
+                    e.Url.StartsWith(Settings.Url + Settings.ExternalLoginFinalPath))
                 {
                     WebView.IsVisible = false;
-                    var result = await AccountService.GetService().ExternalLogin(e.Url);
-                    if (result.IsSuccessStatusCode)
+                    var result = await AccountService.ExternalLogin(e.Url);
+                    if (result)
                     {
-                        await Navigation.PushAsync(new NotePage());
+                        var page = new NotePage();
+                        await Navigation.PushAsync(page);
+                        page.SetService(NotesService);
+                        page.SetAuthService(new AccountService());
                     }
                     else
                     {
-                        StateLabel.Text = await result.Content.ReadAsStringAsync();
                         StateLabel.Text = "Login Failure";
                         BackBtn.IsVisible = true;
                     }

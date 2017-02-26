@@ -7,13 +7,24 @@
     <Label x:Name="TextLabel" HorizontalTextAlignment="Center" FontSize="Large">Sign in</Label>
       <Entry x:Name="LoginEntry" Placeholder = "Login" Text="qwerty"/>
       <Entry x:Name="PasswordEntry"  Placeholder = "Password" IsPassword ="True" Text="qwerty"/>
-      <Button Text ="Sign in" FontSize="Medium" BorderWidth="1" Clicked="OnLogin"/>
-    <Label x:Name="StateLabel" FontSize="Large" HorizontalTextAlignment="Center"></Label>
-    <StackLayout VerticalOptions="End">
-      <Button Text ="Facebook" FontSize="Medium" BorderWidth="1" Clicked="OnFacebookLogin" BackgroundColor="#3b579d" TextColor="White"/>
-      <Button Text ="Google" FontSize="Medium" BorderWidth="1" Clicked="OnGoogleLogin" BackgroundColor="#cf4332" TextColor="White"/>
-      <Button Text ="LinkedIn" FontSize="Medium" BorderWidth="1" Clicked="OnLinkedinLogin" BackgroundColor="#006599" TextColor="White"/>
+    <StackLayout Orientation="Horizontal">
+      <Button x:Name="LoginBtn" Text ="Sign in" FontSize="Medium" BorderWidth="1" HorizontalOptions="Start" Clicked="OnLogin"/>
+      <Label FontSize="Large" VerticalOptions="Center" HorizontalOptions="End">Remember me</Label>
+      <Switch x:Name="RememberMe" IsToggled="False" HorizontalOptions="End"/>
+    <ActivityIndicator x:Name="ActivityIndicatorLogin" HorizontalOptions="Center" IsVisible="False" IsRunning="False" />
     </StackLayout>
+    <StackLayout Orientation="Horizontal">
+      </StackLayout>
+    <Label x:Name="StateLabel" FontSize="Large" HorizontalTextAlignment="Center"></Label>
+    <Label FontSize="Large" HorizontalTextAlignment="Center">- OR -</Label>
+    <StackLayout HorizontalOptions="Center" Orientation="Horizontal" VerticalOptions="End">
+      <Button HorizontalOptions="Start" Text ="Facebook" FontSize="Medium" BorderWidth="1" Clicked="OnFacebookLogin" BackgroundColor="#3b579d" TextColor="White"/>
+      <Button HorizontalOptions="Center" Text ="Google" FontSize="Medium" BorderWidth="1" Clicked="OnGoogleLogin" BackgroundColor="#cf4332" TextColor="White"/>
+      <Button HorizontalOptions="End" Text ="LinkedIn" FontSize="Medium" BorderWidth="1" Clicked="OnLinkedinLogin" BackgroundColor="#006599" TextColor="White"/>
+    </StackLayout>
+    <Label FontSize="Large" HorizontalTextAlignment="Center">- OR -</Label>
+    <Label FontSize="Large" HorizontalTextAlignment="Center">Do you not have account?</Label>
+    <Button Text ="Sign up" FontSize="Medium" BorderWidth="1" Clicked="OnRegister"/>
   </StackLayout>
   
 

@@ -6,7 +6,10 @@ namespace NoteBook.Contracts
 {
     public interface IAccountService
     {
-        Task<HttpResponseMessage> Login(AccountModels.LoginModel credentials);
-        Task<HttpResponseMessage> Register(AccountModels.RegisterModel credentials);
+        Task<bool> Login(AccountModels.LoginModel credentials);
+        Task<bool> ExternalLogin(string url);
+        Task<bool> Register(AccountModels.RegisterModel credentials);
+        Task Logout();
+        bool IsLoged();
     }
 }

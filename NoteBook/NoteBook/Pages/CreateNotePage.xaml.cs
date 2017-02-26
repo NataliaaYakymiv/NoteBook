@@ -1,46 +1,70 @@
 ﻿using NoteBook.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NoteBook.Services;
+using System.Net.Http;
+using NoteBook.Contracts;
 using Xamarin.Forms;
 
 namespace NoteBook.Pages
 {
     public partial class CreateNotePage : ContentPage
     {
-        public CreateNotePage()
+        public INotesService NotesService { get; private set; }
+
+        private CreateNotePage()
         {
+            Title = "Create note";
             InitializeComponent();
+            StateLabel.Text = string.Empty;
         }
 
-        public CreateNotePage(NoteModel item)
+        public CreateNotePage(INotesService notesService) : this()
         {
-            NoteNameEntry.Text = item.NoteName;
-            NoteTextEntry.Text = item.NoteText;
-            InitializeComponent();
+            NotesService = notesService;
         }
 
         public async void OnCreateNote(object sender, EventArgs e)
         {
-            NoteModel note = new NoteModel();
-            note.NoteName = NoteNameEntry.Text;
-            note.NoteText = NoteTextEntry.Text;
-
-            var result = App.NotesItemManager.NoteService.CreateNote(note);
-
-            if (result)
+            var note = new NoteModel
             {
-                NoteNameEntry.Text = string.Empty;
-                NoteTextEntry.Text = string.Empty;
+                NoteName = NoteNameEntry.Text,
+                NoteText = NoteTextEntry.Text
+            };
 
-                await Navigation.PopAsync();
+            try
+            {
+                ActivityIndicatorCreateNote.IsRunning = true;
+                ActivityIndicatorCreateNote.IsVisible = true;
+                CreateBtn.IsEnabled = false;
+
+                var result = await NotesService.CreateNote(note);
+
+                ActivityIndicatorCreateNote.IsRunning = false;
+                ActivityIndicatorCreateNote.IsVisible = false;
+                CreateBtn.IsEnabled = true;
+
+                if (result)
+                {
+                    NoteNameEntry.Text = string.Empty;
+                    NoteTextEntry.Text = string.Empty;
+
+                    await Navigation.PopAsync();
+                }
+                else
+                {
+                    StateLabel.Text = "Something wrong, try again";
+                }
             }
-            else
+            catch (HttpRequestException)
             {
-                StateLabel.Text = "Something wrong, try again";
+                await Navigation.PopToRootAsync();
+            }
+            catch (InvalidOperationException exception)
+            {
+                StateLabel.Text = exception.Message;
+            }
+            catch (InvalidCastException exception)
+            {
+                StateLabel.Text = exception.Message;
             }
         }
     }

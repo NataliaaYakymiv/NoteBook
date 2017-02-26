@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System;
+using System.Web.Http;
 using System.Web.Security;
 using DotNetOpenAuth.AspNet;
 using Microsoft.Web.WebPages.OAuth;
@@ -27,7 +28,18 @@ namespace WebService.Controllers
         {
             IHttpActionResult result;
 
-            if (WebSecurity.Login(model.UserName, model.Password, persistCookie: true))
+            var isLoged = false;
+
+            try
+            {
+                isLoged = WebSecurity.Login(model.UserName, model.Password, persistCookie: model.RememberMe);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+
+            if (isLoged)
             {
                 result = Ok();
             }
@@ -156,7 +168,8 @@ namespace WebService.Controllers
             IHttpActionResult result;
             if (OAuthWebSecurity.Login(provider, providerUserId, createPersistentCookie: false))
             {
-                result = Ok();
+                var username = OAuthWebSecurity.GetUserName(provider, providerUserId);
+                result = Ok(username);
             }
             else
             {

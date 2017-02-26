@@ -7,14 +7,14 @@ namespace NoteBook.Contracts
 {
     public interface INotesService
     {
-        IEnumerable<NoteModel> GetAllNotes();
+        Task<IEnumerable<NoteModel>> GetAllNotes();
 
-        IEnumerable<NoteModel> GetSyncNotes(SyncModel syncModel);
+        Task<IEnumerable<NoteModel>> GetSyncNotes(SyncModel syncModel);
 
-        bool CreateNote(NoteModel credentials);
+        Task<bool> CreateNote(NoteModel credentials);
 
-        bool UpdateNote(NoteModel credentials);
+        Task<bool> UpdateNote(NoteModel credentials);
 
-        bool DeleteNote(NoteModel credentials);
+        Task<bool> DeleteNote(NoteModel credentials);
     }
 }
