@@ -18,7 +18,6 @@ namespace NoteBook.Pages
 
         public List<NoteModel> Notes { get; set; }
 
-
         public NotePage()
         {
             InitializeComponent();
@@ -28,10 +27,8 @@ namespace NoteBook.Pages
         public void SetService(INotesService notesService)
         {
             NotesService = notesService;
-
             CreateNotePage = new CreateNotePage(NotesService);
             UpdateNotePage = new UpdateNotePage(NotesService);
-
             OnAppearing();
         }
 
@@ -54,19 +51,18 @@ namespace NoteBook.Pages
 
         private void NotesList_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
-
             UpdateButton.IsEnabled = DeleteButton.IsEnabled = true;
         }
 
         private async void OnCreate(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(CreateNotePage);
+            await Navigation.PushAsync(CreateNotePage, true);
         }
 
         private async void OnUpdate(object sender, EventArgs e)
         {
             UpdateNotePage.SetNoteModel((NoteModel)NotesList.SelectedItem);
-            await Navigation.PushAsync(UpdateNotePage);
+            await Navigation.PushAsync(UpdateNotePage, true);
         }
 
         private async void OnDelete(object sender, EventArgs e)
@@ -86,13 +82,16 @@ namespace NoteBook.Pages
             if (e.Value)
             {
                 SetService(new RemoteNotesService(new AccountService(), new NoteService(Settings.DatabaseName)));
+                RemoteLocalSwitchLabel.Text = "REMOTE";
             }
             else
             {
                 SetService(new LocalNotesService(Settings.DatabaseName));
+                RemoteLocalSwitchLabel.Text = "LOCAL";
             }
-            
+            OnAppearing();
         }
+
 
         private async void OnLogout(object sender, EventArgs e)
         {
