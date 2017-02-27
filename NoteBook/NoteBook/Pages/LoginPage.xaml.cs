@@ -30,12 +30,12 @@ namespace NoteBook.Pages
             }
         }
 
-        public LoginPage(string login, string password, string state, IAccountService accountService, INotesService notesService) : this(accountService, notesService)
+        public LoginPage(string login, string password, string status, IAccountService accountService, INotesService notesService) : this(accountService, notesService)
         {
 
             LoginEntry.Text = login;
             PasswordEntry.Text = password;
-            StateLabel.Text = state;
+            StatusLabel.Text = status;
         }
 
         private async void OnLogin(object sender, EventArgs e)
@@ -49,19 +49,39 @@ namespace NoteBook.Pages
                     RememberMe = !RememberMe.IsToggled
                 };
 
+                #region diasblingViews
+                PasswordEntry.IsEnabled = false;
+                LoginEntry.IsEnabled = false;
                 LoginBtn.IsEnabled = false;
+                RegisterButton.IsEnabled = false;
+                FacebookButton.IsEnabled = false;
+                GoogleButton.IsEnabled = false;
+                LinkedInButton.IsEnabled = false;
+                RememberMe.IsVisible = false;
+                RememberMeLabel.IsVisible = false;
                 ActivityIndicatorLogin.IsRunning = true;
                 ActivityIndicatorLogin.IsVisible = true;
+                #endregion
 
                 var response = await AccountService.Login(credentials);
 
+                #region enablingViews
                 ActivityIndicatorLogin.IsRunning = false;
                 ActivityIndicatorLogin.IsVisible = false;
+                FacebookButton.IsEnabled = true;
+                GoogleButton.IsEnabled = true;
+                LinkedInButton.IsEnabled = true;
+                RegisterButton.IsEnabled = true;
+                RememberMe.IsVisible = true;
+                RememberMeLabel.IsVisible = true;
                 LoginBtn.IsEnabled = true;
+                PasswordEntry.IsEnabled = true;
+                LoginEntry.IsEnabled = true;
+                #endregion
 
                 if (!response)
                 {
-                    StateLabel.Text = "User name or password is not valid";
+                    StatusLabel.Text = "User name or password is not valid";
                     PasswordEntry.Text = string.Empty;
                 }
                 else
@@ -74,7 +94,7 @@ namespace NoteBook.Pages
             }
             else
             {
-                StateLabel.Text = "Fill in all fields";
+                StatusLabel.Text = "Fill in all fields";
             }
 
         }
