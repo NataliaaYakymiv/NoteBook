@@ -2,14 +2,14 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NoteBook.Pages.NotePage">
-  
+
   <ContentPage.ToolbarItems>
     <ToolbarItem Name="LOGOUT" Clicked="OnLogout"></ToolbarItem>
   </ContentPage.ToolbarItems>
-  
+
   <StackLayout >
     <Grid x:Name="ButtonsGroup">
-      
+
       <Grid.RowDefinitions>
         <RowDefinition Height="*" />
         <RowDefinition Height="*" />
@@ -32,9 +32,9 @@
         <Label x:Name="RemoteLocalSwitchLabel" HorizontalOptions="StartAndExpand" VerticalOptions="Center">LOCAL</Label>
         <Switch x:Name="RemoteLocalSwitch" IsToggled="False" HorizontalOptions="EndAndExpand" Toggled="Ontoggled" VerticalOptions="Center"/>
       </StackLayout>
-      
+
     </Grid>
-    
+
     <ActivityIndicator x:Name="ActivityIndicatorUdpateNote" VerticalOptions="Center" HorizontalOptions="Center" IsVisible="False" IsRunning="False" />
 
     <ScrollView VerticalOptions="FillAndExpand">
@@ -43,17 +43,27 @@
           <DataTemplate x:Name="DataTemplate">
             <ViewCell>
               <ViewCell.View>
-                <StackLayout Orientation="Horizontal" VerticalOptions="FillAndExpand">
-                  <Label Text="{Binding NoteName}" Font="Bold" FontSize="18" />
-                  <Label Text="{Binding NoteText}" FontSize="18" />
-                </StackLayout>
+                <Grid Padding="5,5">
+                  
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                  </Grid.RowDefinitions>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+
+                  <Label VerticalOptions="Center" HorizontalOptions="StartAndExpand" Grid.Row="0" Grid.Column="0" Text="{Binding NoteName}" Font="Bold" FontSize="Large" />
+                  <Label VerticalOptions="Center" HorizontalOptions="StartAndExpand" Grid.Row="0" Grid.Column="1" Text="{Binding NoteText}" FontSize="Large" />
+                  
+                </Grid>
               </ViewCell.View>
             </ViewCell>
           </DataTemplate>
         </ListView.ItemTemplate>
       </ListView>
     </ScrollView>
-    
+
   </StackLayout>
-  
+
 </ContentPage>
