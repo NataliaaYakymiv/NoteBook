@@ -102,7 +102,7 @@ namespace NoteBook.Pages
 
         private void OnRefresh(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            OnAppearing();
         }
     }
 }
