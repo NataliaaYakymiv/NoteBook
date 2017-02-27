@@ -33,38 +33,50 @@ namespace NoteBook.Pages
                         Password = PasswordEntry.Text
                     };
 
-
+                    #region diasblingViews
+                    LoginEntry.IsEnabled = false;
+                    PasswordEntry.IsEnabled = false;
+                    RePasswordEntry.IsEnabled = false;
+                    RegisterButton.IsVisible = false;
                     ActivityIndicatorRegister.IsRunning = true;
                     ActivityIndicatorRegister.IsVisible = true;
+                    #endregion
 
                     var result = await AccountService.Register(credentials);
-
+                    
+                    #region enablingViews
                     ActivityIndicatorRegister.IsRunning = false;
                     ActivityIndicatorRegister.IsVisible = false;
+                    RegisterButton.IsVisible = true;
+                    RePasswordEntry.IsEnabled = true;
+                    PasswordEntry.IsEnabled = true;
+                    LoginEntry.IsEnabled = true;
+                    #endregion
+
 
                     if (!result)
                     {
                         PasswordEntry.Text = string.Empty;
-                        StateLabel.Text = "User name already exist";
+                        StatusLabel.Text = "User name already exist";
                     }
                     else
                     {
                         var page = new LoginPage(credentials.UserName, credentials.Password, "You successfully registered. Now sing in", AccountService, new LocalNotesService(Settings.DatabaseName));
 
                         await Navigation.PushAsync(page);
-                        
+
                     }
                 }
                 else
                 {
-                    StateLabel.Text = "Repeat password entered is not correct";
+                    StatusLabel.Text = "Repeat password entered is not correct";
                 }
             }
             else
             {
-                StateLabel.Text = "Fill in all fields";
+                StatusLabel.Text = "Fill in all fields";
             }
-            
+
         }
     }
 }
