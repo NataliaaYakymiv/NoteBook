@@ -17,10 +17,13 @@ namespace NoteBook.Pages
             InitializeComponent();
         }
 
-        public LoginPage(IAccountService accountService, INotesService notesService) : this()
+        public LoginPage(IAccountService accountService, INotesService notesService)
         {
+            InitializeComponent();
+
             AccountService = accountService;
             NotesService = notesService;
+
             if (AccountService.IsLoged())
             {
                 var page = new NotePage();
@@ -66,6 +69,18 @@ namespace NoteBook.Pages
                 }
                 else
                 {
+                    LoginBtn.IsEnabled = false;
+                    ActivityIndicatorLogin.IsRunning = true;
+                    ActivityIndicatorLogin.IsVisible = true;
+
+                    App.NotesItemManager.ClearLocal();
+
+                    ActivityIndicatorLogin.IsRunning = false;
+                    ActivityIndicatorLogin.IsVisible = false;
+                    LoginBtn.IsEnabled = true;
+
+                    UserSettings.SyncDate = DateTime.MinValue.ToString();
+
                     var page = new NotePage();
                     await Navigation.PushAsync(page);
                     page.SetService(NotesService);

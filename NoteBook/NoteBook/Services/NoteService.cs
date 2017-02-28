@@ -24,14 +24,22 @@ namespace NoteBook.Services
 
         public Task<IEnumerable<NoteModel>> GetAllNotes()
         {
+            Task<IEnumerable<NoteModel>> task = new Task<IEnumerable<NoteModel>>(() => _database.Table<NoteModel>().Where(item => item.Delete == null));
+            task.Start();
+            return task;
+        }
+
+        public Task<IEnumerable<NoteModel>> Get()
+        {
             Task<IEnumerable<NoteModel>> task = new Task<IEnumerable<NoteModel>>(() => _database.Table<NoteModel>());
             task.Start();
             return task;
         }
 
-        public Task<IEnumerable<NoteModel>> GetSyncNotes(SyncModel syncModel)
+        public Task<IEnumerable<NoteModel>> GetSyncNotes(DateTime time)
         {
-            Task<IEnumerable<NoteModel>> task = new Task<IEnumerable<NoteModel>>(() => GetAllNotes().Result.Where(item => Convert.ToDateTime(item.Create) > syncModel.LastModify || Convert.ToDateTime(item.Update) > syncModel.LastModify || Convert.ToDateTime(item.Delete) > syncModel.LastModify));
+            Task<IEnumerable<NoteModel>> task = new Task<IEnumerable<NoteModel>>(() => _database.Table<NoteModel>().AsEnumerable()
+                    .Where(item => Convert.ToDateTime(item.Create) > time || Convert.ToDateTime(item.Update) > time || Convert.ToDateTime(item.Delete) > time));
             task.Start();
             return task;
         }

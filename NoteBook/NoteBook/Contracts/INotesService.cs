@@ -1,4 +1,5 @@
-﻿using NoteBook.Models;
+﻿using System;
+using NoteBook.Models;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace NoteBook.Contracts
     {
         Task<IEnumerable<NoteModel>> GetAllNotes();
 
-        Task<IEnumerable<NoteModel>> GetSyncNotes(SyncModel syncModel);
+        Task<IEnumerable<NoteModel>> GetSyncNotes(DateTime time);
 
         Task<bool> CreateNote(NoteModel credentials);
 

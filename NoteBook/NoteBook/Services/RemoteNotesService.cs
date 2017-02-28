@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -51,9 +52,14 @@ namespace NoteBook.Services
             return items;
         }
 
-        public async Task<IEnumerable<NoteModel>> GetSyncNotes(SyncModel syncModel)
+        public Task<IEnumerable<NoteModel>> GetSyncNotes(DateTime time)
         {
-            var items = new List<NoteModel>();
+            var syncModel = new SyncModel {LastModify = time };
+            var notes = NotesService.GetSyncNotes(time).Result.ToList() ?? new List<NoteModel>();
+
+
+            syncModel.NoteModels = notes;
+
             HttpResponseMessage response;
 
             var json = JsonConvert.SerializeObject(syncModel);
@@ -61,15 +67,34 @@ namespace NoteBook.Services
 
             using (var client = AccountService.GetAuthHttpClient())
             {
-                response = await client.PostAsync(Settings.Url + Settings.NoteSyncPath, content);
+                response = client.PostAsync(Settings.Url + Settings.NoteSyncPath, content).Result;
             }
 
             if (response.IsSuccessStatusCode)
             {
                 try
                 {
-                    var result = await response.Content.ReadAsStringAsync();
-                    items = JsonConvert.DeserializeObject<SyncModel>(result).NoteModels;
+                    var result = response.Content.ReadAsStringAsync().Result;
+                    var items = JsonConvert.DeserializeObject<SyncModel>(result).NoteModels;
+
+                    UserSettings.SyncDate = JsonConvert.DeserializeObject<SyncModel>(result).LastModify.ToString();
+                    foreach (var t in notes)
+                    {
+                        NotesService.DeleteNote(t);
+                    }
+                    foreach (var item in items)
+                    {
+                        try
+                        {
+                            NotesService.CreateNote(item);
+                        }
+                        catch (Exception)
+                        {
+                            NotesService.UpdateNote(item);
+                        }
+                    }
+
+
                 }
                 catch(Exception)
                 {
@@ -80,8 +105,8 @@ namespace NoteBook.Services
             {
                 throw new HttpRequestException("Not authorized");
             }
-
-            return items;
+           
+            return NotesService.GetAllNotes();
         }
 
         public async Task<bool> CreateNote(NoteModel credentials)
@@ -109,14 +134,15 @@ namespace NoteBook.Services
                 {
                     throw new InvalidCastException("Cannot deserialize note");
                 }
-
-                if (!await NotesService.CreateNote(tempModel))
+                if (!NotesService.CreateNote(tempModel).Result)
                     throw new InvalidOperationException("Cannot create object in DB");
+                UserSettings.SyncDate = Convert.ToDateTime(tempModel.Create).AddSeconds(1).ToString();
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 throw new HttpRequestException("Not authorized");
             }
+
 
             return response.IsSuccessStatusCode;
         }
@@ -147,8 +173,9 @@ namespace NoteBook.Services
                     throw new InvalidCastException("Cannot deserialize note");
                 }
 
-                if (!await NotesService.UpdateNote(tempModel))
-                    throw new InvalidOperationException("Cannot update object in DB");
+                if (!NotesService.UpdateNote(tempModel).Result)
+                    await NotesService.CreateNote(tempModel);
+                UserSettings.SyncDate = Convert.ToDateTime(tempModel.Update).AddSeconds(1).ToString();
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -172,8 +199,8 @@ namespace NoteBook.Services
 
             if (response.IsSuccessStatusCode)
             {
-                if (!await NotesService.DeleteNote(credentials))
-                    throw new InvalidOperationException("Cannot delete object in DB");
+                await NotesService.DeleteNote(credentials);
+                UserSettings.SyncDate = DateTime.Now.ToString();
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)
             {

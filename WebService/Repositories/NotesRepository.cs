@@ -123,6 +123,7 @@ namespace WebService.Repositories
             item.UserId = idUser;
             _db.NoteModels.Add(item);
             _db.SaveChanges();
+
         }
 
         public void Update(int idUser, NoteModel note)
@@ -155,7 +156,11 @@ namespace WebService.Repositories
 
         public void Delete(int idUser, string idNote)
         {
-            _db.NoteModels.Remove(Find(idUser, idNote));
+            var note = Find(idUser, idNote);
+            if (note!=null)
+            {
+                _db.NoteModels.Remove(note);
+            }
             _db.SaveChanges();
         }
 

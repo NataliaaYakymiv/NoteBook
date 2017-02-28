@@ -3,7 +3,7 @@
     public class Settings
     {
 
-        public static string Url { get; } = "http://52bf02c0.ngrok.io/";
+        public static string Url { get; } = "http://7e565f60.ngrok.io/";
 
         public static string DatabaseName { get; } = "notes1.db";
 

@@ -44,7 +44,8 @@ namespace NoteBook.Pages
         {
             if (NotesService != null)
             {
-                Notes = NotesService.GetAllNotes().Result.ToList();
+               // Notes = NotesService.GetAllNotes().Result.ToList();
+                Notes = NotesService.GetSyncNotes(Convert.ToDateTime(UserSettings.SyncDate)).Result.ToList();
                 NotesList.ItemsSource = Notes;
 
                 UpdateButton.IsEnabled = DeleteButton.IsEnabled = false;
@@ -77,7 +78,6 @@ namespace NoteBook.Pages
 
         private void OnSync(object sender, EventArgs e)
         {
-            App.NotesItemManager.Sync();
             OnAppearing();
         }
 
@@ -96,14 +96,14 @@ namespace NoteBook.Pages
 
         private async void OnLogout(object sender, EventArgs e)
         {
-            UserSettings.AuthValue = string.Empty;
             await AccountService.Logout();
             await Navigation.PopToRootAsync();
         }
 
-        private void OnRefresh(object sender, EventArgs e)
+        private async void OnRefresh(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            Notes = (await NotesService.GetAllNotes()).ToList();
+            base.OnAppearing();
         }
     }
 }

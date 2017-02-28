@@ -72,10 +72,14 @@ namespace NoteBook.Services
 
         public async Task Logout()
         {
-            using (var client = new HttpClient())
+            using (var client = GetAuthHttpClient())
             {
                  await client.GetAsync(Settings.Url + Settings.LogoutPath).ConfigureAwait(false);
             }
+            UserSettings.AuthValue = string.Empty;
+            UserSettings.Expiress = string.Empty;
+            UserSettings.SyncDate = string.Empty;
+            UserSettings.UserName = string.Empty;
         }
 
         public HttpClient GetAuthHttpClient()

@@ -37,7 +37,7 @@ namespace NoteBook.Pages
                 CreateBtn.IsEnabled = false;
 
                 var result = await NotesService.CreateNote(note);
-
+                
                 ActivityIndicatorCreateNote.IsRunning = false;
                 ActivityIndicatorCreateNote.IsVisible = false;
                 CreateBtn.IsEnabled = true;
