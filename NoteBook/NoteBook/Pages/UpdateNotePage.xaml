@@ -3,17 +3,22 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NoteBook.Pages.UpdateNotePage">
   <StackLayout>
+    
     <Label x:Name="TextLabel" HorizontalTextAlignment="Center" FontSize="Large">Update note</Label>
+   
     <Label HorizontalTextAlignment="Start">Title</Label>
     <Entry x:Name="NoteNameEntry" />
+    
     <Label HorizontalTextAlignment="Start">Text</Label>
     <Editor x:Name="NoteTextEntry"/>
+    
     <Label x:Name="CreatedLabel" HorizontalOptions="Start"></Label>
     <Label x:Name="UpdatedLabel" HorizontalOptions="Start"></Label>
-    <StackLayout Orientation="Horizontal">
-      <Button x:Name="UpdateBtn" HorizontalOptions="Start" Text = "Update note" FontSize="Medium" BorderWidth="1" Clicked="OnUpdateNote"/>
-      <ActivityIndicator x:Name="ActivityIndicatorUdpateNote" HorizontalOptions="Center" IsVisible="False" IsRunning="False" />
-    </StackLayout>
+    
+    <Button x:Name="UpdateBtn" Text = "Update note" FontSize="Medium" BorderWidth="1" Clicked="OnUpdateNote"/>
+    <ActivityIndicator x:Name="ActivityIndicatorUdpateNote" HorizontalOptions="Center" IsVisible="False" IsRunning="False" />
     <Label x:Name="StateLabel" FontSize="Large"></Label>
+  
   </StackLayout>
+  
 </ContentPage>

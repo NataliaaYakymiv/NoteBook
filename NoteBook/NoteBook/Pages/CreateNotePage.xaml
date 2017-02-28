@@ -8,10 +8,8 @@
     <Entry x:Name="NoteNameEntry"/>
     <Label HorizontalTextAlignment="Start">Text</Label>
     <Editor x:Name="NoteTextEntry"/>
-    <StackLayout Orientation="Horizontal">
-      <Button x:Name="CreateBtn" HorizontalOptions="Start" Text = "Create note" FontSize="Medium" BorderWidth="1" Clicked="OnCreateNote"/>
-      <ActivityIndicator x:Name="ActivityIndicatorCreateNote" HorizontalOptions="Center" IsVisible="False" IsRunning="False" />
-    </StackLayout>
+    <Button x:Name="CreateBtn" Text = "Create note" FontSize="Medium" BorderWidth="1" Clicked="OnCreateNote"/>
+    <ActivityIndicator x:Name="ActivityIndicatorCreateNote" HorizontalOptions="Center" IsVisible="False" IsRunning="False" />
     <Label x:Name="StateLabel" FontSize="Large"></Label>
   </StackLayout>
 </ContentPage>

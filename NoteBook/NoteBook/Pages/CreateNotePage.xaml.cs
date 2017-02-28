@@ -34,13 +34,17 @@ namespace NoteBook.Pages
             {
                 ActivityIndicatorCreateNote.IsRunning = true;
                 ActivityIndicatorCreateNote.IsVisible = true;
-                CreateBtn.IsEnabled = false;
+                NoteNameEntry.IsEnabled = false;
+                NoteTextEntry.IsEnabled = false;
+                CreateBtn.IsVisible= false;
 
                 var result = await NotesService.CreateNote(note);
                 
                 ActivityIndicatorCreateNote.IsRunning = false;
                 ActivityIndicatorCreateNote.IsVisible = false;
-                CreateBtn.IsEnabled = true;
+                NoteNameEntry.IsEnabled = true;
+                NoteTextEntry.IsEnabled = true;
+                CreateBtn.IsVisible = true;
 
                 if (result)
                 {

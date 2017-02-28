@@ -18,20 +18,24 @@ namespace NoteBook.Pages
 
         public List<NoteModel> Notes { get; set; }
 
-
         public NotePage()
         {
             InitializeComponent();
-            Title = "Note page";
+            Title = "Your notes";
+            OnAppearing();
+        }
+
+        public NotePage(IAccountService accountService, INotesService notesService) : this()
+        {
+            SetService(notesService);
+            SetAuthService(accountService);
         }
 
         public void SetService(INotesService notesService)
         {
             NotesService = notesService;
-
             CreateNotePage = new CreateNotePage(NotesService);
             UpdateNotePage = new UpdateNotePage(NotesService);
-
             OnAppearing();
         }
 
@@ -47,7 +51,6 @@ namespace NoteBook.Pages
                // Notes = NotesService.GetAllNotes().Result.ToList();
                 Notes = NotesService.GetSyncNotes(Convert.ToDateTime(UserSettings.SyncDate)).Result.ToList();
                 NotesList.ItemsSource = Notes;
-
                 UpdateButton.IsEnabled = DeleteButton.IsEnabled = false;
             }
             base.OnAppearing();
@@ -55,19 +58,18 @@ namespace NoteBook.Pages
 
         private void NotesList_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
-
             UpdateButton.IsEnabled = DeleteButton.IsEnabled = true;
         }
 
         private async void OnCreate(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(CreateNotePage);
+            await Navigation.PushAsync(CreateNotePage, true);
         }
 
         private async void OnUpdate(object sender, EventArgs e)
         {
             UpdateNotePage.SetNoteModel((NoteModel)NotesList.SelectedItem);
-            await Navigation.PushAsync(UpdateNotePage);
+            await Navigation.PushAsync(UpdateNotePage, true);
         }
 
         private async void OnDelete(object sender, EventArgs e)
@@ -86,24 +88,26 @@ namespace NoteBook.Pages
             if (e.Value)
             {
                 SetService(new RemoteNotesService(new AccountService(), new NoteService(Settings.DatabaseName)));
+                RemoteLocalSwitchLabel.Text = "REMOTE";
             }
             else
             {
                 SetService(new LocalNotesService(Settings.DatabaseName));
+                RemoteLocalSwitchLabel.Text = "LOCAL";
             }
-            
+            OnAppearing();
         }
 
         private async void OnLogout(object sender, EventArgs e)
         {
+            SetService(new LocalNotesService(Settings.DatabaseName));
             await AccountService.Logout();
-            await Navigation.PopToRootAsync();
+            Application.Current.MainPage = new NavigationPage(new LoginPage(AccountService, NotesService));
         }
 
-        private async void OnRefresh(object sender, EventArgs e)
+        private void OnRefresh(object sender, EventArgs e)
         {
-            Notes = (await NotesService.GetAllNotes()).ToList();
-            base.OnAppearing();
+            OnAppearing();
         }
     }
 }

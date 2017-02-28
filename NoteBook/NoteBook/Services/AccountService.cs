@@ -114,7 +114,7 @@ namespace NoteBook.Services
             }
         }
 
-        public bool IsLoged()
+        public static bool IsLoged()
         {
             if (!string.IsNullOrEmpty(UserSettings.Expiress))
             {

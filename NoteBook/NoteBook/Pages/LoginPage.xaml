@@ -2,30 +2,46 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NoteBook.Pages.LoginPage">
- 
-  <StackLayout x:Name="Layout">
-    <Label x:Name="TextLabel" HorizontalTextAlignment="Center" FontSize="Large">Sign in</Label>
+
+  <StackLayout>
+
+    <Label HorizontalTextAlignment="Center" FontSize="Large">Sign in</Label>
+
+    <StackLayout x:Name="LoginViev">
       <Entry x:Name="LoginEntry" Placeholder = "Login" Text="qwerty"/>
       <Entry x:Name="PasswordEntry"  Placeholder = "Password" IsPassword ="True" Text="qwerty"/>
-    <StackLayout Orientation="Horizontal">
-      <Button x:Name="LoginBtn" Text ="Sign in" FontSize="Medium" BorderWidth="1" HorizontalOptions="Start" Clicked="OnLogin"/>
-      <Label FontSize="Large" VerticalOptions="Center" HorizontalOptions="End">Remember me</Label>
-      <Switch x:Name="RememberMe" IsToggled="False" HorizontalOptions="End"/>
-    <ActivityIndicator x:Name="ActivityIndicatorLogin" HorizontalOptions="Center" IsVisible="False" IsRunning="False" />
+      <Button x:Name="LoginBtn" Text ="Sign in" FontSize="Medium" BorderWidth="1" Clicked="OnLogin" />
     </StackLayout>
-    <StackLayout Orientation="Horizontal">
-      </StackLayout>
-    <Label x:Name="StateLabel" FontSize="Large" HorizontalTextAlignment="Center"></Label>
-    <Label FontSize="Large" HorizontalTextAlignment="Center">- OR -</Label>
-    <StackLayout HorizontalOptions="Center" Orientation="Horizontal" VerticalOptions="End">
-      <Button HorizontalOptions="Start" Text ="Facebook" FontSize="Medium" BorderWidth="1" Clicked="OnFacebookLogin" BackgroundColor="#3b579d" TextColor="White"/>
-      <Button HorizontalOptions="Center" Text ="Google" FontSize="Medium" BorderWidth="1" Clicked="OnGoogleLogin" BackgroundColor="#cf4332" TextColor="White"/>
-      <Button HorizontalOptions="End" Text ="LinkedIn" FontSize="Medium" BorderWidth="1" Clicked="OnLinkedinLogin" BackgroundColor="#006599" TextColor="White"/>
+
+    <StackLayout x:Name="OptionsView" Orientation="Horizontal" HorizontalOptions="Center">
+      <Label x:Name="RememberMeLabel" FontSize="Large" VerticalOptions="Center" HorizontalOptions="End">Remember me</Label>
+      <Switch x:Name="RememberMe" IsToggled="False" HorizontalOptions="End" VerticalOptions="Center"/>
+      <ActivityIndicator  x:Name="ActivityIndicatorLogin" HorizontalOptions="Center" VerticalOptions="CenterAndExpand" IsVisible="False" IsRunning="False" />
     </StackLayout>
-    <Label FontSize="Large" HorizontalTextAlignment="Center">- OR -</Label>
-    <Label FontSize="Large" HorizontalTextAlignment="Center">Do you not have account?</Label>
-    <Button Text ="Sign up" FontSize="Medium" BorderWidth="1" Clicked="OnRegister"/>
+
+
+    <Label x:Name="StatusLabel" Text="" FontSize="Large" HorizontalTextAlignment="Center"></Label>
+
+    <Grid x:Name="ExternalLogin">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <Button Grid.Row="0" Grid.Column="0" x:Name="FacebookButton" Text ="Facebook" FontSize="Medium" BorderWidth="1" Clicked="OnFacebookLogin" BackgroundColor="#3b579d" TextColor="White"/>
+      <Button Grid.Row="0" Grid.Column="1"  x:Name="GoogleButton" Text ="Google" FontSize="Medium" BorderWidth="1" Clicked="OnGoogleLogin" BackgroundColor="#cf4332" TextColor="White"/>
+      <Button Grid.Row="0" Grid.Column="2" x:Name="LinkedInButton" Text ="LinkedIn" FontSize="Medium" BorderWidth="1" Clicked="OnLinkedinLogin" BackgroundColor="#006599" TextColor="White"/>
+    </Grid>
+
+    <StackLayout x:Name="RegisterView" VerticalOptions="EndAndExpand">
+      <Label x:Name="BlankLabel" FontSize="Large" HorizontalTextAlignment="Center"></Label>
+      <Label VerticalOptions="End" FontSize="Large" HorizontalTextAlignment="Center">Don't have an account?</Label>
+      <Button x:Name="RegisterButton" VerticalOptions="End" Text ="Sign up" FontSize="Medium" BorderWidth="1" Clicked="OnRegister"/>
+    </StackLayout>
+
   </StackLayout>
-  
 
 </ContentPage>
