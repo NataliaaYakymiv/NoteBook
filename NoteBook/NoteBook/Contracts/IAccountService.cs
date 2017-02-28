@@ -10,6 +10,6 @@ namespace NoteBook.Contracts
         Task<bool> ExternalLogin(string url);
         Task<bool> Register(AccountModels.RegisterModel credentials);
         Task Logout();
-        bool IsLoged();
+        //bool IsLoged();
     }
 }

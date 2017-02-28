@@ -13,7 +13,6 @@ namespace NoteBook.Pages
 
         private LoginPage()
         {
-            Title = "Sing in";
             InitializeComponent();
         }
 
@@ -21,13 +20,6 @@ namespace NoteBook.Pages
         {
             AccountService = accountService;
             NotesService = notesService;
-            if (AccountService.IsLoged())
-            {
-                var page = new NotePage();
-                Navigation.PushAsync(page);
-                page.SetService(NotesService);
-                page.SetAuthService(new AccountService());
-            }
         }
 
         public LoginPage(string login, string password, string status, IAccountService accountService, INotesService notesService) : this(accountService, notesService)
@@ -86,10 +78,13 @@ namespace NoteBook.Pages
                 }
                 else
                 {
-                    var page = new NotePage();
-                    await Navigation.PushAsync(page);
-                    page.SetService(NotesService);
-                    page.SetAuthService(new AccountService());
+                    Application.Current.MainPage = new NavigationPage(new NotePage(AccountService, NotesService));
+
+                    //OnDisappearing();
+                    //var page = new NotePage();
+                    //await Navigation.PushAsync(page);
+                    //page.SetService(NotesService);
+                    //page.SetAuthService(new AccountService());
                 }
             }
             else
@@ -98,6 +93,11 @@ namespace NoteBook.Pages
             }
 
         }
+
+        //protected override void OnDisappearing()
+        //{
+        //    Navigation.RemovePage(this);
+        //}
 
         private async void OnGoogleLogin(object sender, EventArgs e)
         {

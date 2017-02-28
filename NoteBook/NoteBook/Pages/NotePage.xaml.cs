@@ -21,7 +21,13 @@ namespace NoteBook.Pages
         public NotePage()
         {
             InitializeComponent();
-            Title = "Note page";
+            Title = "Your notes";
+        }
+
+        public NotePage(IAccountService accountService, INotesService notesService) : this()
+        {
+            SetService(notesService);
+            SetAuthService(accountService);
         }
 
         public void SetService(INotesService notesService)
@@ -43,7 +49,6 @@ namespace NoteBook.Pages
             {
                 Notes = NotesService.GetAllNotes().Result.ToList();
                 NotesList.ItemsSource = Notes;
-
                 UpdateButton.IsEnabled = DeleteButton.IsEnabled = false;
             }
             base.OnAppearing();
@@ -92,12 +97,11 @@ namespace NoteBook.Pages
             OnAppearing();
         }
 
-
         private async void OnLogout(object sender, EventArgs e)
         {
             UserSettings.AuthValue = string.Empty;
             await AccountService.Logout();
-            await Navigation.PopToRootAsync();
+            Application.Current.MainPage = new NavigationPage(new LoginPage(AccountService, NotesService));
         }
 
         private void OnRefresh(object sender, EventArgs e)

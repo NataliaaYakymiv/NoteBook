@@ -4,7 +4,7 @@
     {
 
         //public static string Url { get; } = "http://52bf02c0.ngrok.io/";
-        public static string Url { get; } = "http://192.168.0.105:81/";
+        public static string Url { get; } = "http://192.168.88.116:81/";
 
         public static string DatabaseName { get; } = "notes1.db";
 
