@@ -1,4 +1,7 @@
-﻿using System.Threading;
+﻿using System;
+using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
+using System.Threading;
 using System.Web.Http;
 using System.Web.Mvc;
 using WebMatrix.WebData;
@@ -28,6 +31,24 @@ namespace WebService
             if (!WebSecurity.Initialized)
                 WebSecurity.InitializeDatabaseConnection("DefaultConnection", "UserProfile", "UserId", "UserName",
                     autoCreateTables: true);
+        }
+    }
+
+    public class UploadMultipartMediaTypeFormatter : MediaTypeFormatter
+    {
+        UploadMultipartMediaTypeFormatter()
+        {
+            SupportedMediaTypes.Add(new MediaTypeHeaderValue("multipart/form-data"));
+        }
+
+        public override bool CanReadType(Type type)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override bool CanWriteType(Type type)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
