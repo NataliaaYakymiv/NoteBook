@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Java.IO;
 using Newtonsoft.Json;
 using NoteBook.Contracts;
 using NoteBook.Models;
+using XLabs.Platform.Services.Media;
 
 namespace NoteBook.Services
 {
@@ -80,7 +83,10 @@ namespace NoteBook.Services
                     UserSettings.SyncDate = JsonConvert.DeserializeObject<SyncModel>(result).LastModify.ToString();
                     foreach (var t in notes)
                     {
-                        NotesService.DeleteNote(t);
+                        if (t.Delete != null)
+                        {
+                            NotesService.DeleteNote(t);
+                        }
                     }
                     foreach (var item in items)
                     {
@@ -145,6 +151,61 @@ namespace NoteBook.Services
 
 
             return response.IsSuccessStatusCode;
+        }
+
+        public async Task PostItem(byte[] item)
+        {
+            using (var client = AccountService.GetAuthHttpClient())
+            {
+                var da = new ByteArrayContent(item);
+
+                try
+                {
+                    var multi = new MultipartContent();
+                    multi.Add(da);
+                    var response = await client.PostAsync(Settings.Url + Settings.NoteAddImagePath, multi);
+                }
+                catch (Exception ex)
+                {
+                   // Console.Write(ex.Message);
+                }
+            }
+        }
+
+        private void upload(MediaFile mediaFile)
+        {
+            try
+            {
+
+                byte[] data = ReadFully(mediaFile.Source);
+                var imageStream = new ByteArrayContent(data);
+
+
+                var multi = new MultipartContent();
+                multi.Add(imageStream);
+                var client = new System.Net.Http.HttpClient();
+                client.BaseAddress = new Uri("http://xyz.com/");
+                var result = client.PostAsync("api/Default", multi).Result;
+            }
+            catch (Exception e)
+            {
+
+            }
+
+        }
+        //This for converting media file stream to byte[]
+        public static byte[] ReadFully(Stream input)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
         }
 
         public async Task<bool> UpdateNote(NoteModel credentials)

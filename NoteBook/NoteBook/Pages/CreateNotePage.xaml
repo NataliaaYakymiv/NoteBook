@@ -8,6 +8,8 @@
     <Entry x:Name="NoteNameEntry"/>
     <Label HorizontalTextAlignment="Start">Text</Label>
     <Editor x:Name="NoteTextEntry"/>
+    <Button x:Name="SelectImageBtn" Text = "Select image" FontSize="Medium" BorderWidth="1" Clicked="OnSelectImage"/>
+    <Image x:Name="Image"></Image>
     <Button x:Name="CreateBtn" Text = "Create note" FontSize="Medium" BorderWidth="1" Clicked="OnCreateNote"/>
     <ActivityIndicator x:Name="ActivityIndicatorCreateNote" HorizontalOptions="Center" IsVisible="False" IsRunning="False" />
     <Label x:Name="StateLabel" FontSize="Large"></Label>

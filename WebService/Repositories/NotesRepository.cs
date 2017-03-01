@@ -35,7 +35,7 @@ namespace WebService.Repositories
         {
             var list = new List<NoteModel>();
             
-            var notes = _db.NoteModels.Where(item => item.Create > model.LastModify || item.Update > model.LastModify || item.Delete > model.LastModify).ToList();
+            var notes = _db.NoteModels.Where(item => (item.Create > model.LastModify || item.Update > model.LastModify || item.Delete > model.LastModify) && item.UserId == idUser).ToList();
 
             if (notes.Count == 0) // no changes in remote
             {

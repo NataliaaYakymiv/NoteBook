@@ -1,14 +1,31 @@
 ﻿using NoteBook.Models;
 using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 using NoteBook.Contracts;
 using Xamarin.Forms;
+using XLabs.Ioc;
+using XLabs.Platform.Device;
+using XLabs.Platform.Services.Media;
 
 namespace NoteBook.Pages
 {
     public partial class CreateNotePage : ContentPage
     {
         public INotesService NotesService { get; private set; }
+        private IMediaPicker _mediaPicker;
+
+        private void Setup()
+        {
+            if (_mediaPicker != null)
+            {
+                return;
+            }
+
+            var device = Resolver.Resolve<IDevice>();
+ 
+            _mediaPicker = DependencyService.Get<IMediaPicker>() ?? device.MediaPicker;
+        }
 
         private CreateNotePage()
         {
@@ -70,6 +87,29 @@ namespace NoteBook.Pages
             {
                 StateLabel.Text = exception.Message;
             }
+        }
+
+        private async void OnSelectImage(object sender, EventArgs eventArgs)
+        {
+            Setup();
+            Image.Source = null;
+            try
+            {
+                var mediaFile = await this._mediaPicker.SelectPhotoAsync(new CameraMediaStorageOptions
+                { 
+                    
+                    DefaultCamera = CameraDevice.Front,
+                    MaxPixelDimension = 400,
+                    
+
+                });
+                Image.Source = ImageSource.FromStream(() => mediaFile.Source);
+            }
+            catch (System.Exception ex)
+            {
+                StateLabel.Text = "some kekxeption";
+            }
+
         }
     }
 }

@@ -21,6 +21,7 @@
         public static string NoteUpdatePath { get; } = "api/Notes/UpdateNote";
         public static string NoteDeletePath { get; } = "api/Notes/DeleteNote";
         public static string NoteSyncPath { get; } = "api/Notes/GetSyncNotes";
+        public static string NoteAddImagePath { get; } = "api/Notes/PostImage";
 
     }
 }

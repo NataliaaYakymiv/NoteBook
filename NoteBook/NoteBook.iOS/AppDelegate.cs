@@ -1,6 +1,11 @@
 ﻿
 using Foundation;
 using UIKit;
+using XLabs.Forms;
+using XLabs.Ioc;
+using XLabs.Platform.Device;
+using XLabs.Platform.Services;
+using XLabs.Platform.Services.Media;
 
 namespace NoteBook.iOS
 {
@@ -8,7 +13,7 @@ namespace NoteBook.iOS
     // User Interface of the application, as well as listening (and optionally responding) to 
     // application events from iOS.
     [Register("AppDelegate")]
-    public partial class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate
+    public partial class AppDelegate : XFormsApplicationDelegate
     {
         //
         // This method is invoked when the application has loaded and is ready to run. In this 
@@ -19,6 +24,14 @@ namespace NoteBook.iOS
         //
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
+            SimpleContainer container = new SimpleContainer();
+            container.Register<IDevice>(t => AppleDevice.CurrentDevice);
+            container.Register<IDisplay>(t => t.Resolve<IDevice>().Display);
+            container.Register<INetwork>(t => t.Resolve<IDevice>().Network);
+            container.Register<IMediaPicker>(t => t.Resolve<IDevice>().MediaPicker);
+
+            Resolver.SetResolver(container.GetResolver());
+
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App());
 

@@ -50,10 +50,10 @@ namespace NoteBook.Pages
                     var result = await AccountService.ExternalLogin(e.Url);
                     if (result)
                     {
-                        var page = new NotePage();
-                        await Navigation.PushAsync(page);
-                        page.SetService(NotesService);
-                        page.SetAuthService(new AccountService());
+                        App.NotesItemManager.ClearLocal();
+                        UserSettings.SyncDate = DateTime.MinValue.ToString();
+                        var page = new NotePage(AccountService, NotesService);
+                        Application.Current.MainPage = new NavigationPage(page);
                     }
                     else
                     {
