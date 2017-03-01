@@ -110,6 +110,7 @@ namespace NoteBook.Pages
 
                 });
                 Image.Source = ImageSource.FromStream(() => _mediaFile.Source);
+                Image.IsVisible = true;
             }
             catch (System.Exception ex)
             {
