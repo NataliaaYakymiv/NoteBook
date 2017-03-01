@@ -153,46 +153,26 @@ namespace NoteBook.Services
             return response.IsSuccessStatusCode;
         }
 
-        public async Task PostItem(byte[] item)
+
+        public async Task<bool> Upload(MediaFile mediaFile)
         {
+            HttpResponseMessage response;
+
+            byte[] data = ReadFully(mediaFile.Source);
+            var imageStream = new ByteArrayContent(data);
+
+            var content = new MultipartContent();
+            content.Add(imageStream);
+
             using (var client = AccountService.GetAuthHttpClient())
             {
-                var da = new ByteArrayContent(item);
-
-                try
-                {
-                    var multi = new MultipartContent();
-                    multi.Add(da);
-                    var response = await client.PostAsync(Settings.Url + Settings.NoteAddImagePath, multi);
-                }
-                catch (Exception ex)
-                {
-                   // Console.Write(ex.Message);
-                }
+                response = await client.PostAsync(Settings.Url + Settings.NoteCreatePath, content);
             }
+
+            return response.IsSuccessStatusCode;
+
         }
 
-        private void upload(MediaFile mediaFile)
-        {
-            try
-            {
-
-                byte[] data = ReadFully(mediaFile.Source);
-                var imageStream = new ByteArrayContent(data);
-
-
-                var multi = new MultipartContent();
-                multi.Add(imageStream);
-                var client = new System.Net.Http.HttpClient();
-                client.BaseAddress = new Uri("http://xyz.com/");
-                var result = client.PostAsync("api/Default", multi).Result;
-            }
-            catch (Exception e)
-            {
-
-            }
-
-        }
         //This for converting media file stream to byte[]
         public static byte[] ReadFully(Stream input)
         {

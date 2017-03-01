@@ -12,14 +12,14 @@ using XLabs.Platform.Services.Media;
 namespace NoteBook.Droid
 {
     [Activity(Label = "NoteBook", Icon = "@drawable/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
-    public class MainActivity : XFormsApplicationDroid
+    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity//XFormsApplicationDroid
     {
         protected override void OnCreate(Bundle bundle)
         {
            // TabLayoutResource = Resource.Layout.Tabbar;
            // ToolbarResource = Resource.Layout.Toolbar;
 
-            base.OnCreate(bundle);
+            //base.OnCreate(bundle);
 
             SimpleContainer container = new SimpleContainer();
             container.Register<IDevice>(t => AndroidDevice.CurrentDevice);
@@ -29,12 +29,20 @@ namespace NoteBook.Droid
 
             Resolver.SetResolver(container.GetResolver());
 
+
+            TabLayoutResource = Resource.Layout.Tabbar;
+            ToolbarResource = Resource.Layout.Toolbar;
+
+            base.OnCreate(bundle);
+
             global::Xamarin.Forms.Forms.Init(this, bundle);
-            Toolbar tb = new Toolbar(this);//FindViewById<Toolbar>(Resource.Layout.Toolbar);
-           // tb.
-            this.SetActionBar(tb);
-            
             LoadApplication(new App());
+            // global::Xamarin.Forms.Forms.Init(this, bundle);
+            // Toolbar tb = new Toolbar(this);//FindViewById<Toolbar>(Resource.Layout.Toolbar);
+            // tb.
+            // this.SetActionBar(tb);
+
+            // LoadApplication(new App());
         }
     }
 }

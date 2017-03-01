@@ -3,6 +3,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using NoteBook.Contracts;
+using NoteBook.Services;
 using Xamarin.Forms;
 using XLabs.Ioc;
 using XLabs.Platform.Device;
@@ -14,6 +15,7 @@ namespace NoteBook.Pages
     {
         public INotesService NotesService { get; private set; }
         private IMediaPicker _mediaPicker;
+        private MediaFile _mediaFile;
 
         private void Setup()
         {
@@ -56,7 +58,11 @@ namespace NoteBook.Pages
                 CreateBtn.IsVisible= false;
 
                 var result = await NotesService.CreateNote(note);
-                
+                if (_mediaFile != null)
+                {
+                    var res = (NotesService as RemoteNotesService).Upload(_mediaFile);
+                }
+
                 ActivityIndicatorCreateNote.IsRunning = false;
                 ActivityIndicatorCreateNote.IsVisible = false;
                 NoteNameEntry.IsEnabled = true;
@@ -95,7 +101,7 @@ namespace NoteBook.Pages
             Image.Source = null;
             try
             {
-                var mediaFile = await this._mediaPicker.SelectPhotoAsync(new CameraMediaStorageOptions
+                _mediaFile = await this._mediaPicker.SelectPhotoAsync(new CameraMediaStorageOptions
                 { 
                     
                     DefaultCamera = CameraDevice.Front,
@@ -103,7 +109,7 @@ namespace NoteBook.Pages
                     
 
                 });
-                Image.Source = ImageSource.FromStream(() => mediaFile.Source);
+                Image.Source = ImageSource.FromStream(() => _mediaFile.Source);
             }
             catch (System.Exception ex)
             {
