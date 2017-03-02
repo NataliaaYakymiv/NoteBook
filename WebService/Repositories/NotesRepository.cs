@@ -9,7 +9,7 @@ namespace WebService.Repositories
 {
     public class NotesRepository : INotesRepository
     {
-        private NotesContext _db; 
+        private NotesContext _db;
 
         public NotesRepository()
         {
@@ -34,10 +34,10 @@ namespace WebService.Repositories
         public IEnumerable<NoteModel> HasChanges(int idUser, SyncModel model)
         {
             var list = new List<NoteModel>();
-            
+
             var notes = _db.NoteModels.Where(item => (item.Create > model.LastModify || item.Update > model.LastModify || item.Delete > model.LastModify) && item.UserId == idUser).ToList();
 
-            if (notes.Count == 0) // no changes in remote
+            if (notes.Count == 0) // no changes in remote 
             {
                 foreach (var notemodels in model.NoteModels)
                 {
@@ -59,22 +59,22 @@ namespace WebService.Repositories
                         Delete(idUser, notemodels.NoteId);
                     }
                 }
-
-                
             }
-            
-            else if (model.NoteModels.Count == 0) // no changes in local
+
+            else if (model.NoteModels.Count == 0) // no changes in local 
             {
                 list = notes;
             }
-            else // changes in local and remote
+            else // changes in local and remote 
             {
-                for (int i = 0; i < notes.Count; i++)
+                for (int j = 0; j < model.NoteModels.Count; j++)
+                //for (int i = 0; i < notes.Count; i++) 
                 {
-                    for (int j = 0; j < model.NoteModels.Count; j++)
+                    //for (int j = 0; j < model.NoteModels.Count; j++) 
+                    for (int i = 0; i < notes.Count; i++)
                     {
                         if ((model.NoteModels[j].Delete != null && notes[i].Update < model.NoteModels[j].Delete) ||
-                            (model.NoteModels[j].Delete != null && notes[i].Update == null))
+                        (model.NoteModels[j].Delete != null && notes[i].Update == null))
                         {
                             Delete(idUser, model.NoteModels[j].NoteId);
                             notes.Remove(model.NoteModels[j]);
@@ -99,9 +99,11 @@ namespace WebService.Repositories
                             }
                         }
 
-                        InsertFromLocal(idUser, model.NoteModels[j]);
-                        list.Add(model.NoteModels[j]);
+                        //InsertFromLocal(idUser, model.NoteModels[j]); 
+                        //list.Add(model.NoteModels[j]); 
                     }
+                    InsertFromLocal(idUser, model.NoteModels[j]);
+                    list.Add(model.NoteModels[j]);
                 }
 
             }
@@ -157,14 +159,14 @@ namespace WebService.Repositories
         public void Delete(int idUser, string idNote)
         {
             var note = Find(idUser, idNote);
-            if (note!=null)
+            if (note != null)
             {
                 _db.NoteModels.Remove(note);
             }
             _db.SaveChanges();
         }
 
-        
+
 
         #region Helpers
 
