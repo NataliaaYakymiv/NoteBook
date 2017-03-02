@@ -161,12 +161,12 @@ namespace NoteBook.Services
             byte[] data = ReadFully(mediaFile.Source);
             var imageStream = new ByteArrayContent(data);
 
-            var content = new MultipartContent();
+            var content = new MultipartFormDataContent();
             content.Add(imageStream);
 
             using (var client = AccountService.GetAuthHttpClient())
             {
-                response = await client.PostAsync(Settings.Url + Settings.NoteCreatePath, content);
+                response = await client.PostAsync(Settings.Url + Settings.NoteAddImagePath+ "?filename=" + mediaFile.Path, content);
             }
 
             return response.IsSuccessStatusCode;
