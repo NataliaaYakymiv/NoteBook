@@ -21,12 +21,11 @@ namespace NoteBook.Pages
         public NotePage()
         {
             InitializeComponent();
-            Title = "Your notes";
-            OnAppearing();
         }
 
         public NotePage(IAccountService accountService, INotesService notesService) : this()
         {
+            Title = "Your notes";
             SetService(notesService);
             SetAuthService(accountService);
         }
@@ -48,7 +47,7 @@ namespace NoteBook.Pages
         {
             if (NotesService != null)
             {
-               // Notes = NotesService.GetAllNotes().Result.ToList();
+                //Notes = NotesService.GetAllNotes().Result.ToList();
                 Notes = NotesService.GetSyncNotes(Convert.ToDateTime(UserSettings.SyncDate)).Result.ToList();
                 NotesList.ItemsSource = Notes;
                 UpdateButton.IsEnabled = DeleteButton.IsEnabled = false;
@@ -75,6 +74,7 @@ namespace NoteBook.Pages
         private async void OnDelete(object sender, EventArgs e)
         {
             await NotesService.DeleteNote((NoteModel)NotesList.SelectedItem);
+            //NotesList.IsRefreshing = true;
             OnAppearing();
         }
 
@@ -102,6 +102,7 @@ namespace NoteBook.Pages
         {
             SetService(new LocalNotesService(Settings.DatabaseName));
             await AccountService.Logout();
+            //OnDisappearing();
             Application.Current.MainPage = new NavigationPage(new LoginPage(AccountService, NotesService));
         }
 

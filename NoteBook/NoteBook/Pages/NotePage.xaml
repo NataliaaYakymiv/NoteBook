@@ -9,7 +9,6 @@
 
   <StackLayout >
     <Grid x:Name="ButtonsGroup">
-
       <Grid.RowDefinitions>
         <RowDefinition Height="*" />
         <RowDefinition Height="*" />
@@ -22,7 +21,6 @@
 
       <Button Grid.Row="0" Grid.Column="0" x:Name="SyncButton" Text = "Sync" BorderWidth="1" Clicked="OnSync" />
       <Button Grid.Row="0" Grid.Column="1" x:Name="RefreshButton" Text = "Refresh" BorderWidth="1" Clicked="OnRefresh" />
-      <!--<Button Grid.Row="1" Grid.Column="2" x:Name="LogoutButton" Text = "Logout" BorderWidth="1" Clicked="OnLogout" />-->
 
       <Button Grid.Row="1" Grid.Column="0" Text = "Create" BorderWidth="1"  Clicked="OnCreate"/>
       <Button Grid.Row="1" Grid.Column="1" x:Name="UpdateButton" Text = "Update" BorderWidth="1" Clicked="OnUpdate" IsEnabled="False" />
@@ -32,30 +30,28 @@
         <Label x:Name="RemoteLocalSwitchLabel" HorizontalOptions="StartAndExpand" VerticalOptions="Center">LOCAL</Label>
         <Switch x:Name="RemoteLocalSwitch" IsToggled="False" HorizontalOptions="EndAndExpand" Toggled="Ontoggled" VerticalOptions="Center"/>
       </StackLayout>
-
     </Grid>
 
     <ActivityIndicator x:Name="ActivityIndicatorUdpateNote" VerticalOptions="Center" HorizontalOptions="Center" IsVisible="False" IsRunning="False" />
 
-    <ScrollView VerticalOptions="FillAndExpand">
+    <ScrollView VerticalOptions="FillAndExpand" >
       <ListView x:Name="NotesList" ItemSelected="NotesList_ItemSelected" SeparatorVisibility="None">
         <ListView.ItemTemplate>
           <DataTemplate x:Name="DataTemplate">
             <ViewCell>
               <ViewCell.View>
-                <Grid Padding="5,5">
-                  
-                  <Grid.RowDefinitions>
+                <Grid ColumnSpacing="5" Margin="5">
+                  <Grid.RowDefinitions >
+                    <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
                   </Grid.RowDefinitions>
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                   </Grid.ColumnDefinitions>
-
-                  <Label VerticalOptions="Center" HorizontalOptions="StartAndExpand" Grid.Row="0" Grid.Column="0" Text="{Binding NoteName}" Font="Bold" FontSize="Large" />
-                  <Label VerticalOptions="Center" HorizontalOptions="StartAndExpand" Grid.Row="0" Grid.Column="1" Text="{Binding NoteText}" FontSize="Large" />
-                  <Image VerticalOptions="Center" HorizontalOptions="StartAndExpand" Grid.Row="0" Grid.Column="0"  Source="{Binding Image}"/>
+                  <Label VerticalOptions="Center" HorizontalOptions="StartAndExpand" Grid.Row="0" Grid.Column="1" Text="{Binding NoteName}" Font="Bold" FontSize="Large" />
+                  <Label VerticalOptions="Center" HorizontalOptions="StartAndExpand" Grid.Row="1" Grid.Column="1" Text="{Binding NoteText}" FontSize="Large" />
+                  <Image VerticalOptions="CenterAndExpand" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="Image" Source="{Binding Image}" IsVisible="True" ></Image>
                 </Grid>
               </ViewCell.View>
             </ViewCell>
