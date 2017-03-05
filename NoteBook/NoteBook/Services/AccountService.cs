@@ -1,17 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Net;
+﻿using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NoteBook.Contracts;
+using NoteBook.Helpers;
 using NoteBook.Models;
 
 namespace NoteBook.Services
 {
-    public class AccountService : IAccountService, IHttpAuth
+    public class AccountService : IAccountService
     {
 
         public async Task<bool> Login(AccountModels.LoginModel credentials)
@@ -30,7 +28,7 @@ namespace NoteBook.Services
             {
                 UserSettings.UserName = credentials.UserName;
                 var aspxauth = result.Headers.GetValues("Set-Cookie").First(x => x.StartsWith(".ASPXAUTH"));
-                SetAuthKey(aspxauth);
+                AuthHelper.SetAuthKey(aspxauth);
             }
 
             return result.IsSuccessStatusCode;
@@ -49,7 +47,7 @@ namespace NoteBook.Services
             {
                 UserSettings.UserName = result.Content.ReadAsStringAsync().Result;
                 var aspxauth  = result.Headers.GetValues("Set-Cookie").First(x => x.StartsWith(".ASPXAUTH"));
-                SetAuthKey(aspxauth);
+                AuthHelper.SetAuthKey(aspxauth);
             }
 
             return result.IsSuccessStatusCode;
@@ -72,55 +70,12 @@ namespace NoteBook.Services
 
         public async Task Logout()
         {
-            using (var client = GetAuthHttpClient())
+            using (var client = AuthHelper.GetAuthHttpClient())
             {
                  await client.GetAsync(Settings.Url + Settings.LogoutPath).ConfigureAwait(false);
             }
-            UserSettings.AuthValue = string.Empty;
-            UserSettings.Expiress = string.Empty;
-            UserSettings.SyncDate = string.Empty;
-            UserSettings.UserName = string.Empty;
+            AuthHelper.ClearAll();
         }
 
-        public HttpClient GetAuthHttpClient()
-        {
-            var handler = new HttpClientHandler {CookieContainer = new CookieContainer()};
-
-            if (!string.IsNullOrEmpty(UserSettings.AuthKey) && !string.IsNullOrEmpty(UserSettings.AuthValue))
-            {
-                handler.CookieContainer.Add(new Uri(Settings.Url), new Cookie(UserSettings.AuthKey, UserSettings.AuthValue));
-            }
-
-            return new HttpClient(handler);
-        }
-
-        private static void SetAuthKey(string aspxauth)
-        {
-            if (string.IsNullOrEmpty(aspxauth)) return;
-
-            UserSettings.AuthKey = aspxauth.Split('=')[0];
-            UserSettings.AuthValue = aspxauth.Split('=')[1].Split(';')[0];
-            string time = Regex.Match(aspxauth, @"(?<=expires=)(.*)(?= GMT;)").ToString();
-            if (!string.IsNullOrEmpty(time))
-            {
-                var myDate = DateTime.ParseExact(time, "ddd, dd-MMM-yyyy HH:mm:ss",
-                    System.Globalization.CultureInfo.InvariantCulture).AddHours(2);
-                UserSettings.Expiress = myDate.ToString();
-            }
-            else
-            {
-                var tempTime = DateTime.Now.AddDays(7);
-                UserSettings.Expiress = tempTime.ToString();
-            }
-        }
-
-        public static bool IsLoged()
-        {
-            if (!string.IsNullOrEmpty(UserSettings.Expiress))
-            {
-                return DateTime.Now < Convert.ToDateTime(UserSettings.Expiress);
-            }
-            return false;
-        }
     }
 }

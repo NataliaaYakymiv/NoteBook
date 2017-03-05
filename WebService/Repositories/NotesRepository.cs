@@ -23,7 +23,7 @@ namespace WebService.Repositories
 
         public IEnumerable<NoteModel> All(int iduser)
         {
-            return _db.NoteModels.Where(item => item.UserId == iduser).ToList();
+            return _db.NoteModels.Where(item => item.UserId == iduser && item.Delete == null).ToList();
         }
 
         public NoteModel Find(int idUser, string idNote)
@@ -34,8 +34,8 @@ namespace WebService.Repositories
         public IEnumerable<NoteModel> HasChanges(int idUser, SyncModel model)
         {
             var list = new List<NoteModel>();
-            
-            var notes = _db.NoteModels.Where(item => (item.Create > model.LastModify || item.Update > model.LastModify || item.Delete > model.LastModify) && item.UserId == idUser).ToList();
+            var last = DateTime.Parse(model.LastModify);
+            var notes = _db.NoteModels.Where(item => (item.Create > last || item.Update > last || item.Delete > last) && item.UserId == idUser).ToList();
 
             if (notes.Count == 0) // no changes in remote
             {
@@ -46,11 +46,11 @@ namespace WebService.Repositories
                         var item = Find(idUser, notemodels.NoteId);
                         if (item != null)
                         {
-                            UpdateFromLocal(idUser, notemodels);
+                            Update(idUser, notemodels);
                         }
                         else
                         {
-                            InsertFromLocal(idUser, notemodels);
+                            Insert(idUser, notemodels);
                         }
                         list.Add(Find(idUser, notemodels.NoteId));
                     }
@@ -99,7 +99,7 @@ namespace WebService.Repositories
                             }
                         }
 
-                        InsertFromLocal(idUser, model.NoteModels[j]);
+                        Insert(idUser, model.NoteModels[j]);
                         list.Add(model.NoteModels[j]);
                     }
                 }
@@ -111,60 +111,50 @@ namespace WebService.Repositories
 
         public void Insert(int idUser, NoteModel item)
         {
-            item.NoteId = Guid.NewGuid().ToString();
             item.UserId = idUser;
             item.Create = DateTime.Now;
             _db.NoteModels.Add(item);
             _db.SaveChanges();
         }
 
-        public void InsertFromLocal(int idUser, NoteModel item)
-        {
-            item.UserId = idUser;
-            _db.NoteModels.Add(item);
-            _db.SaveChanges();
 
-        }
-
-        public void Update(int idUser, NoteModel note)
+        public void Update(int idUser, NoteModel noteModel)
         {
-            var result = _db.NoteModels.SingleOrDefault(item => item.NoteId == note.NoteId && item.UserId == idUser);
-            if (result != null)
+            var note = Find(idUser, noteModel.NoteId);
+            if (note != null)
             {
-                result.NoteName = note.NoteName;
-                result.NoteText = note.NoteText;
-                result.Update = DateTime.Now;
-                _db.Entry(result).State = EntityState.Modified;
+                note.NoteName = note.NoteName;
+                note.NoteText = note.NoteText;
+                note.Update = DateTime.Now;
+                _db.Entry(note).State = EntityState.Modified;
 
                 _db.SaveChanges();
             }
         }
 
-        public void UpdateFromLocal(int idUser, NoteModel note)
-        {
-            var result = _db.NoteModels.SingleOrDefault(item => item.NoteId == note.NoteId && item.UserId == idUser);
-            if (result != null)
-            {
-                result.NoteName = note.NoteName;
-                result.NoteText = note.NoteText;
-                result.Update = note.Update;
-                _db.Entry(result).State = EntityState.Modified;
-
-                _db.SaveChanges();
-            }
-        }
 
         public void Delete(int idUser, string idNote)
         {
             var note = Find(idUser, idNote);
-            if (note!=null)
+            if (note != null)
             {
-                _db.NoteModels.Remove(note);
+                note.Delete = DateTime.Now;
+                _db.Entry(note).State = EntityState.Modified;
+                _db.SaveChanges();
             }
-            _db.SaveChanges();
         }
 
-        
+        public void SetImage(string noteId, string path)
+        {
+            var result = _db.NoteModels.FirstOrDefault(item => item.NoteId == noteId);
+            if (result != null)
+            {
+                result.Image = path;
+                result.Update = DateTime.Now;
+                _db.Entry(result).State = EntityState.Modified;
+                _db.SaveChanges();
+            }
+        }
 
         #region Helpers
 

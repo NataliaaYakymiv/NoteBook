@@ -7,8 +7,11 @@ namespace NoteBook.Contracts
     public interface IAccountService
     {
         Task<bool> Login(AccountModels.LoginModel credentials);
+
         Task<bool> ExternalLogin(string url);
+
         Task<bool> Register(AccountModels.RegisterModel credentials);
+
         Task Logout();
     }
 }

@@ -46,7 +46,8 @@ namespace NoteBook.Pages
             var note = new NoteModel
             {
                 NoteName = NoteNameEntry.Text,
-                NoteText = NoteTextEntry.Text
+                NoteText = NoteTextEntry.Text,
+                MediaFile = _mediaFile
             };
 
             try
@@ -58,10 +59,6 @@ namespace NoteBook.Pages
                 CreateBtn.IsVisible= false;
 
                 var result = await NotesService.CreateNote(note);
-                if (_mediaFile != null)
-                {
-                    var res = (NotesService as RemoteNotesService).Upload(_mediaFile);
-                }
 
                 ActivityIndicatorCreateNote.IsRunning = false;
                 ActivityIndicatorCreateNote.IsVisible = false;

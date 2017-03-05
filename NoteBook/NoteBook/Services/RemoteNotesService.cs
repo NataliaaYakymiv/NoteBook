@@ -1,27 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Java.IO;
 using Newtonsoft.Json;
 using NoteBook.Contracts;
+using NoteBook.Helpers;
 using NoteBook.Models;
-using XLabs.Platform.Services.Media;
 
 namespace NoteBook.Services
 {
     public class RemoteNotesService : INotesService 
     {
-        public IHttpAuth AccountService { get; private set; }
         public INotesService NotesService { get; private set; }
 
-        public RemoteNotesService(IHttpAuth accountService, INotesService notesService)
+        public RemoteNotesService(INotesService notesService)
         {
-            AccountService = accountService;
             NotesService = notesService;
         }
 
@@ -29,8 +25,8 @@ namespace NoteBook.Services
         {
             var items = new List<NoteModel>();
             HttpResponseMessage response;
-            //return items;
-            using (var client = AccountService.GetAuthHttpClient())
+
+            using (var client = AuthHelper.GetAuthHttpClient())
             {
                 response = client.GetAsync(Settings.Url + Settings.NoteGetAllNotesPath).Result;
             }
@@ -57,9 +53,8 @@ namespace NoteBook.Services
 
         public Task<IEnumerable<NoteModel>> GetSyncNotes(DateTime time)
         {
-            var syncModel = new SyncModel {LastModify = time };
-            var notes = NotesService.GetSyncNotes(time).Result.ToList() ?? new List<NoteModel>();
-
+            var syncModel = new SyncModel {LastModify = UserSettings.SyncDate };
+            var notes = NotesService.GetSyncNotes(DateTime.Parse(UserSettings.SyncDate)).Result.ToList() ?? new List<NoteModel>();
 
             syncModel.NoteModels = notes;
 
@@ -67,42 +62,63 @@ namespace NoteBook.Services
 
             var json = JsonConvert.SerializeObject(syncModel);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            using (var client = AccountService.GetAuthHttpClient())
+            
+            using (var client = AuthHelper.GetAuthHttpClient())
             {
                 response = client.PostAsync(Settings.Url + Settings.NoteSyncPath, content).Result;
             }
 
             if (response.IsSuccessStatusCode)
             {
+                for (int i = 0; i < notes.Count; i++)
+                {
+                    if (notes[i].ImageInBytes != null && notes[i].ImageInBytes.Length > 0)
+                    {
+                        UploadBytes(notes[i]);
+                        notes[i].ImageInBytes = null;
+                    }
+                }
                 try
                 {
                     var result = response.Content.ReadAsStringAsync().Result;
-                    var items = JsonConvert.DeserializeObject<SyncModel>(result).NoteModels;
+                    var syncModelParse = JsonConvert.DeserializeObject<SyncModel>(result);
+                    UserSettings.SyncDate = syncModelParse.LastModify;
 
-                    UserSettings.SyncDate = JsonConvert.DeserializeObject<SyncModel>(result).LastModify.ToString();
-                    foreach (var t in notes)
+                    var items = syncModelParse.NoteModels;
+
+                    foreach (var note in notes)
                     {
-                        if (t.Delete != null)
+                        if (note.Delete != null)
                         {
-                            NotesService.DeleteNote(t);
+                            NotesService.DeleteNote(note);
                         }
                     }
+
+                    var localStorage = NotesService.GetAllNotes().Result.ToList();
+
                     foreach (var item in items)
                     {
-                        try
+                        if (localStorage.Find(x => x.NoteId == item.NoteId) == null)
                         {
-                            NotesService.CreateNote(item);
+                            if (item.Delete == null)
+                            {
+                                NotesService.CreateNote(item);
+                            }
                         }
-                        catch (Exception)
+                        else
                         {
-                            NotesService.UpdateNote(item);
+                            if (item.Delete != null)
+                            {
+                                NotesService.DeleteNote(item);
+                            }
+                            else
+                            {
+                                NotesService.UpdateNote(item);
+                            }
                         }
                     }
-
-
                 }
-                catch(Exception)
+                catch(Exception ex)
                 {
                     throw new InvalidCastException("Cannot deserialize list notes");
                 }
@@ -111,18 +127,19 @@ namespace NoteBook.Services
             {
                 throw new HttpRequestException("Not authorized");
             }
-           
+
             return NotesService.GetAllNotes();
         }
 
         public async Task<bool> CreateNote(NoteModel credentials)
         {
+            credentials.NoteId = Guid.NewGuid().ToString();
             HttpResponseMessage response;
 
             var json = JsonConvert.SerializeObject(credentials);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            using (var client = AccountService.GetAuthHttpClient())
+            using (var client = AuthHelper.GetAuthHttpClient())
             {
                 response = await client.PostAsync(Settings.Url + Settings.NoteCreatePath, content);
             }
@@ -130,8 +147,8 @@ namespace NoteBook.Services
             if (response.IsSuccessStatusCode)
             {
                 var text = await response.Content.ReadAsStringAsync();
-                NoteModel tempModel;
 
+                NoteModel tempModel;
                 try
                 {
                     tempModel = JsonConvert.DeserializeObject<NoteModel>(text);
@@ -140,9 +157,13 @@ namespace NoteBook.Services
                 {
                     throw new InvalidCastException("Cannot deserialize note");
                 }
-                if (!NotesService.CreateNote(tempModel).Result)
-                    throw new InvalidOperationException("Cannot create object in DB");
-                UserSettings.SyncDate = Convert.ToDateTime(tempModel.Create).AddSeconds(1).ToString();
+
+                if (credentials.MediaFile != null)
+                {
+                    tempModel.MediaFile = credentials.MediaFile;
+                    if (! Upload(tempModel))
+                        throw new HttpRequestException("Cannot upload image");
+                }
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -151,41 +172,6 @@ namespace NoteBook.Services
 
 
             return response.IsSuccessStatusCode;
-        }
-
-
-        public async Task<bool> Upload(MediaFile mediaFile)
-        {
-            HttpResponseMessage response;
-
-            byte[] data = ReadFully(mediaFile.Source);
-            var imageStream = new ByteArrayContent(data);
-
-            var content = new MultipartFormDataContent();
-            content.Add(imageStream);
-
-            using (var client = AccountService.GetAuthHttpClient())
-            {
-                response = await client.PostAsync(Settings.Url + Settings.NoteAddImagePath+ "?filename=" + mediaFile.Path, content);
-            }
-
-            return response.IsSuccessStatusCode;
-
-        }
-
-        //This for converting media file stream to byte[]
-        public static byte[] ReadFully(Stream input)
-        {
-            byte[] buffer = new byte[16 * 1024];
-            using (MemoryStream ms = new MemoryStream())
-            {
-                int read;
-                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    ms.Write(buffer, 0, read);
-                }
-                return ms.ToArray();
-            }
         }
 
         public async Task<bool> UpdateNote(NoteModel credentials)
@@ -195,7 +181,7 @@ namespace NoteBook.Services
             var json = JsonConvert.SerializeObject(credentials);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            using (var client = AccountService.GetAuthHttpClient())
+            using (var client = AuthHelper.GetAuthHttpClient())
             {
                 response = await client.PutAsync(Settings.Url + Settings.NoteUpdatePath, content);
             }
@@ -214,9 +200,12 @@ namespace NoteBook.Services
                     throw new InvalidCastException("Cannot deserialize note");
                 }
 
-                if (!NotesService.UpdateNote(tempModel).Result)
-                    await NotesService.CreateNote(tempModel);
-                UserSettings.SyncDate = Convert.ToDateTime(tempModel.Update).AddSeconds(1).ToString();
+                if (credentials.MediaFile != null)
+                {
+                    tempModel.MediaFile = credentials.MediaFile;
+                    if (!Upload(tempModel))
+                        throw new HttpRequestException("Cannot upload image");
+                }
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -233,7 +222,7 @@ namespace NoteBook.Services
             var json = JsonConvert.SerializeObject(credentials);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            using (var client = AccountService.GetAuthHttpClient())
+            using (var client = AuthHelper.GetAuthHttpClient())
             {
                 response = await client.PostAsync(Settings.Url + Settings.NoteDeletePath, content);
             }
@@ -241,7 +230,6 @@ namespace NoteBook.Services
             if (response.IsSuccessStatusCode)
             {
                 await NotesService.DeleteNote(credentials);
-                UserSettings.SyncDate = DateTime.Now.ToString();
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -250,5 +238,44 @@ namespace NoteBook.Services
 
             return response.IsSuccessStatusCode;
         }
+
+        #region UploadingImage
+
+        private bool Upload(NoteModel model)
+        {
+            HttpResponseMessage response;
+
+            byte[] data = StreamHelper.ReadFully(model.MediaFile.Source);
+
+            var imageStream = new ByteArrayContent(data);
+
+            var content = new MultipartFormDataContent();
+            content.Add(imageStream);
+
+            using (var client = AuthHelper.GetAuthHttpClient())
+            {
+                response = client.PostAsync(Settings.Url + Settings.NoteAddImagePath + "?noteId=" + model.NoteId, content).Result;
+            }
+
+            return response.IsSuccessStatusCode;
+        }
+
+        private bool UploadBytes(NoteModel model)
+        {
+            HttpResponseMessage response;
+            var imageStream = new ByteArrayContent(model.ImageInBytes);
+
+            var content = new MultipartFormDataContent();
+            content.Add(imageStream);
+
+            using (var client = AuthHelper.GetAuthHttpClient())
+            {
+                response = client.PostAsync(Settings.Url + Settings.NoteAddImagePath + "?noteId=" + model.NoteId, content).Result;
+            }
+
+            return response.IsSuccessStatusCode;
+        }
+
+        #endregion
     }
 }

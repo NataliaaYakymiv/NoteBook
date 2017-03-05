@@ -25,17 +25,20 @@ namespace WebService.Models
         [Display(Name = "Note text")]
         public string NoteText { get; set; }
 
+        
+
         public int UserId { get; set; }
         public AccountModels.UserProfile User { get; set; }
 
         public DateTime Create { get; set; }
         public DateTime? Update { get; set; }
         public DateTime? Delete { get; set; }
+        public string Image { get; set; }
     }
 
     public class SyncModel
     {
-        public DateTime LastModify { set; get; }
+        public string LastModify { set; get; }
         public List<NoteModel> NoteModels { set; get; }
     }
 

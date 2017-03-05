@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Http;
 using WebService.Models;
 using WebService.Repositories;
@@ -156,10 +160,9 @@ namespace WebService.Controllers
             SyncModel syncModel = new SyncModel();
             var notes =
                 NotesRepository.HasChanges(AccountRepository.GetIdByUserName(User.Identity.Name), model).ToList();
-            HttpResponseMessage response;
             syncModel.NoteModels = notes;
-            syncModel.LastModify = DateTime.Now;
-            response = Request.CreateResponse(HttpStatusCode.OK, syncModel);
+            syncModel.LastModify = DateTime.Now.ToString("G");
+            var response = Request.CreateResponse(HttpStatusCode.OK, syncModel);
 
 
             return response;
@@ -167,117 +170,38 @@ namespace WebService.Controllers
 
         [HttpPost]
         [Route("PostImage")]
-        public async Task<HttpResponseMessage> PostFormData(string filename)
+        public HttpResponseMessage PostImage(string noteId)
         {
-            // Check if the request contains multipart/form-data.
-            if (!Request.Content.IsMimeMultipartContent())
+            var result = new HttpResponseMessage(HttpStatusCode.OK);
+            if (Request.Content.IsMimeMultipartContent())
             {
-                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+                Request.Content.ReadAsMultipartAsync<MultipartMemoryStreamProvider>(
+                    new MultipartMemoryStreamProvider()).ContinueWith((task) =>
+                    {
+                        MultipartMemoryStreamProvider provider = task.Result;
+                        foreach (HttpContent content in provider.Contents)
+                        {
+                            Stream stream = content.ReadAsStreamAsync().Result;
+                            string fileName;
+                            using (Image image = Image.FromStream(stream))
+                            {
+                                string filePath = HostingEnvironment.MapPath("~/Userimage/");
+                                fileName = DateTime.Now.ToFileTime() + ".png";
+                                string fullPath = Path.Combine(filePath, fileName);
+                                image.Save(fullPath);
+                            }
+                            NotesRepository.SetImage(noteId, AccountController.Url + "Userimage/" + fileName);
+                        }
+                    }).ConfigureAwait(false);
+                return result;
             }
-
-            string root = HttpContext.Current.Server.MapPath("~/Userimage");
-            var provider = new MultipartFileStreamProvider(root);
-
-            try
+            else
             {
-                // Read the form data.
-                await Request.Content.ReadAsMultipartAsync(provider);
-
-                // This illustrates how to get the file names.
-                foreach (MultipartFileData file in provider.FileData)
-                {
-                    //file.LocalFileName
-                    //System.IO.File.Move(file.LocalFileName, root + Guid.NewGuid() + file.Headers.ContentDisposition.FileName);
-                    Trace.WriteLine(file.Headers.ContentDisposition.FileName);
-                    Trace.WriteLine("Server file path: " + file.LocalFileName);
-                    Trace.WriteLine(filename);
-                }
-                return Request.CreateResponse(HttpStatusCode.OK);
-            }
-            catch (System.Exception e)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
+                throw new HttpResponseException(Request.CreateResponse(
+                    HttpStatusCode.NotAcceptable,
+                    "This request is not properly formatted"));
             }
         }
-        //public  IHttpActionResult PostImage()
-        //{
-        //    //var file = HttpContext.Current.Request.Files.Count > 0 ?
-        //    // HttpContext.Current.Request.Files[0] : null;
-
-        //    //if (file != null && file.ContentLength > 0)
-        //    //{
-        //    //    var fileName = Path.GetFileName(file.FileName);
-
-        //    //    var path = Path.Combine(
-        //    //        HttpContext.Current.Server.MapPath("~/uploads"),
-        //    //        fileName
-        //    //    );
-
-        //    //    file.SaveAs(path);
-        //    //}
-
-        //    //return Ok(file != null ? "/Userimage/" + file.FileName : "");
-        //    Dictionary<string, object> dict = new Dictionary<string, object>();
-        //    try
-        //    {
-
-        //        var httpRequest = HttpContext.Current.Request;
-
-        //        foreach (string file in httpRequest.Files)
-        //        {
-        //            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.Created);
-
-        //            var postedFile = httpRequest.Files[file];
-        //            if (postedFile != null && postedFile.ContentLength > 0)
-        //            {
-
-        //                int MaxContentLength = 1024 * 1024 * 1; //Size = 1 MB  
-
-        //                IList<string> AllowedFileExtensions = new List<string> { ".jpg", ".gif", ".png" };
-        //                var ext = postedFile.FileName.Substring(postedFile.FileName.LastIndexOf('.'));
-        //                var extension = ext.ToLower();
-        //                if (!AllowedFileExtensions.Contains(extension))
-        //                {
-
-        //                    var message = string.Format("Please Upload image of type .jpg,.gif,.png.");
-
-        //                    dict.Add("error", message);
-        //                    return BadRequest(dict.ToString());
-        //                }
-        //                else if (postedFile.ContentLength > MaxContentLength)
-        //                {
-
-        //                    var message = string.Format("Please Upload a file upto 1 mb.");
-
-        //                    dict.Add("error", message);
-        //                    return BadRequest();
-        //                }
-        //                else
-        //                {
-
-
-
-        //                    var filePath = HttpContext.Current.Server.MapPath("~/Userimage/" + postedFile.FileName + extension);
-
-        //                    postedFile.SaveAs(filePath);
-
-        //                }
-        //            }
-
-        //            var message1 = string.Format("Image Updated Successfully.");
-        //            return Ok(); 
-        //        }
-        //        var res = string.Format("Please Upload a image.");
-        //        dict.Add("error", res);
-        //        return NotFound();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        var res = string.Format("some Message");
-        //        dict.Add("error", res);
-        //        return NotFound();
-        //    }
-        //}
     }
 
 }

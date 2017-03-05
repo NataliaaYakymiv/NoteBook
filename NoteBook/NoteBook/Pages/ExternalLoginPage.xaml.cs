@@ -50,8 +50,8 @@ namespace NoteBook.Pages
                     var result = await AccountService.ExternalLogin(e.Url);
                     if (result)
                     {
-                        App.NotesItemManager.ClearLocal();
-                        UserSettings.SyncDate = DateTime.MinValue.ToString();
+                        //App.NotesItemManager.ClearLocal();
+                        UserSettings.SyncDate = DateTime.MinValue.ToString("G");
                         var page = new NotePage(AccountService, NotesService);
                         Application.Current.MainPage = new NavigationPage(page);
                     }

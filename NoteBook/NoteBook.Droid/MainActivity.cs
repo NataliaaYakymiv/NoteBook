@@ -7,6 +7,7 @@ using XLabs.Forms;
 using XLabs.Ioc;
 using XLabs.Platform.Device;
 using XLabs.Platform.Services;
+using XLabs.Platform.Services.IO;
 using XLabs.Platform.Services.Media;
 
 namespace NoteBook.Droid
@@ -26,6 +27,7 @@ namespace NoteBook.Droid
             container.Register<IDisplay>(t => t.Resolve<IDevice>().Display);
             container.Register<INetwork>(t => t.Resolve<IDevice>().Network);
             container.Register<IMediaPicker>(t => t.Resolve<IDevice>().MediaPicker);
+            container.Register<IFileManager>(t => t.Resolve<IDevice>().FileManager);
 
             Resolver.SetResolver(container.GetResolver());
 

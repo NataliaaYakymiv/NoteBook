@@ -13,5 +13,6 @@ namespace WebService.Contracts
         void Insert(int idUser, NoteModel note);
         void Update(int idUser, NoteModel note);
         void Delete(int idUser, string idNote);
+        void SetImage(string noteId, string path);
     }
 }

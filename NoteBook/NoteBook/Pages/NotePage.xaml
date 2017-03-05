@@ -55,7 +55,7 @@
 
                   <Label VerticalOptions="Center" HorizontalOptions="StartAndExpand" Grid.Row="0" Grid.Column="0" Text="{Binding NoteName}" Font="Bold" FontSize="Large" />
                   <Label VerticalOptions="Center" HorizontalOptions="StartAndExpand" Grid.Row="0" Grid.Column="1" Text="{Binding NoteText}" FontSize="Large" />
-                  
+                  <Image VerticalOptions="Center" HorizontalOptions="StartAndExpand" Grid.Row="0" Grid.Column="0"  Source="{Binding Image}"/>
                 </Grid>
               </ViewCell.View>
             </ViewCell>

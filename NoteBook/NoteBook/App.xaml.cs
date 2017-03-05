@@ -1,6 +1,7 @@
 ﻿using System;
 using Xamarin.Forms;
 using NoteBook.Contracts;
+using NoteBook.Helpers;
 using NoteBook.Pages;
 using NoteBook.Services;
 
@@ -8,38 +9,28 @@ namespace NoteBook
 {
     public partial class App : Application
     {
-        public static NotesItemManager NotesItemManager { get; private set; }
+       // public static NotesItemManager NotesItemManager { get; private set; }
 
-        public static INotesService database;
-        public static INotesService Database
-
-        {
-            get
-            {
-                if (database == null)
-                {
-                    database = new NoteService(Settings.DatabaseName);
-                }
-                return database;
-            }
-        }
+        private static INotesService _database;
+        public static INotesService Database => _database ?? (_database = new NoteService(Settings.DatabaseName));
 
         public App()
         {
             InitializeComponent();
-
+            AuthHelper.ClearAll();
+            NotesHelper.ClearLocal(new NoteService(Settings.DatabaseName));
             if (string.IsNullOrEmpty(UserSettings.SyncDate))
             {
-                UserSettings.SyncDate = DateTime.MinValue.ToString();
+                UserSettings.SyncDate = DateTime.MinValue.ToString("G");
             }
 
             var accountService = new AccountService();
-            var noteService = new NoteService(Settings.DatabaseName);
-            var remoteService = new RemoteNotesService(accountService, noteService);
+           // var noteService = new NoteService(Settings.DatabaseName);
+           // var remoteService = new RemoteNotesService(noteService);
 
-            NotesItemManager = new NotesItemManager(remoteService, noteService);
+            //NotesItemManager = new NotesItemManager(remoteService, noteService);
 
-            var isLoggedIn = Services.AccountService.IsLoged();
+            var isLoggedIn = AuthHelper.IsLoged();
 
             if (isLoggedIn)
             {

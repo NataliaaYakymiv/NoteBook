@@ -87,7 +87,7 @@ namespace NoteBook.Pages
         {
             if (e.Value)
             {
-                SetService(new RemoteNotesService(new AccountService(), new NoteService(Settings.DatabaseName)));
+                SetService(new RemoteNotesService(new NoteService(Settings.DatabaseName)));
                 RemoteLocalSwitchLabel.Text = "REMOTE";
             }
             else
