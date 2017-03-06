@@ -25,7 +25,7 @@
         <Label HorizontalTextAlignment="Start">Text</Label>
         <Editor x:Name="NoteTextEntry"/>
       </StackLayout>
-      <Image VerticalOptions="CenterAndExpand" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="Image" Source="/icon.jpg" IsVisible="False" ></Image>
+      <Image Aspect="AspectFit" VerticalOptions="CenterAndExpand" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="Image" Source="/icon.jpg" IsVisible="False" ></Image>
     </Grid>
 
     <Button x:Name="SelectImageBtn" Text = "Select image" FontSize="Medium" BorderWidth="1" Clicked="OnSelectImage"/>

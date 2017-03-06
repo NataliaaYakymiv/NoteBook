@@ -51,7 +51,7 @@ namespace NoteBook.Services
             return items;
         }
 
-        public Task<IEnumerable<NoteModel>> GetSyncNotes()
+        public async Task<IEnumerable<NoteModel>> GetSyncNotes()
         {
             var syncModel = new SyncModel {LastModify = UserSettings.SyncDate };
             var notes = NotesService.GetSyncNotes().Result.ToList() ?? new List<NoteModel>();
@@ -74,7 +74,7 @@ namespace NoteBook.Services
                 {
                     if (notes[i].ImageInBytes != null && notes[i].ImageInBytes.Length > 0)
                     {
-                        UploadBytes(notes[i]);
+                        await UploadBytes(notes[i]);
                         notes[i].ImageInBytes = null;
                     }
                 }
@@ -130,7 +130,7 @@ namespace NoteBook.Services
                 throw new HttpRequestException("Not authorized");
             }
 
-            return NotesService.GetAllNotes();
+            return NotesService.GetAllNotes().Result;
         }
 
         public async Task<bool> CreateNote(NoteModel credentials)
@@ -163,8 +163,9 @@ namespace NoteBook.Services
                 if (credentials.MediaFile != null)
                 {
                     tempModel.MediaFile = credentials.MediaFile;
-                    if (! Upload(tempModel))
-                        throw new HttpRequestException("Cannot upload image");
+                    await Upload(tempModel);
+                    //  if (! Upload(tempModel))
+                    //  throw new HttpRequestException("Cannot upload image");
                 }
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)
@@ -205,8 +206,9 @@ namespace NoteBook.Services
                 if (credentials.MediaFile != null)
                 {
                     tempModel.MediaFile = credentials.MediaFile;
-                    if (!Upload(tempModel))
-                        throw new HttpRequestException("Cannot upload image");
+                    await Upload(tempModel);
+                    //if (!Upload(tempModel))
+                    // throw new HttpRequestException("Cannot upload image");
                 }
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)
@@ -243,7 +245,7 @@ namespace NoteBook.Services
 
         #region UploadingImage
 
-        private bool Upload(NoteModel model)
+        private async Task Upload(NoteModel model)
         {
             HttpResponseMessage response;
 
@@ -256,13 +258,13 @@ namespace NoteBook.Services
 
             using (var client = AuthHelper.GetAuthHttpClient())
             {
-                response = client.PostAsync(Settings.Url + Settings.NoteAddImagePath + "?noteId=" + model.NoteId, content).Result;
+                await client.PostAsync(Settings.Url + Settings.NoteAddImagePath + "?noteId=" + model.NoteId, content);
             }
 
-            return response.IsSuccessStatusCode;
+          //  return response.IsSuccessStatusCode;
         }
 
-        private bool UploadBytes(NoteModel model)
+        private async  Task UploadBytes(NoteModel model)
         {
             HttpResponseMessage response;
             var imageStream = new ByteArrayContent(model.ImageInBytes);
@@ -272,10 +274,10 @@ namespace NoteBook.Services
 
             using (var client = AuthHelper.GetAuthHttpClient())
             {
-                response = client.PostAsync(Settings.Url + Settings.NoteAddImagePath + "?noteId=" + model.NoteId, content).Result;
+                await client.PostAsync(Settings.Url + Settings.NoteAddImagePath + "?noteId=" + model.NoteId, content);
             }
 
-            return response.IsSuccessStatusCode;
+            //return response.IsSuccessStatusCode;
         }
 
         #endregion
