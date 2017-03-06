@@ -51,7 +51,7 @@ namespace NoteBook.Services
             return items;
         }
 
-        public Task<IEnumerable<NoteModel>> GetSyncNotes()
+        public async Task<IEnumerable<NoteModel>> GetSyncNotes()
         {
             var syncModel = new SyncModel {LastModify = UserSettings.SyncDate };
             var notes = NotesService.GetSyncNotes().Result.ToList() ?? new List<NoteModel>();
@@ -74,7 +74,7 @@ namespace NoteBook.Services
                 {
                     if (notes[i].ImageInBytes != null && notes[i].ImageInBytes.Length > 0)
                     {
-                        UploadBytes(notes[i]);
+                        await UploadBytes(notes[i]);
                         notes[i].ImageInBytes = null;
                     }
                 }
@@ -130,7 +130,7 @@ namespace NoteBook.Services
                 throw new HttpRequestException("Not authorized");
             }
 
-            return NotesService.GetAllNotes();
+            return NotesService.GetAllNotes().Result;
         }
 
         public async Task<bool> CreateNote(NoteModel credentials)
@@ -164,7 +164,6 @@ namespace NoteBook.Services
                 {
                     tempModel.MediaFile = credentials.MediaFile;
                     await Upload(tempModel);
-                    //throw new HttpRequestException("Cannot upload image");
                 }
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)
@@ -206,7 +205,6 @@ namespace NoteBook.Services
                 {
                     tempModel.MediaFile = credentials.MediaFile;
                     await Upload(tempModel);
-                    //throw new HttpRequestException("Cannot upload image");
                 }
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)
@@ -245,36 +243,29 @@ namespace NoteBook.Services
 
         private async Task Upload(NoteModel model)
         {
-            HttpResponseMessage response;
-
             byte[] data = StreamHelper.ReadFully(model.MediaFile.Source);
 
             var imageStream = new ByteArrayContent(data);
 
-            var content = new MultipartFormDataContent();
-            content.Add(imageStream);
-
-            var client = AuthHelper.GetAuthHttpClient();
-            await client.PostAsync(Settings.Url + Settings.NoteAddImagePath + "?noteId=" + model.NoteId, content);
-            
-
-           // return response.IsSuccessStatusCode;
-        }
-
-        private async Task UploadBytes(NoteModel model)
-        {
-            HttpResponseMessage response;
-            var imageStream = new ByteArrayContent(model.ImageInBytes);
-
-            var content = new MultipartFormDataContent();
-            content.Add(imageStream);
+            var content = new MultipartFormDataContent {imageStream};
 
             using (var client = AuthHelper.GetAuthHttpClient())
             {
                 await client.PostAsync(Settings.Url + Settings.NoteAddImagePath + "?noteId=" + model.NoteId, content);
             }
+        }
 
-            //return response.IsSuccessStatusCode;
+
+        private async Task UploadBytes(NoteModel model)
+        {
+            var imageStream = new ByteArrayContent(model.ImageInBytes);
+
+            var content = new MultipartFormDataContent {imageStream};
+
+            using (var client = AuthHelper.GetAuthHttpClient())
+            {
+                await client.PostAsync(Settings.Url + Settings.NoteAddImagePath + "?noteId=" + model.NoteId, content);
+            }
         }
 
         #endregion

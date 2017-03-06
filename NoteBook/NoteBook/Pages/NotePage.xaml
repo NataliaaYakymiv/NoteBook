@@ -38,20 +38,20 @@
       <ListView x:Name="NotesList" ItemSelected="NotesList_ItemSelected" SeparatorVisibility="None">
         <ListView.ItemTemplate>
           <DataTemplate x:Name="DataTemplate">
-            <ViewCell>
+            <ViewCell Height="NaN">
               <ViewCell.View>
                 <Grid ColumnSpacing="5" Margin="5">
                   <Grid.RowDefinitions >
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
                   </Grid.RowDefinitions>
                   <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                   </Grid.ColumnDefinitions>
                   <Label VerticalOptions="Center" HorizontalOptions="StartAndExpand" Grid.Row="0" Grid.Column="1" Text="{Binding NoteName}" Font="Bold" FontSize="Large" />
-                  <Label VerticalOptions="Center" HorizontalOptions="StartAndExpand" Grid.Row="1" Grid.Column="1" Text="{Binding NoteText}" FontSize="Large" />
-                  <Image VerticalOptions="CenterAndExpand" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="Image" Source="{Binding Image}" IsVisible="True" ></Image>
+                  <Label VerticalOptions="Center" HorizontalOptions="StartAndExpand" Grid.Row="0" Grid.Column="2" Text="{Binding NoteText}" FontSize="Large" />
+                  <Image VerticalOptions="CenterAndExpand" Grid.Row="0" Grid.Column="0" x:Name="Image" Source="{Binding Image}" IsVisible="True" ></Image>
                 </Grid>
               </ViewCell.View>
             </ViewCell>

@@ -89,6 +89,10 @@ namespace WebService.Repositories
                     }
                     list.Add(Find(idUser, model.NoteModels[i].NoteId));
                 }
+                foreach (var n in notes)
+                {
+                    list.Add(Find(idUser, n.NoteId));
+                }
             }
 
             return list;
