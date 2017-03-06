@@ -80,16 +80,9 @@ namespace NoteBook.Pages
                 }
                 else
                 {
-                   //App.NotesItemManager.ClearLocal();
                     UserSettings.SyncDate = DateTime.MinValue.ToString("G");
                     var page = new NotePage(AccountService, NotesService);
                     Application.Current.MainPage = new NavigationPage(page);
-
-                    //OnDisappearing();
-                    //var page = new NotePage();
-                    //await Navigation.PushAsync(page);
-                    //page.SetService(NotesService);
-                    //page.SetAuthService(new AccountService());
                 }
             }
             else
@@ -98,11 +91,6 @@ namespace NoteBook.Pages
             }
 
         }
-
-        //protected override void OnDisappearing()
-        //{
-        //    Navigation.RemovePage(this);
-        //}
 
         private async void OnGoogleLogin(object sender, EventArgs e)
         {

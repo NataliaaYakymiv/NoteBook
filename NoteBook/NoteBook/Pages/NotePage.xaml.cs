@@ -102,7 +102,6 @@ namespace NoteBook.Pages
         {
             SetService(new LocalNotesService(Settings.DatabaseName));
             await AccountService.Logout();
-            //OnDisappearing();
             Application.Current.MainPage = new NavigationPage(new LoginPage(AccountService, NotesService));
         }
 
