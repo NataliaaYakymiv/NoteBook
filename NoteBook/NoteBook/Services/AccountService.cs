@@ -75,6 +75,7 @@ namespace NoteBook.Services
                  await client.GetAsync(Settings.Url + Settings.LogoutPath).ConfigureAwait(false);
             }
             AuthHelper.ClearAll();
+            NotesHelper.ClearLocal(new NoteService(Settings.DatabaseName));
         }
 
     }

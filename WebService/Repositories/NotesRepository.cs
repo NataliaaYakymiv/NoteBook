@@ -53,12 +53,12 @@ namespace WebService.Repositories
                         {
                             Insert(idUser, notemodels);
                         }
-                        list.Add(Find(idUser, notemodels.NoteId));
                     }
                     else
                     {
                         Delete(idUser, notemodels.NoteId);
                     }
+                    list.Add(Find(idUser, notemodels.NoteId));
                 }
             }
 
@@ -68,45 +68,27 @@ namespace WebService.Repositories
             }
             else // changes in local and remote 
             {
-                for (int j = 0; j < model.NoteModels.Count; j++)
-                //for (int i = 0; i < notes.Count; i++) 
+                for (int i = 0; i < model.NoteModels.Count; i++)
                 {
-                    //for (int j = 0; j < model.NoteModels.Count; j++) 
-                    for (int i = 0; i < notes.Count; i++)
+                    var note = Find(idUser, model.NoteModels[i].NoteId);
+                    if (note != null)
                     {
-                        if ((model.NoteModels[j].Delete != null && notes[i].Update < model.NoteModels[j].Delete) ||
-                        (model.NoteModels[j].Delete != null && notes[i].Update == null))
+                        if (model.NoteModels[i].Delete != null)
                         {
-                            Delete(idUser, model.NoteModels[j].NoteId);
-                            notes.Remove(model.NoteModels[j]);
-                            j--;
-                            continue;
+                            Delete(idUser, model.NoteModels[i].NoteId);
                         }
-
-                        if (model.NoteModels[j].Update != null)
+                        else
                         {
-                            if (model.NoteModels[j].NoteId == notes[i].NoteId)
-                            {
-                                if ((model.NoteModels[j].Update > notes[i].Update) || notes[i].Update == null)
-                                {
-                                    Update(idUser, model.NoteModels[j]);
-                                    list.Add(model.NoteModels[j]);
-                                }
-                                notes.Remove(notes[i]);
-                                model.NoteModels.Remove(model.NoteModels[j]);
-                                i--;
-                                j--;
-                                break;
-                            }
+                            Update(idUser, model.NoteModels[i]);
                         }
-
-                        //InsertFromLocal(idUser, model.NoteModels[j]); 
-                        //list.Add(model.NoteModels[j]); 
                     }
-                    Insert(idUser, model.NoteModels[j]);
-                    list.Add(Find(idUser, model.NoteModels[j].NoteId));
+                    else
+                    {
+                        Insert(idUser, model.NoteModels[i]);
+                        
+                    }
+                    list.Add(Find(idUser, model.NoteModels[i].NoteId));
                 }
-
             }
 
             return list;
@@ -126,8 +108,8 @@ namespace WebService.Repositories
             var note = Find(idUser, noteModel.NoteId);
             if (note != null)
             {
-                note.NoteName = note.NoteName;
-                note.NoteText = note.NoteText;
+                note.NoteName = noteModel.NoteName;
+                note.NoteText = noteModel.NoteText;
                 note.Update = DateTime.Now;
                 _db.Entry(note).State = EntityState.Modified;
 

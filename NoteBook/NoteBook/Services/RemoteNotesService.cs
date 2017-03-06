@@ -51,10 +51,10 @@ namespace NoteBook.Services
             return items;
         }
 
-        public Task<IEnumerable<NoteModel>> GetSyncNotes(DateTime time)
+        public Task<IEnumerable<NoteModel>> GetSyncNotes()
         {
             var syncModel = new SyncModel {LastModify = UserSettings.SyncDate };
-            var notes = NotesService.GetSyncNotes(DateTime.Parse(UserSettings.SyncDate)).Result.ToList() ?? new List<NoteModel>();
+            var notes = NotesService.GetSyncNotes().Result.ToList() ?? new List<NoteModel>();
 
             syncModel.NoteModels = notes;
 
@@ -102,6 +102,7 @@ namespace NoteBook.Services
                         {
                             if (item.Delete == null)
                             {
+                                item.IsLocal = false;
                                 NotesService.CreateNote(item);
                             }
                         }
@@ -113,6 +114,7 @@ namespace NoteBook.Services
                             }
                             else
                             {
+                                item.IsLocal = false;
                                 NotesService.UpdateNote(item);
                             }
                         }

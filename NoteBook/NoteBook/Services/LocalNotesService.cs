@@ -27,7 +27,7 @@ namespace NoteBook.Services
             return task;   
         }
 
-        public Task<IEnumerable<NoteModel>> GetSyncNotes(DateTime time)
+        public Task<IEnumerable<NoteModel>> GetSyncNotes()
         {
             var task = new Task<IEnumerable<NoteModel>>(() => _database.Table<NoteModel>().Where(item => item.Delete == null));
             task.Start();
@@ -38,6 +38,7 @@ namespace NoteBook.Services
         {
             note.NoteId = Guid.NewGuid().ToString();
             note.Create = DateTime.Now.ToString("G");
+            note.IsLocal = true;
             if (note.MediaFile != null)
             {
                 note.ImageInBytes = StreamHelper.ReadFully(note.MediaFile.Source);
@@ -51,7 +52,7 @@ namespace NoteBook.Services
         public Task<bool> UpdateNote(NoteModel note)
         {
             note.Update = DateTime.Now.ToString("G");
-
+            note.IsLocal = true;
             if (note.MediaFile != null)
             {
                 note.ImageInBytes = StreamHelper.ReadFully(note.MediaFile.Source);
@@ -66,7 +67,7 @@ namespace NoteBook.Services
         public Task<bool> DeleteNote(NoteModel note)
         {
             note.Delete = DateTime.Now.ToString("G");
-
+            note.IsLocal = true;
             var task = new Task<bool>(() => _database.Update(note) > 0);
             task.Start();
             return task;

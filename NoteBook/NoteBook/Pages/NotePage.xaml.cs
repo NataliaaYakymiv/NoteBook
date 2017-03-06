@@ -48,7 +48,7 @@ namespace NoteBook.Pages
             if (NotesService != null)
             {
                 //Notes = NotesService.GetAllNotes().Result.ToList();
-                Notes = NotesService.GetSyncNotes(Convert.ToDateTime(UserSettings.SyncDate)).Result.ToList();
+                Notes = NotesService.GetSyncNotes().Result.ToList();
                 NotesList.ItemsSource = Notes;
                 UpdateButton.IsEnabled = DeleteButton.IsEnabled = false;
             }
@@ -102,13 +102,12 @@ namespace NoteBook.Pages
         {
             SetService(new LocalNotesService(Settings.DatabaseName));
             await AccountService.Logout();
-            //OnDisappearing();
             Application.Current.MainPage = new NavigationPage(new LoginPage(AccountService, NotesService));
         }
 
         private void OnRefresh(object sender, EventArgs e)
         {
-            OnAppearing();
+            Notes = NotesService.GetAllNotes().Result.ToList();
         }
     }
 }
