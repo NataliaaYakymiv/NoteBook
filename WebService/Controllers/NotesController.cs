@@ -78,7 +78,7 @@ namespace WebService.Controllers
             }
             catch (Exception e)
             {
-                Debug.Print("Bug!!!!!!!!!!!!!!!!!!!! "  + e.Message);
+                Debug.Print("Bug!!!!!!!!!!!!!!!!!!!! " + e.Message);
                 result = Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
@@ -170,37 +170,25 @@ namespace WebService.Controllers
 
         [HttpPost]
         [Route("PostImage")]
-        public HttpResponseMessage PostImage(string noteId)
+        public async Task<HttpResponseMessage> PostImage(string noteId)
         {
             var result = new HttpResponseMessage(HttpStatusCode.OK);
-            if (Request.Content.IsMimeMultipartContent())
+
+            var streamProvider = await Request.Content.ReadAsMultipartAsync();
+            foreach (var file in streamProvider.Contents)
             {
-                Request.Content.ReadAsMultipartAsync<MultipartMemoryStreamProvider>(
-                    new MultipartMemoryStreamProvider()).ContinueWith((task) =>
-                    {
-                        MultipartMemoryStreamProvider provider = task.Result;
-                        foreach (HttpContent content in provider.Contents)
-                        {
-                            Stream stream = content.ReadAsStreamAsync().Result;
-                            string fileName;
-                            using (Image image = Image.FromStream(stream))
-                            {
-                                string filePath = HostingEnvironment.MapPath("~/Userimage/");
-                                fileName = DateTime.Now.ToFileTime() + ".png";
-                                string fullPath = Path.Combine(filePath, fileName);
-                                image.Save(fullPath);
-                            }
-                            NotesRepository.SetImage(noteId, AccountController.Url + "Userimage/" + fileName);
-                        }
-                    }).ConfigureAwait(false);
-                return result;
+                var imageStream = await file.ReadAsStreamAsync();
+                string fileName;
+                using (Image image = Image.FromStream(imageStream))
+                {
+                    string filePath = HostingEnvironment.MapPath("~/App_Data/Userimage/");
+                    fileName = DateTime.Now.ToFileTime() + ".png";
+                    string fullPath = Path.Combine(filePath, fileName);
+                    image.Save(fullPath);
+                }
+                NotesRepository.SetImage(noteId, AccountController.Url + "App_Data/Userimage/" + fileName);
             }
-            else
-            {
-                throw new HttpResponseException(Request.CreateResponse(
-                    HttpStatusCode.NotAcceptable,
-                    "This request is not properly formatted"));
-            }
+            return result;
         }
     }
 

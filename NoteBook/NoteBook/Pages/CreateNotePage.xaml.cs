@@ -1,9 +1,7 @@
 ﻿using NoteBook.Models;
 using System;
 using System.Net.Http;
-using System.Threading.Tasks;
 using NoteBook.Contracts;
-using NoteBook.Services;
 using Xamarin.Forms;
 using XLabs.Ioc;
 using XLabs.Platform.Device;
@@ -109,9 +107,9 @@ namespace NoteBook.Pages
                 Image.Source = ImageSource.FromStream(() => _mediaFile.Source);
                 Image.IsVisible = true;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                StateLabel.Text = "some kekxeption";
+                StateLabel.Text = ex.Message;
             }
 
         }
