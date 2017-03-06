@@ -11,7 +11,7 @@ namespace NoteBook.Contracts
     {
         Task<IEnumerable<NoteModel>> GetAllNotes();
 
-        Task<IEnumerable<NoteModel>> GetSyncNotes(DateTime time);
+        Task<IEnumerable<NoteModel>> GetSyncNotes();
 
         Task<bool> CreateNote(NoteModel credentials);
 

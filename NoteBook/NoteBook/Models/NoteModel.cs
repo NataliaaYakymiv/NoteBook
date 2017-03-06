@@ -26,6 +26,9 @@ namespace NoteBook.Models
 
         [JsonIgnore]
         public byte[] ImageInBytes { get; set; }
+
+        [JsonIgnore]
+        public bool IsLocal { get; set; }
     }
 
     public class SyncModel

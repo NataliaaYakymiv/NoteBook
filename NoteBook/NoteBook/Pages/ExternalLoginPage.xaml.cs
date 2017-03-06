@@ -1,5 +1,6 @@
 ﻿using System;
 using NoteBook.Contracts;
+using NoteBook.Helpers;
 using NoteBook.Services;
 using Xamarin.Forms;
 
@@ -50,7 +51,7 @@ namespace NoteBook.Pages
                     var result = await AccountService.ExternalLogin(e.Url);
                     if (result)
                     {
-                        //App.NotesItemManager.ClearLocal();
+                        NotesHelper.ClearLocal(new NoteService(Settings.DatabaseName));
                         UserSettings.SyncDate = DateTime.MinValue.ToString("G");
                         var page = new NotePage(AccountService, NotesService);
                         Application.Current.MainPage = new NavigationPage(page);

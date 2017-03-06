@@ -9,7 +9,6 @@ namespace NoteBook
 {
     public partial class App : Application
     {
-       // public static NotesItemManager NotesItemManager { get; private set; }
 
         private static INotesService _database;
         public static INotesService Database => _database ?? (_database = new NoteService(Settings.DatabaseName));
@@ -17,19 +16,14 @@ namespace NoteBook
         public App()
         {
             InitializeComponent();
-            AuthHelper.ClearAll();
-            NotesHelper.ClearLocal(new NoteService(Settings.DatabaseName));
+            //AuthHelper.ClearAll();
+            //NotesHelper.ClearLocal(new NoteService(Settings.DatabaseName));
             if (string.IsNullOrEmpty(UserSettings.SyncDate))
             {
                 UserSettings.SyncDate = DateTime.MinValue.ToString("G");
             }
 
             var accountService = new AccountService();
-           // var noteService = new NoteService(Settings.DatabaseName);
-           // var remoteService = new RemoteNotesService(noteService);
-
-            //NotesItemManager = new NotesItemManager(remoteService, noteService);
-
             var isLoggedIn = AuthHelper.IsLoged();
 
             if (isLoggedIn)

@@ -28,10 +28,10 @@ namespace NoteBook.Services
             return task;
         }
 
-        public Task<IEnumerable<NoteModel>> GetSyncNotes(DateTime time)
+        public Task<IEnumerable<NoteModel>> GetSyncNotes()
         {
             var task = new Task<IEnumerable<NoteModel>>(() => _database.Table<NoteModel>().AsEnumerable()
-                    .Where(item => Convert.ToDateTime(item.Create) > time || Convert.ToDateTime(item.Update) > time || Convert.ToDateTime(item.Delete) > time));
+                    .Where(x => x.IsLocal));
             task.Start();
             return task;
         }
