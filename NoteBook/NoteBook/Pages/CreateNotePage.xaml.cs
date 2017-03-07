@@ -70,7 +70,7 @@ namespace NoteBook.Pages
                     NoteNameEntry.Text = string.Empty;
                     NoteTextEntry.Text = string.Empty;
 
-                    await Task.Factory.StartNew(() => Navigation.PopAsync());
+                    await Navigation.PopAsync();
                 }
                 else
                 {
