@@ -35,7 +35,6 @@ namespace NoteBook.Pages
             NotesService = notesService;
             CreateNotePage = new CreateNotePage(NotesService);
             UpdateNotePage = new UpdateNotePage(NotesService);
-            //OnAppearing();
         }
 
         public void SetAuthService(IAccountService accountService)
@@ -47,7 +46,6 @@ namespace NoteBook.Pages
         {
             if (NotesService != null)
             {
-                //Notes = NotesService.GetAllNotes().Result.ToList();
                 Notes = NotesService.GetSyncNotes().Result.ToList();
                 NotesList.ItemsSource = Notes;
                 UpdateButton.IsEnabled = DeleteButton.IsEnabled = false;
@@ -74,7 +72,6 @@ namespace NoteBook.Pages
         private async void OnDelete(object sender, EventArgs e)
         {
             await NotesService.DeleteNote((NoteModel)NotesList.SelectedItem);
-            //NotesList.IsRefreshing = true;
             OnAppearing();
         }
 

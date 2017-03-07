@@ -164,7 +164,7 @@ namespace NoteBook.Services
                 if (credentials.MediaFile != null)
                 {
                     tempModel.MediaFile = credentials.MediaFile;
-                    await Task.Factory.StartNew(() => Upload(tempModel));
+                    await Upload(tempModel);
                 }
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)

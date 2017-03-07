@@ -1,6 +1,7 @@
 ﻿using NoteBook.Models;
 using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 using NoteBook.Contracts;
 using Xamarin.Forms;
 using XLabs.Ioc;
@@ -69,7 +70,7 @@ namespace NoteBook.Pages
                     NoteNameEntry.Text = string.Empty;
                     NoteTextEntry.Text = string.Empty;
 
-                    await Navigation.PopAsync();
+                    await Task.Factory.StartNew(() => Navigation.PopAsync());
                 }
                 else
                 {

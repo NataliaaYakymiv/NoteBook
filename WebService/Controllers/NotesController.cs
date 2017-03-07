@@ -182,8 +182,8 @@ namespace WebService.Controllers
                 string fileName;
                 using (Image image = Image.FromStream(imageStream))
                 {
-                    Debug.Print("Post image");
-                    Thread.Sleep(60000);
+                    //Debug.Print("Post image");
+                   // Thread.Sleep(60000);
                     
                     string filePath = HostingEnvironment.MapPath("~/Userimage/");
                     fileName = DateTime.Now.ToFileTime() + ".png";
