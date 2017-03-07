@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
@@ -47,7 +48,7 @@ namespace WebService.Controllers
 
         [HttpPost]
         [Route("CreateNote")]
-        public HttpResponseMessage CreateNote(NoteModel item)
+        public async Task<HttpResponseMessage> CreateNote(NoteModel item)
         {
             HttpResponseMessage result;
 
@@ -82,7 +83,7 @@ namespace WebService.Controllers
                 result = Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
-            return result;
+            return await Task.Factory.StartNew(() => result);
         }
 
         [HttpPut]
@@ -181,12 +182,15 @@ namespace WebService.Controllers
                 string fileName;
                 using (Image image = Image.FromStream(imageStream))
                 {
-                    string filePath = HostingEnvironment.MapPath("~/App_Data/Userimage/");
+                    Debug.Print("Post image");
+                    Thread.Sleep(60000);
+                    
+                    string filePath = HostingEnvironment.MapPath("~/Userimage/");
                     fileName = DateTime.Now.ToFileTime() + ".png";
                     string fullPath = Path.Combine(filePath, fileName);
                     image.Save(fullPath);
                 }
-                NotesRepository.SetImage(noteId, AccountController.Url + "App_Data/Userimage/" + fileName);
+                NotesRepository.SetImage(noteId, AccountController.Url + "Userimage/" + fileName);
             }
             return result;
         }

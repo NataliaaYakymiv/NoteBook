@@ -263,9 +263,7 @@
     </Content>
     <None Include="Properties\PublishProfiles\somePublish.pubxml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\UserImage\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
