@@ -81,5 +81,11 @@ namespace NoteBook.Pages
                 StateLabel.Text = exception.Message;
             }
         }
+
+        public async void OnDeleteNote(object sender, EventArgs e)
+        {
+            await NotesService.DeleteNote(NoteModel);
+            await Navigation.PopAsync();
+        }
     }
 }

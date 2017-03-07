@@ -16,6 +16,7 @@
     <Label x:Name="UpdatedLabel" HorizontalOptions="Start"></Label>
     
     <Button x:Name="UpdateBtn" Text = "Update note" FontSize="Medium" BorderWidth="1" Clicked="OnUpdateNote"/>
+    <Button x:Name="DeleteBtn" Text = "Delete note" FontSize="Medium" BorderWidth="1" Clicked="OnDeleteNote"/>
     <ActivityIndicator x:Name="ActivityIndicatorUdpateNote" HorizontalOptions="Center" IsVisible="False" IsRunning="False" />
     <Label x:Name="StateLabel" FontSize="Large"></Label>
   
