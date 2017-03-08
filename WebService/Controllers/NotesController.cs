@@ -2,15 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Hosting;
 using System.Web.Http;
 using WebService.Models;
@@ -23,8 +19,8 @@ namespace WebService.Controllers
     [RoutePrefix("api/Notes")]
     public class NotesController : BaseApiController
     {
-        public INotesRepository NotesRepository;
-        public IAccountRepository AccountRepository;
+        private INotesRepository NotesRepository;
+        private IAccountRepository AccountRepository;
 
         public NotesController()
         {
@@ -186,15 +182,12 @@ namespace WebService.Controllers
                 string fileName;
                 using (Image image = Image.FromStream(imageStream))
                 {
-                    //Debug.Print("Post image");
-                   // Thread.Sleep(60000);
-                    
                     string filePath = HostingEnvironment.MapPath("~/Userimage/");
                     fileName = DateTime.Now.ToFileTime() + ".png";
                     string fullPath = Path.Combine(filePath, fileName);
                     image.Save(fullPath);
                 }
-                NotesRepository.SetImage(noteId, AccountController.Url + "Userimage/" + fileName);
+                NotesRepository.SetImage(noteId, Settings.Url + "Userimage/" + fileName);
             }
             return result;
         }

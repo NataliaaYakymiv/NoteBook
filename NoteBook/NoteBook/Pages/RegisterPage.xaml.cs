@@ -61,7 +61,7 @@ namespace NoteBook.Pages
                     }
                     else
                     {
-                        var page = new LoginPage(credentials.UserName, credentials.Password, "You successfully registered. Now sing in", AccountService, new LocalNotesService(Settings.DatabaseName));
+                        var page = new LoginPage(credentials.UserName, credentials.Password, "You successfully registered. Now sing in", AccountService, new LocalNotesService(Settings.Settings.DatabaseName));
 
                         await Navigation.PushAsync(page);
 

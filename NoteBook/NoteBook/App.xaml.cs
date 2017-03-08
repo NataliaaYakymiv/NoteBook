@@ -4,6 +4,7 @@ using NoteBook.Contracts;
 using NoteBook.Helpers;
 using NoteBook.Pages;
 using NoteBook.Services;
+using NoteBook.Settings;
 
 namespace NoteBook
 {
@@ -11,7 +12,7 @@ namespace NoteBook
     {
 
         private static INotesService _database;
-        public static INotesService Database => _database ?? (_database = new NoteService(Settings.DatabaseName));
+        public static INotesService Database => _database ?? (_database = new NoteService(Settings.Settings.DatabaseName));
 
         public App()
         {
@@ -28,11 +29,11 @@ namespace NoteBook
 
             if (isLoggedIn)
             {
-                MainPage = new NavigationPage(new NotePage(accountService, new LocalNotesService(Settings.DatabaseName)));
+                MainPage = new NavigationPage(new NotePage(accountService, new LocalNotesService(Settings.Settings.DatabaseName)));
             }
             else
             {
-                MainPage = new NavigationPage(new LoginPage(accountService, new LocalNotesService(Settings.DatabaseName)));
+                MainPage = new NavigationPage(new LoginPage(accountService, new LocalNotesService(Settings.Settings.DatabaseName)));
             }
         }
 

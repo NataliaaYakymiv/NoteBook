@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using NoteBook.Contracts;
 using NoteBook.Helpers;
 using NoteBook.Models;
+using NoteBook.Settings;
 
 namespace NoteBook.Services
 {
@@ -21,7 +22,7 @@ namespace NoteBook.Services
 
             using (var client = new HttpClient())
             {
-                result = await client.PostAsync(Settings.Url + Settings.LoginPath, content).ConfigureAwait(false);
+                result = await client.PostAsync(Settings.Settings.Url + Settings.Settings.LoginPath, content).ConfigureAwait(false);
             }
 
             if (result.IsSuccessStatusCode)
@@ -62,7 +63,7 @@ namespace NoteBook.Services
 
             using (var client = new HttpClient())
             {
-                result = await client.PostAsync(Settings.Url + Settings.RegisterPath, content).ConfigureAwait(false);
+                result = await client.PostAsync(Settings.Settings.Url + Settings.Settings.RegisterPath, content).ConfigureAwait(false);
             }
 
             return result.IsSuccessStatusCode;
@@ -72,10 +73,10 @@ namespace NoteBook.Services
         {
             using (var client = AuthHelper.GetAuthHttpClient())
             {
-                 await client.GetAsync(Settings.Url + Settings.LogoutPath).ConfigureAwait(false);
+                 await client.GetAsync(Settings.Settings.Url + Settings.Settings.LogoutPath).ConfigureAwait(false);
             }
             AuthHelper.ClearAll();
-            NotesHelper.ClearLocal(new NoteService(Settings.DatabaseName));
+            NotesHelper.ClearLocal(new NoteService(Settings.Settings.DatabaseName));
         }
 
     }

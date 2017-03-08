@@ -85,12 +85,12 @@ namespace NoteBook.Pages
         {
             if (e.Value)
             {
-                SetService(new RemoteNotesService(new NoteService(Settings.DatabaseName)));
+                SetService(new RemoteNotesService(new NoteService(Settings.Settings.DatabaseName)));
                 RemoteLocalSwitchLabel.Text = "REMOTE";
             }
             else
             {
-                SetService(new LocalNotesService(Settings.DatabaseName));
+                SetService(new LocalNotesService(Settings.Settings.DatabaseName));
                 RemoteLocalSwitchLabel.Text = "LOCAL";
             }
             OnAppearing();
@@ -98,7 +98,7 @@ namespace NoteBook.Pages
 
         private async void OnLogout(object sender, EventArgs e)
         {
-            SetService(new LocalNotesService(Settings.DatabaseName));
+            SetService(new LocalNotesService(Settings.Settings.DatabaseName));
             await AccountService.Logout();
             Application.Current.MainPage = new NavigationPage(new LoginPage(AccountService, NotesService));
         }

@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using NoteBook.Settings;
 
 namespace NoteBook.Helpers
 {
@@ -41,7 +42,7 @@ namespace NoteBook.Helpers
 
             if (!string.IsNullOrEmpty(UserSettings.AuthKey) && !string.IsNullOrEmpty(UserSettings.AuthValue))
             {
-                handler.CookieContainer.Add(new Uri(Settings.Url), new Cookie(UserSettings.AuthKey, UserSettings.AuthValue));
+                handler.CookieContainer.Add(new Uri(Settings.Settings.Url), new Cookie(UserSettings.AuthKey, UserSettings.AuthValue));
             }
 
             return new HttpClient(handler);

@@ -3,6 +3,7 @@ using NoteBook.Contracts;
 using NoteBook.Helpers;
 using NoteBook.Models;
 using NoteBook.Services;
+using NoteBook.Settings;
 using Xamarin.Forms;
 
 namespace NoteBook.Pages
