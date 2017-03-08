@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Common;
 using System.Data.Entity;
 using System.Diagnostics;
 
@@ -28,7 +29,7 @@ namespace WebService.Models
         
 
         public int UserId { get; set; }
-        public AccountModels.UserProfile User { get; set; }
+        //public AccountModels.UserProfile User { get; set; }
 
         public DateTime Create { get; set; }
         public DateTime? Update { get; set; }
@@ -44,10 +45,14 @@ namespace WebService.Models
 
     public class NotesContext : DbContext
     {
-        public NotesContext()
-            : base("DefaultConnection")
+        public NotesContext() : base("DefaultConnection")
         {
-            
+
+        }
+
+        public NotesContext(DbConnection connection) : base(connection, true)
+        {
+
         }
 
         public DbSet<NoteModel> NoteModels { get; set; }
