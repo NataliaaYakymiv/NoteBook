@@ -14,6 +14,7 @@ namespace NoteBook.Pages
         public INotesService NotesService { get; private set; }
         private IMediaPicker _mediaPicker;
         private MediaFile _mediaFile;
+        private bool _canDelete = false;
 
         private void Setup()
         {
@@ -121,6 +122,16 @@ namespace NoteBook.Pages
             Image.IsVisible = false;
             RemoveImageBtn.IsEnabled = false;
             OnAppearing();
+        }
+
+        private async void ShowDeleteDialog(object sender, EventArgs e)
+        {
+            var answer = await DisplayAlert("Removing image", "Do you want to remove this image from note?", "Yes", "No");
+            if (answer)
+            {
+                _canDelete = false;
+                OnRemoveImage(this, EventArgs.Empty);
+            }
         }
 
     }
