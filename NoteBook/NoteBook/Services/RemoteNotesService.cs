@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using NoteBook.Contracts;
 using NoteBook.Helpers;
 using NoteBook.Models;
+using NoteBook.Settings;
 
 namespace NoteBook.Services
 {
@@ -28,7 +29,7 @@ namespace NoteBook.Services
 
             using (var client = AuthHelper.GetAuthHttpClient())
             {
-                response = client.GetAsync(Settings.Url + Settings.NoteGetAllNotesPath).Result;
+                response = client.GetAsync(Settings.Settings.Url + Settings.Settings.NoteGetAllNotesPath).Result;
             }
 
             if (response.IsSuccessStatusCode)
@@ -65,7 +66,7 @@ namespace NoteBook.Services
             
             using (var client = AuthHelper.GetAuthHttpClient())
             {
-                response = client.PostAsync(Settings.Url + Settings.NoteSyncPath, content).Result;
+                response = client.PostAsync(Settings.Settings.Url + Settings.Settings.NoteSyncPath, content).Result;
             }
 
             if (response.IsSuccessStatusCode)
@@ -145,7 +146,7 @@ namespace NoteBook.Services
 
             using (var client = AuthHelper.GetAuthHttpClient())
             {
-                response = await client.PostAsync(Settings.Url + Settings.NoteCreatePath, content);
+                response = await client.PostAsync(Settings.Settings.Url + Settings.Settings.NoteCreatePath, content);
             }
 
             if (response.IsSuccessStatusCode)
@@ -186,7 +187,7 @@ namespace NoteBook.Services
 
             using (var client = AuthHelper.GetAuthHttpClient())
             {
-                response = await client.PutAsync(Settings.Url + Settings.NoteUpdatePath, content);
+                response = await client.PutAsync(Settings.Settings.Url + Settings.Settings.NoteUpdatePath, content);
             }
 
             if (response.IsSuccessStatusCode)
@@ -226,7 +227,7 @@ namespace NoteBook.Services
 
             using (var client = AuthHelper.GetAuthHttpClient())
             {
-                response = await client.PostAsync(Settings.Url + Settings.NoteDeletePath, content);
+                response = await client.PostAsync(Settings.Settings.Url + Settings.Settings.NoteDeletePath, content);
             }
 
             if (response.IsSuccessStatusCode)
@@ -253,7 +254,7 @@ namespace NoteBook.Services
 
             using (var client = AuthHelper.GetAuthHttpClient())
             {
-                await client.PostAsync(Settings.Url + Settings.NoteAddImagePath + "?noteId=" + model.NoteId, content);
+                await client.PostAsync(Settings.Settings.Url + Settings.Settings.NoteAddImagePath + "?noteId=" + model.NoteId, content);
             }
         }
 
@@ -266,7 +267,7 @@ namespace NoteBook.Services
 
             using (var client = AuthHelper.GetAuthHttpClient())
             {
-                await client.PostAsync(Settings.Url + Settings.NoteAddImagePath + "?noteId=" + model.NoteId, content);
+                await client.PostAsync(Settings.Settings.Url + Settings.Settings.NoteAddImagePath + "?noteId=" + model.NoteId, content);
             }
         }
 

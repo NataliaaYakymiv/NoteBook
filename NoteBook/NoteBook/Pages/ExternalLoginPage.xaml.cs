@@ -2,6 +2,7 @@
 using NoteBook.Contracts;
 using NoteBook.Helpers;
 using NoteBook.Services;
+using NoteBook.Settings;
 using Xamarin.Forms;
 
 namespace NoteBook.Pages
@@ -17,7 +18,7 @@ namespace NoteBook.Pages
             NotesService = notesService;
 
             InitializeComponent();
-            var url = Settings.Url + Settings.ExternalLoginPath + "?provider=" +
+            var url = Settings.Settings.Url + Settings.Settings.ExternalLoginPath + "?provider=" +
                       provider;
             WebView.Source = new UrlWebViewSource()
             {
@@ -36,7 +37,7 @@ namespace NoteBook.Pages
             {
 
                 if (
-                    e.Url.StartsWith(Settings.Url + Settings.ExternalLoginFailurePath))
+                    e.Url.StartsWith(Settings.Settings.Url + Settings.Settings.ExternalLoginFailurePath))
                 {
                     e.Cancel = true;
                     StateLabel.Text = "Login Failure";
@@ -45,13 +46,13 @@ namespace NoteBook.Pages
 
                 }
                 if (
-                    e.Url.StartsWith(Settings.Url + Settings.ExternalLoginFinalPath))
+                    e.Url.StartsWith(Settings.Settings.Url + Settings.Settings.ExternalLoginFinalPath))
                 {
                     WebView.IsVisible = false;
                     var result = await AccountService.ExternalLogin(e.Url);
                     if (result)
                     {
-                        NotesHelper.ClearLocal(new NoteService(Settings.DatabaseName));
+                        NotesHelper.ClearLocal(new NoteService(Settings.Settings.DatabaseName));
                         UserSettings.SyncDate = DateTime.MinValue.ToString("G");
                         var page = new NotePage(AccountService, NotesService);
                         Application.Current.MainPage = new NavigationPage(page);

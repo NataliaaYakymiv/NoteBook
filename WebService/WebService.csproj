@@ -244,6 +244,7 @@
     <Compile Include="Contracts\INotesRepository.cs" />
     <Compile Include="Repositories\AccountRepository.cs" />
     <Compile Include="Repositories\NotesRepository.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -288,7 +289,7 @@
           <IISUrl>http://localhost:55023/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
-          <CustomServerUrl>http://l2993216-001-site1.dtempurl.com/</CustomServerUrl>
+          <CustomServerUrl>http://6df9db01.ngrok.io/</CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>

@@ -16,10 +16,21 @@ namespace WebService.Controllers
     public class AccountController : ApiController
     {
 
-        //public static string Url { get; } = "http://6df9db01.ngrok.io/";
-        public static string Url { get; } = "http://192.168.88.116:81/";
+       // public static string Url { get; } = "http://6df9db01.ngrok.io/";
+        //public static string Url { get; } = "http://192.168.88.116:81/";
 
-        static readonly IAccountRepository AccountRepository = new AccountRepository();
+        private IAccountRepository _accountRepository;
+
+        public AccountController()
+        {
+            _accountRepository = new AccountRepository();
+        }
+
+        public AccountController(IAccountRepository accountRepository)
+        {
+            _accountRepository = accountRepository;
+        }
+
         //
         // POST: /Account/Login
         [HttpPost]
@@ -79,7 +90,7 @@ namespace WebService.Controllers
         [AllowAnonymous]
         public IHttpActionResult ExternalLogin([FromUri]string provider)
         {
-            OAuthWebSecurity.RequestAuthentication(provider, Url + "api/account/ExternalLoginCallback");
+            OAuthWebSecurity.RequestAuthentication(provider, Settings.Url + "api/Account/ExternalLoginCallback");
 
             return Ok();
         }
@@ -93,16 +104,16 @@ namespace WebService.Controllers
             GoogleOAuth2Client.RewriteRequest();
             IHttpActionResult actionResult;
 
-            AuthenticationResult result = OAuthWebSecurity.VerifyAuthentication(Url + "api/account/ExternalLoginCallback");
+            AuthenticationResult result = OAuthWebSecurity.VerifyAuthentication(Settings.Url + "api/account/ExternalLoginCallback");
             if (!result.IsSuccessful)
             {
-                actionResult = Redirect(Url  + "api/account/ExternalLoginFailure");
+                actionResult = Redirect(Settings.Url + "api/Account/ExternalLoginFailure");
             }
 
             else if (OAuthWebSecurity.Login(result.Provider, result.ProviderUserId, createPersistentCookie: false))
             {
                 actionResult =
-                    Redirect(Url + "api/account/ExternalLoginFinal?provider=" + result.Provider + "&providerUserId=" +
+                    Redirect(Settings.Url + "api/Account/ExternalLoginFinal?provider=" + result.Provider + "&providerUserId=" +
                              result.ProviderUserId);
             }
             else
@@ -138,7 +149,7 @@ namespace WebService.Controllers
                 }
 
                 actionResult =
-                    Redirect(Url + "api/account/ExternalLoginConfirmation?username=" + model.UserName + "&email=" +
+                    Redirect(Settings.Url + "api/Account/ExternalLoginConfirmation?username=" + model.UserName + "&email=" +
                              model.Email + "&externallogindata=" + model.ExternalLoginData + "&provider=" +
                              result.Provider + "&providerUserId=" + result.ProviderUserId);
             }
@@ -154,9 +165,9 @@ namespace WebService.Controllers
         {
             AccountModels.RegisterExternalLoginModel model = new AccountModels.RegisterExternalLoginModel() {UserName = username, ExternalLoginData = externalLoginData, Email = email};
 
-            AccountRepository.CreateUser(model, provider, providerUserId);
+            _accountRepository.CreateUser(model, provider, providerUserId);
 
-            return Redirect(Url + "api/account/ExternalLoginFinal?provider=" + provider + "&providerUserId=" + providerUserId);
+            return Redirect(Settings.Url + "api/Account/ExternalLoginFinal?provider=" + provider + "&providerUserId=" + providerUserId);
         }
 
         //

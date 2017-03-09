@@ -13,7 +13,12 @@ namespace WebService.Repositories
 
         public NotesRepository()
         {
-            InitializeData();
+            _db = new NotesContext();
+        }
+
+        public NotesRepository(NotesContext db)
+        {
+            _db = db;
         }
 
         public bool DoesItemExist(int idUser, string idNote)
@@ -145,13 +150,5 @@ namespace WebService.Repositories
                 _db.SaveChanges();
             }
         }
-
-        #region Helpers
-
-        private void InitializeData()
-        {
-            _db = new NotesContext();
-        }
-        #endregion
     }
 }

@@ -18,27 +18,31 @@ namespace WebService.Controllers
     [RoutePrefix("api/Notes")]
     public class NotesController : BaseApiController
     {
-        static readonly INotesRepository NotesRepository = new NotesRepository();
-        static readonly IAccountRepository AccountRepository = new AccountRepository();
+        private INotesRepository NotesRepository;
+        private IAccountRepository AccountRepository;
+
+        public NotesController()
+        {
+            NotesRepository = new NotesRepository();
+            AccountRepository = new AccountRepository();
+        }
+
+        public NotesController(INotesRepository notesRepository, IAccountRepository accountRepository)
+        {
+            NotesRepository = notesRepository;
+            AccountRepository = accountRepository;
+        }
 
         [HttpGet]
-        //[Route("GetAllNotes")]
+        [Route("GetAllNotes")]
         public HttpResponseMessage GetAllNotes()
         {
-            var notes = NotesRepository.All(AccountRepository.GetIdByUserName(User.Identity.Name));
-            HttpResponseMessage response;
-            if (notes == null)
-            {
-                response = Request.CreateResponse(HttpStatusCode.NoContent);
-            }
-            else
-            {
-                response = Request.CreateResponse(HttpStatusCode.OK, notes);
-            }
+            var notes = NotesRepository.All(AccountRepository.GetIdByUserName(User.Identity.Name)) ??
+                        new List<NoteModel>();
+            var response = Request.CreateResponse(HttpStatusCode.OK, notes);
 
             return response;
         }
-
 
 
         [HttpPost]
@@ -69,12 +73,13 @@ namespace WebService.Controllers
                         var note = NotesRepository.Find(AccountRepository.GetIdByUserName(User.Identity.Name),
                             item.NoteId);
                         result = Request.CreateResponse(HttpStatusCode.OK, note);
+                        
                     }
                 }
             }
             catch (Exception e)
             {
-                Debug.Print("Bug!!!!!!!!!!!!!!!!!!!! " + e.Message);
+                Debug.Print(e.Message);
                 result = Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
@@ -135,7 +140,7 @@ namespace WebService.Controllers
                 if (todoItem != null)
                 {
                     NotesRepository.Delete(AccountRepository.GetIdByUserName(User.Identity.Name), item.NoteId);
-                    result = BuildSuccessResult(HttpStatusCode.NoContent);
+                    result = BuildSuccessResult(HttpStatusCode.OK);
                 }
                 else
                 {
@@ -161,7 +166,6 @@ namespace WebService.Controllers
             syncModel.LastModify = DateTime.Now.ToString("G");
             var response = Request.CreateResponse(HttpStatusCode.OK, syncModel);
 
-
             return response;
         }
 
@@ -178,15 +182,12 @@ namespace WebService.Controllers
                 string fileName;
                 using (Image image = Image.FromStream(imageStream))
                 {
-                    //Debug.Print("Post image");
-                   // Thread.Sleep(60000);
-                    
                     string filePath = HostingEnvironment.MapPath("~/Userimage/");
                     fileName = DateTime.Now.ToFileTime() + ".png";
                     string fullPath = Path.Combine(filePath, fileName);
                     image.Save(fullPath);
                 }
-                NotesRepository.SetImage(noteId, AccountController.Url + "Userimage/" + fileName);
+                NotesRepository.SetImage(noteId, Settings.Url + "Userimage/" + fileName);
             }
             return result;
         }

@@ -1,6 +1,6 @@
 ﻿using Xamarin.Forms;
 
-namespace NoteBook
+namespace NoteBook.Settings
 {
     public class UserSettings
     {
