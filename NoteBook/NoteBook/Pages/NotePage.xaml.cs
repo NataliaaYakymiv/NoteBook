@@ -40,6 +40,7 @@ namespace NoteBook.Pages
             NotesService = notesService;
             CreateNotePage = new CreateNotePage(NotesService);
             UpdateNotePage = new UpdateNotePage(NotesService);
+            OnAppearing();
         }
 
         public void SetAuthService(IAccountService accountService)

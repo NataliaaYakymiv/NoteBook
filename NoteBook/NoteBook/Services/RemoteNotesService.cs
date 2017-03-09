@@ -91,7 +91,8 @@ namespace NoteBook.Services
                     {
                         if (note.Delete != null)
                         {
-                            await Task.Factory.StartNew(() =>  NotesService.DeleteNote(note));
+                            await Task.Factory.StartNew(() =>  NotesService.DeleteNote(note)).ConfigureAwait(false);
+                           // await NotesService.DeleteNote(note);
                         }
                     }
 
@@ -104,19 +105,19 @@ namespace NoteBook.Services
                             if (item.Delete == null)
                             {
                                 item.IsLocal = false;
-                                await Task.Factory.StartNew(() => NotesService.CreateNote(item));
+                                await Task.Factory.StartNew(() => NotesService.CreateNote(item)).ConfigureAwait(false);
                             }
                         }
                         else
                         {
                             if (item.Delete != null)
                             {
-                                await Task.Factory.StartNew(() => NotesService.DeleteNote(item));
+                                await Task.Factory.StartNew(() => NotesService.DeleteNote(item)).ConfigureAwait(false);
                             }
                             else
                             {
                                 item.IsLocal = false;
-                                await Task.Factory.StartNew(() => NotesService.UpdateNote(item));
+                                await Task.Factory.StartNew(() => NotesService.UpdateNote(item)).ConfigureAwait(false);
                             }
                         }
                     }
@@ -164,7 +165,7 @@ namespace NoteBook.Services
                 if (credentials.MediaFile != null)
                 {
                     tempModel.MediaFile = credentials.MediaFile;
-                    await Upload(tempModel);
+                    await Task.Factory.StartNew(() => Upload(tempModel)).ConfigureAwait(false);
                 }
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)
@@ -205,7 +206,7 @@ namespace NoteBook.Services
                 if (credentials.MediaFile != null)
                 {
                     tempModel.MediaFile = credentials.MediaFile;
-                    await Task.Factory.StartNew(() => Upload(tempModel));
+                    await Task.Factory.StartNew(() => Upload(tempModel)).ConfigureAwait(false);
                 }
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)
@@ -230,7 +231,7 @@ namespace NoteBook.Services
 
             if (response.IsSuccessStatusCode)
             {
-                await Task.Factory.StartNew(() => NotesService.DeleteNote(credentials));
+                await Task.Factory.StartNew(() => NotesService.DeleteNote(credentials)).ConfigureAwait(false);
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)
             {

@@ -48,7 +48,7 @@ namespace WebService.Controllers
 
         [HttpPost]
         [Route("CreateNote")]
-        public async Task<HttpResponseMessage> CreateNote(NoteModel item)
+        public HttpResponseMessage CreateNote(NoteModel item)
         {
             HttpResponseMessage result;
 
@@ -83,7 +83,7 @@ namespace WebService.Controllers
                 result = Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
-            return await Task.Factory.StartNew(() => result);
+            return result;
         }
 
         [HttpPut]
