@@ -1,6 +1,7 @@
 ﻿using System;
 using NoteBook.Contracts;
 using NoteBook.Models;
+using NoteBook.Settings;
 using Xamarin.Forms;
 
 namespace NoteBook.Pages

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -96,8 +97,7 @@ namespace WebService.Controllers
             {
                 if (item == null ||
                     string.IsNullOrWhiteSpace(item.NoteName) ||
-                    string.IsNullOrWhiteSpace(item.NoteText) ||
-                    string.IsNullOrWhiteSpace(item.Image))
+                    string.IsNullOrWhiteSpace(item.NoteText))
                 {
                     result = BuildErrorResult(HttpStatusCode.BadRequest,
                         ErrorCode.NotesItemNameAndNotesRequired.ToString());
