@@ -52,6 +52,7 @@ namespace NoteBook.Services
         public Task<bool> UpdateNote(NoteModel note)
         {
             note.Update = DateTime.Now.ToString("G");
+
             note.IsLocal = true;
             if (note.MediaFile != null)
             {

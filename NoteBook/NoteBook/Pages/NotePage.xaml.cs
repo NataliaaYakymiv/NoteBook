@@ -18,6 +18,11 @@ namespace NoteBook.Pages
 
         public List<NoteModel> Notes { get; set; }
 
+        private bool _canLogout = false;
+        private bool _settingsShowing = false;
+        private bool _canDelete = false;
+
+
         public NotePage()
         {
             InitializeComponent();
@@ -44,6 +49,8 @@ namespace NoteBook.Pages
 
         protected sealed override void OnAppearing()
         {
+            _settingsShowing = true;
+            OnSettings(this, EventArgs.Empty);
             if (NotesService != null)
             {
                 Notes = NotesService.GetSyncNotes().Result.ToList();
@@ -67,6 +74,25 @@ namespace NoteBook.Pages
         {
             UpdateNotePage.SetNoteModel((NoteModel)NotesList.SelectedItem);
             await Navigation.PushAsync(UpdateNotePage, true);
+        }
+
+        private void OnSettings(object sender, EventArgs e)
+        {
+            switch (_settingsShowing)
+            {
+                case false:
+                    SettingsRow.Height = GridLength.Auto;
+                    _settingsShowing = true;
+                    break;
+                case true:
+                    SettingsRow.Height = 0;
+                    _settingsShowing = false;
+                    break;
+                default:
+                    SettingsRow.Height = 0;
+                    _settingsShowing = false;
+                    break;
+            }
         }
 
         private async void OnDelete(object sender, EventArgs e)
@@ -102,9 +128,24 @@ namespace NoteBook.Pages
             Application.Current.MainPage = new NavigationPage(new LoginPage(AccountService, NotesService));
         }
 
-        private void OnRefresh(object sender, EventArgs e)
+        private async void ShowLoguotDialog(object sender, EventArgs e)
         {
-            Notes = NotesService.GetAllNotes().Result.ToList();
+            var answer = await DisplayAlert("Logout", "Do you want to logout?", "Yes", "No");
+            if (answer)
+            {
+                _canLogout = false;
+                OnLogout(this, EventArgs.Empty);
+            }
+        }
+
+        private async void ShowDeleteDialog(object sender, EventArgs e)
+        {
+            var answer = await DisplayAlert("Delete", "Do you want to delete this note?", "Yes", "No");
+            if (answer)
+            {
+                _canDelete = false;
+                OnDelete(this, EventArgs.Empty);
+            }
         }
     }
 }

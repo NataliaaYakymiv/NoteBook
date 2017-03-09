@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using NoteBook.Contracts;
 using NoteBook.Services;
 using Xamarin.Forms;
+using XLabs.Ioc;
+using XLabs.Platform.Device;
+using XLabs.Platform.Services.Media;
 
 namespace NoteBook.Pages
 {
@@ -16,9 +19,25 @@ namespace NoteBook.Pages
         public INotesService NotesService { get; private set; }
         public NoteModel NoteModel { get; private set; }
 
+        private IMediaPicker _mediaPicker;
+        private MediaFile _mediaFile;
+        private bool _canDelete = false;
+
+        private void Setup()
+        {
+            if (_mediaPicker != null)
+            {
+                return;
+            }
+
+            var device = Resolver.Resolve<IDevice>();
+
+            _mediaPicker = DependencyService.Get<IMediaPicker>() ?? device.MediaPicker;
+        }
+
         private UpdateNotePage()
         {
-            Title = "Create note";
+            Title = "Update note";
             InitializeComponent();
         }
 
@@ -33,6 +52,16 @@ namespace NoteBook.Pages
             ForceLayout();
             NoteModel = model;
 
+            if (model.Image != null)
+            {
+                Image.Source = model.Image;
+                Image.IsVisible = true;
+            }
+            else
+            {
+                Image.IsVisible = false;
+            }
+
             NoteNameEntry.Text = model.NoteName;
             NoteTextEntry.Text = model.NoteText;
             CreatedLabel.Text = "Created: " + model.Create;
@@ -43,6 +72,7 @@ namespace NoteBook.Pages
         {
             NoteModel.NoteName = NoteNameEntry.Text;
             NoteModel.NoteText = NoteTextEntry.Text;
+            NoteModel.MediaFile = _mediaFile;
 
             try
             {
@@ -60,7 +90,6 @@ namespace NoteBook.Pages
                 {
                     NoteNameEntry.Text = string.Empty;
                     NoteTextEntry.Text = string.Empty;
-
                     await Navigation.PopAsync();
                 }
                 else
@@ -82,10 +111,55 @@ namespace NoteBook.Pages
             }
         }
 
+        private async void OnSelectImage(object sender, EventArgs eventArgs)
+        {
+            Setup();
+            Image.Source = null;
+            try
+            {
+                _mediaFile = await this._mediaPicker.SelectPhotoAsync(new CameraMediaStorageOptions
+                {
+
+                    DefaultCamera = CameraDevice.Front,
+                    MaxPixelDimension = 400,
+
+
+                });
+                Image.Source = ImageSource.FromStream(() => _mediaFile.Source);
+                Image.IsVisible = true;
+            }
+            catch (Exception ex)
+            {
+                StateLabel.Text = ex.Message;
+            }
+            OnAppearing();
+        }
+
+        private void OnDeleteImage(object sender, EventArgs eventArgs)
+        {
+            NoteModel.Image = null;
+            Image.Source = null;
+            OnAppearing();
+        }
+        
+
         public async void OnDeleteNote(object sender, EventArgs e)
         {
+            NoteNameEntry.Text = string.Empty;
+            NoteTextEntry.Text = string.Empty;
             await NotesService.DeleteNote(NoteModel);
             await Navigation.PopAsync();
         }
+
+        private async void ShowDeleteDialog(object sender, EventArgs e)
+        {
+            var answer = await DisplayAlert("Delete", "Do you want to delete this note?", "Yes", "No");
+            if (answer)
+            {
+                _canDelete = false;
+                OnDeleteNote(this, EventArgs.Empty);
+            }
+        }
+
     }
 }

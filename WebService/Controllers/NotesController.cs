@@ -96,7 +96,8 @@ namespace WebService.Controllers
             {
                 if (item == null ||
                     string.IsNullOrWhiteSpace(item.NoteName) ||
-                    string.IsNullOrWhiteSpace(item.NoteText))
+                    string.IsNullOrWhiteSpace(item.NoteText) ||
+                    string.IsNullOrWhiteSpace(item.Image))
                 {
                     result = BuildErrorResult(HttpStatusCode.BadRequest,
                         ErrorCode.NotesItemNameAndNotesRequired.ToString());

@@ -3,8 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NoteBook.Pages.LoginPage">
 
-  <StackLayout>
-
+  <StackLayout Margin="5">
     <Label HorizontalTextAlignment="Center" FontSize="Large">Sign in</Label>
 
     <StackLayout x:Name="LoginViev">
@@ -13,17 +12,16 @@
       <Button x:Name="LoginBtn" Text ="Sign in" FontSize="Medium" BorderWidth="1" Clicked="OnLogin" />
     </StackLayout>
 
-    <StackLayout x:Name="OptionsView" Orientation="Horizontal" HorizontalOptions="Center">
+    <!--<StackLayout x:Name="OptionsView" Orientation="Horizontal" HorizontalOptions="Center">
       <Label x:Name="RememberMeLabel" FontSize="Large" VerticalOptions="Center" HorizontalOptions="End">Remember me</Label>
       <Switch x:Name="RememberMe" IsToggled="False" HorizontalOptions="End" VerticalOptions="Center"/>
       <ActivityIndicator  x:Name="ActivityIndicatorLogin" HorizontalOptions="Center" VerticalOptions="CenterAndExpand" IsVisible="False" IsRunning="False" />
-    </StackLayout>
+    </StackLayout>-->
 
-
-    <Label x:Name="StatusLabel" Text="" FontSize="Large" HorizontalTextAlignment="Center"></Label>
-
-    <Grid x:Name="ExternalLogin">
+    <Grid x:Name="OptionsView">
       <Grid.RowDefinitions>
+        <RowDefinition Height="*" />
+        <RowDefinition Height="*" />
         <RowDefinition Height="*" />
       </Grid.RowDefinitions>
       <Grid.ColumnDefinitions>
@@ -31,9 +29,18 @@
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
-      <Button Grid.Row="0" Grid.Column="0" x:Name="FacebookButton" Text ="Facebook" FontSize="Medium" BorderWidth="1" Clicked="OnFacebookLogin" BackgroundColor="#3b579d" TextColor="White"/>
-      <Button Grid.Row="0" Grid.Column="1"  x:Name="GoogleButton" Text ="Google" FontSize="Medium" BorderWidth="1" Clicked="OnGoogleLogin" BackgroundColor="#cf4332" TextColor="White"/>
-      <Button Grid.Row="0" Grid.Column="2" x:Name="LinkedInButton" Text ="LinkedIn" FontSize="Medium" BorderWidth="1" Clicked="OnLinkedinLogin" BackgroundColor="#006599" TextColor="White"/>
+      
+      <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Grid.Row="0" Grid.ColumnSpan="3">
+        <Label x:Name="RememberMeLabel" FontSize="Large" VerticalOptions="Center" HorizontalOptions="Center">Remember me</Label>
+        <Switch x:Name="RememberMe" IsToggled="False" HorizontalOptions="Center" VerticalOptions="Center"/>
+        <ActivityIndicator x:Name="ActivityIndicatorLogin" HorizontalOptions="Center" VerticalOptions="CenterAndExpand" IsVisible="False" IsRunning="True" />
+      </StackLayout>
+
+      <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" x:Name="StatusLabel" Text="" FontSize="Large" HorizontalTextAlignment="Center"></Label>
+
+      <Button Grid.Row="2" Grid.Column="0" x:Name="FacebookButton" Text ="Facebook" FontSize="Medium" BorderWidth="1" Clicked="OnFacebookLogin" BackgroundColor="#3b579d" TextColor="White"/>
+      <Button Grid.Row="2" Grid.Column="1"  x:Name="GoogleButton" Text ="Google" FontSize="Medium" BorderWidth="1" Clicked="OnGoogleLogin" BackgroundColor="#cf4332" TextColor="White"/>
+      <Button Grid.Row="2" Grid.Column="2" x:Name="LinkedInButton" Text ="LinkedIn" FontSize="Medium" BorderWidth="1" Clicked="OnLinkedinLogin" BackgroundColor="#006599" TextColor="White"/>
     </Grid>
 
     <StackLayout x:Name="RegisterView" VerticalOptions="EndAndExpand">
@@ -41,7 +48,6 @@
       <Label VerticalOptions="End" FontSize="Large" HorizontalTextAlignment="Center">Don't have an account?</Label>
       <Button x:Name="RegisterButton" VerticalOptions="End" Text ="Sign up" FontSize="Medium" BorderWidth="1" Clicked="OnRegister"/>
     </StackLayout>
-
   </StackLayout>
 
 </ContentPage>

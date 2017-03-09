@@ -114,6 +114,7 @@ namespace WebService.Repositories
             {
                 note.NoteName = noteModel.NoteName;
                 note.NoteText = noteModel.NoteText;
+                note.Image = noteModel.Image;
                 note.Update = DateTime.Now;
                 _db.Entry(note).State = EntityState.Modified;
 

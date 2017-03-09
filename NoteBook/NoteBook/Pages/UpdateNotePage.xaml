@@ -2,24 +2,38 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NoteBook.Pages.UpdateNotePage">
-  <StackLayout>
-    
-    <Label x:Name="TextLabel" HorizontalTextAlignment="Center" FontSize="Large">Update note</Label>
-   
-    <Label HorizontalTextAlignment="Start">Title</Label>
-    <Entry x:Name="NoteNameEntry" />
-    
-    <Label HorizontalTextAlignment="Start">Text</Label>
-    <Editor x:Name="NoteTextEntry"/>
-    
+
+  <StackLayout Orientation="Vertical" Margin="5" Spacing="5">
+        <Grid >
+            <Grid.RowDefinitions >
+              <RowDefinition Height="*" />
+              <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <StackLayout VerticalOptions="CenterAndExpand" Grid.Row="0" Grid.Column="1" Orientation="Vertical">
+              <Label  HorizontalTextAlignment="Start">Title</Label>
+              <Entry x:Name="NoteNameEntry"/>
+            </StackLayout>
+
+            <StackLayout VerticalOptions="CenterAndExpand" Grid.Row="1" Grid.Column="1" Orientation="Vertical">
+              <Label HorizontalTextAlignment="Start">Text</Label>
+              <Editor x:Name="NoteTextEntry"/>
+            </StackLayout>
+            <Image Aspect="AspectFit" VerticalOptions="CenterAndExpand" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="Image" Source="/icon.jpg" IsVisible="False" ></Image>
+          </Grid>
+
     <Label x:Name="CreatedLabel" HorizontalOptions="Start"></Label>
     <Label x:Name="UpdatedLabel" HorizontalOptions="Start"></Label>
     
+    <Button x:Name="SelectImageBtn" Text = "Select image" FontSize="Medium" BorderWidth="1" Clicked="OnSelectImage"/>
     <Button x:Name="UpdateBtn" Text = "Update note" FontSize="Medium" BorderWidth="1" Clicked="OnUpdateNote"/>
-    <Button x:Name="DeleteBtn" Text = "Delete note" FontSize="Medium" BorderWidth="1" Clicked="OnDeleteNote"/>
+    <Button x:Name="DeleteBtn" Text = "Delete note" FontSize="Medium" BorderWidth="1" Clicked="ShowDeleteDialog"/>
     <ActivityIndicator x:Name="ActivityIndicatorUdpateNote" HorizontalOptions="Center" IsVisible="False" IsRunning="False" />
     <Label x:Name="StateLabel" FontSize="Large"></Label>
-  
+
   </StackLayout>
-  
-</ContentPage>
+  </ContentPage>

@@ -16,8 +16,8 @@ namespace WebService.Controllers
     public class AccountController : ApiController
     {
 
-        public static string Url { get; } = "http://6df9db01.ngrok.io/";
-        //public static string Url { get; } = "http://192.168.88.116:81/";
+        //public static string Url { get; } = "http://6df9db01.ngrok.io/";
+        public static string Url { get; } = "http://192.168.88.116:81/";
 
         static readonly IAccountRepository AccountRepository = new AccountRepository();
         //
