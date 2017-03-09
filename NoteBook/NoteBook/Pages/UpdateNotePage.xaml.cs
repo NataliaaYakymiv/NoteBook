@@ -1,12 +1,7 @@
 ﻿using NoteBook.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using NoteBook.Contracts;
-using NoteBook.Services;
 using Xamarin.Forms;
 using XLabs.Ioc;
 using XLabs.Platform.Device;

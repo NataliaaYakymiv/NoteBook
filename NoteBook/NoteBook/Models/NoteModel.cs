@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using SQLite;
-using Xamarin.Forms;
 using XLabs.Platform.Services.Media;
 
 namespace NoteBook.Models

@@ -2,8 +2,6 @@
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
-using Android.Widget;
-using XLabs.Forms;
 using XLabs.Ioc;
 using XLabs.Platform.Device;
 using XLabs.Platform.Services;

@@ -1,7 +1,6 @@
 ﻿using NoteBook.Models;
 using System;
 using System.Net.Http;
-using System.Threading.Tasks;
 using NoteBook.Contracts;
 using Xamarin.Forms;
 using XLabs.Ioc;

@@ -1,9 +1,6 @@
-﻿using System;
-using NoteBook.Models;
+﻿using NoteBook.Models;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
-using XLabs.Platform.Services.Media;
 
 namespace NoteBook.Contracts
 {
