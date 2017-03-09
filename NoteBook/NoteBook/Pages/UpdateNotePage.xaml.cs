@@ -51,10 +51,12 @@ namespace NoteBook.Pages
             {
                 Image.Source = model.Image;
                 Image.IsVisible = true;
+                RemoveImageBtn.IsEnabled = true;
             }
             else
             {
                 Image.IsVisible = false;
+                RemoveImageBtn.IsEnabled = false;
             }
 
             NoteNameEntry.Text = model.NoteName;
@@ -130,14 +132,6 @@ namespace NoteBook.Pages
             OnAppearing();
         }
 
-        private void OnDeleteImage(object sender, EventArgs eventArgs)
-        {
-            NoteModel.Image = null;
-            Image.Source = null;
-            OnAppearing();
-        }
-        
-
         public async void OnDeleteNote(object sender, EventArgs e)
         {
             NoteNameEntry.Text = string.Empty;
@@ -153,6 +147,25 @@ namespace NoteBook.Pages
             {
                 _canDelete = false;
                 OnDeleteNote(this, EventArgs.Empty);
+            }
+        }
+
+        private void OnRemoveImage(object sender, EventArgs eventArgs)
+        {
+            Image.Source = null;
+            _mediaFile = null;
+            Image.IsVisible = false;
+            RemoveImageBtn.IsEnabled = false;
+            OnAppearing();
+        }
+
+        private async void ShowImageDeleteDialog(object sender, EventArgs e)
+        {
+            var answer = await DisplayAlert("Removing image", "Do you want to remove this image from note?", "Yes", "No");
+            if (answer)
+            {
+                _canDelete = false;
+                OnRemoveImage(this, EventArgs.Empty);
             }
         }
 
