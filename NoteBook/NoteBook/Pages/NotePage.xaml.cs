@@ -22,6 +22,9 @@ namespace NoteBook.Pages
         private bool _settingsShowing = false;
         private bool _canDelete = false;
 
+        private NoteModel _previouslySelectedItem = new NoteModel();
+
+
 
         public NotePage()
         {
@@ -59,11 +62,6 @@ namespace NoteBook.Pages
                 UpdateButton.IsEnabled = DeleteButton.IsEnabled = false;
             }
             base.OnAppearing();
-        }
-
-        private void NotesList_ItemSelected(object sender, SelectedItemChangedEventArgs e)
-        {
-            UpdateButton.IsEnabled = DeleteButton.IsEnabled = true;
         }
 
         private async void OnCreate(object sender, EventArgs e)
@@ -107,6 +105,8 @@ namespace NoteBook.Pages
             OnAppearing();
         }
 
+
+
         private void Ontoggled(object sender, ToggledEventArgs e)
         {
             if (e.Value)
@@ -146,6 +146,23 @@ namespace NoteBook.Pages
             {
                 _canDelete = false;
                 OnDelete(this, EventArgs.Empty);
+            }
+        }
+
+        private void NotesList_OnItemTapped(object sender, ItemTappedEventArgs e)
+        {
+            switch (_previouslySelectedItem.Equals(e.Item))
+            {
+                case true:
+                    _previouslySelectedItem = (NoteModel)NotesList.SelectedItem;
+                    NotesList.SelectedItem = null;
+                    UpdateButton.IsEnabled = DeleteButton.IsEnabled = false;
+                    OnAppearing();
+                    break;
+                case false:
+                    _previouslySelectedItem = (NoteModel)NotesList.SelectedItem;
+                    UpdateButton.IsEnabled = DeleteButton.IsEnabled = true;
+                    break;
             }
         }
     }

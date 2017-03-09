@@ -37,7 +37,8 @@
 
     <ScrollView VerticalOptions="FillAndExpand" >
       <!--<ListView x:Name="NotesList" ItemSelected="NotesList_ItemSelected" SeparatorVisibility="None" BackgroundColor="#2196f3">-->
-      <ListView x:Name="NotesList" ItemSelected="NotesList_ItemSelected" SeparatorVisibility="None">
+      <!--<ListView x:Name="NotesList" ItemSelected="NotesList_ItemSelected" ItemTapped="NotesList_OnItemTapped" SeparatorVisibility="None">-->
+      <ListView x:Name="NotesList" ItemTapped="NotesList_OnItemTapped" SeparatorVisibility="None">
         <ListView.ItemTemplate>
           <DataTemplate x:Name="DataTemplate">
             <ViewCell Height="NaN">
