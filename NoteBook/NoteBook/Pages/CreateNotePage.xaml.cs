@@ -105,12 +105,23 @@ namespace NoteBook.Pages
 
                 });
                 Image.Source = ImageSource.FromStream(() => _mediaFile.Source);
-                Image.IsVisible = true;
             }
             catch (Exception ex)
             {
                 StateLabel.Text = ex.Message;
             }
+            Image.IsVisible = true;
+            RemoveImageBtn.IsEnabled = true;
         }
+
+        private void OnRemoveImage(object sender, EventArgs eventArgs)
+        {
+            Image.Source = null;
+            _mediaFile = null;
+            Image.IsVisible = false;
+            RemoveImageBtn.IsEnabled = false;
+            OnAppearing();
+        }
+
     }
 }

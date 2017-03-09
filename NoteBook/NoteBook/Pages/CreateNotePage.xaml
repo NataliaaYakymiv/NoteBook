@@ -27,6 +27,7 @@
     </Grid>
 
     <Button x:Name="SelectImageBtn" Text = "Select image" FontSize="Medium" BorderWidth="1" Clicked="OnSelectImage"/>
+    <Button x:Name="RemoveImageBtn" Text = "Remove image" FontSize="Medium" BorderWidth="1" Clicked="OnRemoveImage" IsEnabled="False"/>
     <Button x:Name="CreateBtn" Text = "Create note" FontSize="Medium" BorderWidth="1" Clicked="OnCreateNote"/>
     <ActivityIndicator x:Name="ActivityIndicatorCreateNote" HorizontalOptions="Center" IsVisible="False" IsRunning="False" />
     <Label x:Name="StateLabel" FontSize="Large"></Label>
