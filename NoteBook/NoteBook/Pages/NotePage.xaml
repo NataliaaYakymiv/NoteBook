@@ -4,7 +4,7 @@
              x:Class="NoteBook.Pages.NotePage">
 
   <ContentPage.ToolbarItems>
-    <ToolbarItem Name="SETTINGS" Clicked="OnSettings"></ToolbarItem>
+    <ToolbarItem Name="SETTINGS" Clicked="OnToggleSettings"></ToolbarItem>
     <ToolbarItem Name="REFRESH" Clicked="OnSync"></ToolbarItem>
     <ToolbarItem Name="LOGOUT" Clicked="ShowLoguotDialog"></ToolbarItem>
   </ContentPage.ToolbarItems>
@@ -25,20 +25,19 @@
       <Button Grid.Row="0" Grid.Column="0" Text = "Create" BorderWidth="1"  Clicked="OnCreate" IsVisible="False"/>
       <StackLayout Orientation="Horizontal"  Grid.Row="0" Grid.Column="2" Margin="0" Padding="0" VerticalOptions="Center" HorizontalOptions="Center">
         <Label  x:Name="RemoteLocalSwitchLabel" VerticalOptions="Center" >LOCAL</Label>
-        <Switch  x:Name="RemoteLocalSwitch" IsToggled="False" Toggled="Ontoggled" VerticalOptions="Center" />
+        <Switch  x:Name="RemoteLocalSwitch" IsToggled="False" Toggled="OnModeToggled" VerticalOptions="Center" />
       </StackLayout>
       
-      <Button Grid.Row="1" Grid.Column="0" Text = "Create" BorderWidth="1"  Clicked="OnCreate"/>
-      <Button Grid.Row="1" Grid.Column="1" x:Name="UpdateButton" Text = "Update" BorderWidth="1" Clicked="OnUpdate" IsEnabled="False" />
-      <Button Grid.Row="1" Grid.Column="2" x:Name="DeleteButton" Text = "Delete" BorderWidth="1" Clicked="ShowDeleteDialog" IsEnabled="False" />
+      <Button Margin="0" Grid.Row="1" Grid.Column="0" Text = "Create" BorderWidth="1"  Clicked="OnCreate"/>
+      <Button Margin="0" Grid.Row="1" Grid.Column="1" x:Name="UpdateButton" Text = "Update" BorderWidth="1" Clicked="OnUpdate" IsEnabled="False" />
+      <Button Margin="0" Grid.Row="1" Grid.Column="2" x:Name="DeleteButton" Text = "Delete" BorderWidth="1" Clicked="ShowDeleteDialog" IsEnabled="False" />
     </Grid>
 
     <ActivityIndicator x:Name="ActivityIndicatorUdpateNote" VerticalOptions="Center" HorizontalOptions="Center" IsVisible="False" IsRunning="False" />
 
     <ScrollView VerticalOptions="FillAndExpand" >
       <!--<ListView x:Name="NotesList" ItemSelected="NotesList_ItemSelected" SeparatorVisibility="None" BackgroundColor="#2196f3">-->
-      <!--<ListView x:Name="NotesList" ItemSelected="NotesList_ItemSelected" ItemTapped="NotesList_OnItemTapped" SeparatorVisibility="None">-->
-      <ListView x:Name="NotesList" ItemTapped="NotesList_OnItemTapped" SeparatorVisibility="None">
+      <ListView x:Name="NotesList" ItemTapped="NotesList_OnItemTapped" SeparatorVisibility="None" Refreshing="OnSync">
         <ListView.ItemTemplate>
           <DataTemplate x:Name="DataTemplate">
             <ViewCell Height="NaN">
@@ -62,7 +61,5 @@
         </ListView.ItemTemplate>
       </ListView>
     </ScrollView>
-
   </StackLayout>
-
 </ContentPage>

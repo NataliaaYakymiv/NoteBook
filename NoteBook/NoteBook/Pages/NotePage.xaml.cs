@@ -18,9 +18,7 @@ namespace NoteBook.Pages
 
         public List<NoteModel> Notes { get; set; }
 
-        private bool _canLogout = false;
         private bool _settingsShowing = false;
-        private bool _canDelete = false;
 
         private NoteModel _previouslySelectedItem = new NoteModel();
 
@@ -54,7 +52,7 @@ namespace NoteBook.Pages
         protected sealed override void OnAppearing()
         {
             _settingsShowing = true;
-            OnSettings(this, EventArgs.Empty);
+            OnToggleSettings(this, EventArgs.Empty);
             if (NotesService != null)
             {
                 Notes = NotesService.GetSyncNotes().Result.ToList();
@@ -75,7 +73,7 @@ namespace NoteBook.Pages
             await Navigation.PushAsync(UpdateNotePage, true);
         }
 
-        private void OnSettings(object sender, EventArgs e)
+        private void OnToggleSettings(object sender, EventArgs e)
         {
             switch (_settingsShowing)
             {
@@ -107,7 +105,7 @@ namespace NoteBook.Pages
 
 
 
-        private void Ontoggled(object sender, ToggledEventArgs e)
+        private void OnModeToggled(object sender, ToggledEventArgs e)
         {
             if (e.Value)
             {
@@ -134,7 +132,6 @@ namespace NoteBook.Pages
             var answer = await DisplayAlert("Logout", "Do you want to logout?", "Yes", "No");
             if (answer)
             {
-                _canLogout = false;
                 OnLogout(this, EventArgs.Empty);
             }
         }
@@ -144,7 +141,6 @@ namespace NoteBook.Pages
             var answer = await DisplayAlert("Delete", "Do you want to delete this note?", "Yes", "No");
             if (answer)
             {
-                _canDelete = false;
                 OnDelete(this, EventArgs.Empty);
             }
         }

@@ -16,9 +16,8 @@ namespace NoteBook.Pages
 
         private IMediaPicker _mediaPicker;
         private MediaFile _mediaFile;
-        private bool _canDelete = false;
 
-        private void Setup()
+        private void ImagepickerSetup()
         {
             if (_mediaPicker != null)
             {
@@ -73,15 +72,19 @@ namespace NoteBook.Pages
 
             try
             {
+                #region Enabling views
                 ActivityIndicatorUdpateNote.IsRunning = true;
                 ActivityIndicatorUdpateNote.IsVisible = true;
                 UpdateBtn.IsEnabled = false;
+                #endregion
 
                 var result = await NotesService.UpdateNote(NoteModel);
 
+                #region Disabling Views
                 ActivityIndicatorUdpateNote.IsRunning = false;
                 ActivityIndicatorUdpateNote.IsVisible = false;
                 UpdateBtn.IsEnabled = true;
+                #endregion
 
                 if (result)
                 {
@@ -110,7 +113,7 @@ namespace NoteBook.Pages
 
         private async void OnSelectImage(object sender, EventArgs eventArgs)
         {
-            Setup();
+            ImagepickerSetup();
             Image.Source = null;
             try
             {
@@ -145,7 +148,6 @@ namespace NoteBook.Pages
             var answer = await DisplayAlert("Delete", "Do you want to delete this note?", "Yes", "No");
             if (answer)
             {
-                _canDelete = false;
                 OnDeleteNote(this, EventArgs.Empty);
             }
         }
@@ -159,12 +161,11 @@ namespace NoteBook.Pages
             OnAppearing();
         }
 
-        private async void ShowImageDeleteDialog(object sender, EventArgs e)
+        private async void ShowRemoveImageDialog(object sender, EventArgs e)
         {
             var answer = await DisplayAlert("Removing image", "Do you want to remove this image from note?", "Yes", "No");
             if (answer)
             {
-                _canDelete = false;
                 OnRemoveImage(this, EventArgs.Empty);
             }
         }

@@ -14,9 +14,8 @@ namespace NoteBook.Pages
         public INotesService NotesService { get; private set; }
         private IMediaPicker _mediaPicker;
         private MediaFile _mediaFile;
-        private bool _canDelete = false;
 
-        private void Setup()
+        private void ImapickerSetup()
         {
             if (_mediaPicker != null)
             {
@@ -24,7 +23,7 @@ namespace NoteBook.Pages
             }
 
             var device = Resolver.Resolve<IDevice>();
- 
+
             _mediaPicker = DependencyService.Get<IMediaPicker>() ?? device.MediaPicker;
         }
 
@@ -51,19 +50,23 @@ namespace NoteBook.Pages
 
             try
             {
+                #region enabling views
                 ActivityIndicatorCreateNote.IsRunning = true;
                 ActivityIndicatorCreateNote.IsVisible = true;
                 NoteNameEntry.IsEnabled = false;
                 NoteTextEntry.IsEnabled = false;
-                CreateBtn.IsVisible= false;
+                CreateBtn.IsVisible = false;
+                #endregion
 
                 var result = await NotesService.CreateNote(note);
 
+                #region disabling views
                 ActivityIndicatorCreateNote.IsRunning = false;
                 ActivityIndicatorCreateNote.IsVisible = false;
                 NoteNameEntry.IsEnabled = true;
                 NoteTextEntry.IsEnabled = true;
                 CreateBtn.IsVisible = true;
+                #endregion
 
                 if (result)
                 {
@@ -93,16 +96,16 @@ namespace NoteBook.Pages
 
         private async void OnSelectImage(object sender, EventArgs eventArgs)
         {
-            Setup();
+            ImapickerSetup();
             Image.Source = null;
             try
             {
                 _mediaFile = await this._mediaPicker.SelectPhotoAsync(new CameraMediaStorageOptions
-                { 
-                    
+                {
+
                     DefaultCamera = CameraDevice.Front,
                     MaxPixelDimension = 400,
-                    
+
 
                 });
                 Image.Source = ImageSource.FromStream(() => _mediaFile.Source);
@@ -124,12 +127,11 @@ namespace NoteBook.Pages
             OnAppearing();
         }
 
-        private async void ShowDeleteDialog(object sender, EventArgs e)
+        private async void ShowRemoveImageDialog(object sender, EventArgs e)
         {
             var answer = await DisplayAlert("Removing image", "Do you want to remove this image from note?", "Yes", "No");
             if (answer)
             {
-                _canDelete = false;
                 OnRemoveImage(this, EventArgs.Empty);
             }
         }

@@ -3,7 +3,7 @@
     public class Settings
     {
         // if use Genymotion 2.2 and latest, you can access to localhost form this url http://10.0.3.2
-        public static string Url { get; } = "http://192.168.88.105:81/";
+        public static string Url { get; } = "http://192.168.88.116:81/";
 
         public static string DatabaseName { get; } = "notes1.db";
 
