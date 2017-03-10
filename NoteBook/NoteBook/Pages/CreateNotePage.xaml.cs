@@ -39,6 +39,22 @@ namespace NoteBook.Pages
             NotesService = notesService;
         }
 
+        public void OnCreateNoteCheck(object sender, EventArgs e)
+        {
+            switch (!(string.IsNullOrEmpty(NoteNameEntry.Text) && string.IsNullOrEmpty(NoteTextEntry.Text)))
+            {
+                case false:
+                    StateLabel.Text = "Please, write something.";
+                    break;
+                case true:
+                    OnCreateNote(this, EventArgs.Empty);
+                    break;
+                default:
+                    OnCreateNote(this, EventArgs.Empty);
+                    break;
+            }
+        }
+
         public async void OnCreateNote(object sender, EventArgs e)
         {
             var note = new NoteModel
@@ -51,21 +67,25 @@ namespace NoteBook.Pages
             try
             {
                 #region enabling views
+
                 ActivityIndicatorCreateNote.IsRunning = true;
                 ActivityIndicatorCreateNote.IsVisible = true;
                 NoteNameEntry.IsEnabled = false;
                 NoteTextEntry.IsEnabled = false;
                 CreateBtn.IsVisible = false;
+
                 #endregion
 
                 var result = await NotesService.CreateNote(note);
 
                 #region disabling views
+
                 ActivityIndicatorCreateNote.IsRunning = false;
                 ActivityIndicatorCreateNote.IsVisible = false;
                 NoteNameEntry.IsEnabled = true;
                 NoteTextEntry.IsEnabled = true;
                 CreateBtn.IsVisible = true;
+
                 #endregion
 
                 if (result)
@@ -92,6 +112,7 @@ namespace NoteBook.Pages
             {
                 StateLabel.Text = exception.Message;
             }
+
         }
 
         private async void OnSelectImage(object sender, EventArgs eventArgs)

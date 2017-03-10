@@ -27,8 +27,8 @@
 
     <Button x:Name="SelectImageBtn" Text = "Select image" FontSize="Medium" BorderWidth="1" Clicked="OnSelectImage"/>
     <Button x:Name="RemoveImageBtn" Text = "Remove image" FontSize="Medium" BorderWidth="1" Clicked="ShowRemoveImageDialog" IsEnabled="False"/>
-    <Button x:Name="CreateBtn" Text = "Create note" FontSize="Medium" BorderWidth="1" Clicked="OnCreateNote"/>
+    <Button x:Name="CreateBtn" Text = "Create note" FontSize="Medium" BorderWidth="1" Clicked="OnCreateNoteCheck"/>
     <ActivityIndicator x:Name="ActivityIndicatorCreateNote" HorizontalOptions="Center" IsVisible="False" IsRunning="False" />
-    <Label x:Name="StateLabel" FontSize="Large"></Label>
+    <Label x:Name="StateLabel" HorizontalOptions="Center" FontSize="Large"></Label>
   </StackLayout>
 </ContentPage>

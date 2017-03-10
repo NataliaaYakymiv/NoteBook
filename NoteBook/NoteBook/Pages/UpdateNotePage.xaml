@@ -30,9 +30,9 @@
 
     <Button x:Name="SelectImageBtn" Text = "Select image" FontSize="Medium" BorderWidth="1" Clicked="OnSelectImage"/>
     <Button x:Name="RemoveImageBtn" Text = "Remove image" FontSize="Medium" BorderWidth="1" Clicked="ShowRemoveImageDialog"/>
-    <Button x:Name="UpdateBtn" Text = "Update note" FontSize="Medium" BorderWidth="1" Clicked="OnUpdateNote"/>
+    <Button x:Name="UpdateBtn" Text = "Update note" FontSize="Medium" BorderWidth="1" Clicked="OnUpdateNoteCheck"/>
     <Button x:Name="DeleteBtn" Text = "Delete note" FontSize="Medium" BorderWidth="1" Clicked="ShowDeleteDialog"/>
     <ActivityIndicator x:Name="ActivityIndicatorUdpateNote" HorizontalOptions="Center" IsVisible="False" IsRunning="False" />
-    <Label x:Name="StateLabel" FontSize="Large"></Label>
+    <Label x:Name="StateLabel" FontSize="Large" HorizontalOptions="Center"></Label>
   </StackLayout>
 </ContentPage>

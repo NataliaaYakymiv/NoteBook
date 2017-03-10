@@ -34,6 +34,22 @@ namespace NoteBook.Pages
             Title = "Update note";
             InitializeComponent();
         }
+        
+        public void OnUpdateNoteCheck(object sender, EventArgs e)
+        {
+            switch (!(string.IsNullOrEmpty(NoteNameEntry.Text) && string.IsNullOrEmpty(NoteTextEntry.Text)))
+            {
+                case false:
+                    StateLabel.Text = "Please, write something.";
+                    break;
+                case true:
+                    OnUpdateNote(this, EventArgs.Empty);
+                    break;
+                default:
+                    OnUpdateNote(this, EventArgs.Empty);
+                    break;
+            }
+        }
 
         public UpdateNotePage(INotesService notesService) : this()
         {
